@@ -1,0 +1,4389 @@
+<!DOCTYPE html />
+
+<html>
+<head>
+	<title>global.js</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link href="nocco.css" rel="stylesheet" media="all" type="text/css" />
+	<script src="prettify.js" type="text/javascript"></script>
+</head>
+<body onload="prettyPrint()">
+	<div id="container">
+		<div id="background"></div>
+			<div id="jump_to">
+				Jump To &hellip;
+				<div id="jump_wrapper">
+					<div id="jump_page">
+							<a class="source" href="coeffanalyse.html">
+								CoeffAnalyse.js
+							</a>
+							<a class="source" href="engine-11072018-current.html">
+								engine-11072018-current.js
+							</a>
+							<a class="source" href="engine-13072018.html">
+								engine-13072018.js
+							</a>
+							<a class="source" href="engine-30052018.html">
+								engine-30052018.js
+							</a>
+							<a class="source" href="engine-30062018.html">
+								engine-30062018.js
+							</a>
+							<a class="source" href="engine.html">
+								engine.js
+							</a>
+							<a class="source" href="engine18062018.html">
+								engine18062018.js
+							</a>
+							<a class="source" href="engine23052018.html">
+								engine23052018.js
+							</a>
+							<a class="source" href="exporter.html">
+								exporter.js
+							</a>
+							<a class="source" href="global.html">
+								global.js
+							</a>
+							<a class="source" href="importer.html">
+								importer.js
+							</a>
+							<a class="source" href="index.html">
+								index.js
+							</a>
+							<a class="source" href="locationpicker.jquery.html">
+								locationpicker.jquery.js
+							</a>
+							<a class="source" href="output.html">
+								output.js
+							</a>
+							<a class="source" href="privacy-policy.html">
+								privacy-policy.js
+							</a>
+							<a class="source" href="record.html">
+								record.js
+							</a>
+							<a class="source" href="support.html">
+								support.js
+							</a>
+							<a class="source" href="restored/exporterbackup.html">
+								RESTORED\exporterBACKUP.js
+							</a>
+							<a class="source" href="restored/global-backup.html">
+								RESTORED\global-BACKUP.js
+							</a>
+					</div>
+				</div>
+			</div>
+		<table cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th class="docs">
+						<h1>global.js</h1>
+					</th>
+					<th class="code"></th>
+				</tr>
+			</thead>
+			<tbody>
+					<tr id="section_1">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_1">&#182;</a>
+							</div>
+							<p>GLOBAL VALUE REFS</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_2">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_2">&#182;</a>
+							</div>
+							<p>JUST LEAVE IT ALONE</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var DOING_MAP_LOOKUP=false;
+
+var REPLACE_LETTERS_WITH_SPACE_LENGTH = 10;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_3">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_3">&#182;</a>
+							</div>
+							<p>OK - HERE WE NEED SOME ERROR HANDLING
+I can probably get away with setting timeouts to get around the fact that we need to wait about 1 second for each of these operations to actually FINISH!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+var time_delay =  2500;
+
+
+var INPUT_BOX_LENGTH = 17 // old value 8;
+var INPUT_LAT_LON_LENGTH = 17; // old value 6;
+
+var CURRENT_LOCATION_LAT_LON = 17   // old value 8;
+var LAT_LON_MAXLENGTH = 17; // old value 6;
+
+
+var FILE_LOAD_TIMEOUT = 400;
+var IMPORT_POPUP_TIMEOUT = 10;
+
+var SubjectProcessedData;
+var TargetsProcessedData;
+var SubjectsValues = new Array();
+var TargetsValues = new Array();
+var response = &quot;&quot;;
+
+var oldUkLatValue = 0;
+var oldUkLonValue = 0;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_4">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_4">&#182;</a>
+							</div>
+							<p>add logical defaults for SETTING.  NB. These are numbers...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>const __LON_DEFAULTS__ = 0;
+const __LAT_DEFAULTS__ = 0;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_5">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_5">&#182;</a>
+							</div>
+							<p>add logical defaults for testing.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+const __DOB_DEFAULTS__ = &quot;00 00 0000&quot;;
+const __TOB_DEFAULTS__ = &quot;00 00&quot;;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_6">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_6">&#182;</a>
+							</div>
+							<p>an impossibly obscure value.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>const __NUMBER_DEFAULTS__ = Number.MIN_VALUE;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_7">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_7">&#182;</a>
+							</div>
+							<p>an unlikely accidental match</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>const __STRING_DEFAULTS__ = &quot;__INIT_ME__&quot;;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_8">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_8">&#182;</a>
+							</div>
+							<p>assign defaults</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+var dob = __DOB_DEFAULTS__;
+var tob = __TOB_DEFAULTS__;
+var lon = __NUMBER_DEFAULTS__;
+var lat = __NUMBER_DEFAULTS__;
+var acc = __NUMBER_DEFAULTS__;
+
+var command = __STRING_DEFAULTS__;
+var datastream = __STRING_DEFAULTS__;
+var datacommand = __STRING_DEFAULTS__;
+var dataPassed = __STRING_DEFAULTS__;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_9">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_9">&#182;</a>
+							</div>
+							<p>add protoype methods for testing.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>String.prototype.IsDefaultTOB = function () {
+    return this == __TOB_DEFAULTS__;
+};
+
+String.prototype.IsDefaultDOB = function () {
+    return this == __DOB_DEFAULTS__;
+};
+
+String.prototype.IsDefault = function () {
+    return this == __STRING_DEFAULTS__;
+};
+
+Number.prototype.IsDefault = function () {
+    return this == __NUMBER_DEFAULTS__;
+};
+
+var CRLF = &quot;&amp;#013;&amp;#010;&quot;;
+var br = &quot;&lt;br /&gt;&quot;;
+var originalentries = null;
+var recordsList; // = document.getElementById(&#39;person&#39;);
+
+var latsign = 1;
+var absdlat = 0;
+var absmlat = 0;
+var absslat = 0;
+
+var SignNeatTitles = [&quot;Aries&quot;, &quot;Taurus&quot;, &quot;Gemini&quot;, &quot;Cancer&quot;, &quot;Leo&quot;, &quot;Virgo&quot;, &quot;Libra&quot;, &quot;Scorpio&quot;, &quot;Sagittarius&quot;, &quot;Capricon&quot;, &quot;Aquarius&quot;, &quot;Pisces&quot;];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_10">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_10">&#182;</a>
+							</div>
+							<h4>Helper Functions</h4>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+var useLookups = 1;
+var maphtml = &quot;&quot;;
+
+/*
+function _f__InitTheFloatingVariables() {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_11">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_11">&#182;</a>
+							</div>
+							<p>No longer required under the new testing regime.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+*/
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_12">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_12">&#182;</a>
+							</div>
+							<p>Continue on with creating Global methods</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_13">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_13">&#182;</a>
+							</div>
+							<p>store semi-permanently our options</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SetGlobalOptions(reference) {
+    _f__CreateOptionsObject(reference);
+    _f__SaveOptionsCookie(reference);
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_14">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_14">&#182;</a>
+							</div>
+							<p>actually store semi-permanently our options</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SaveOptionsCookie(reference) {
+    Cookies.set(&#39;OptionsObject&#39;, reference, {
+        expires: 8364
+    });
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_15">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_15">&#182;</a>
+							</div>
+							<p>store semi-permanently our options with recall of saved options</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__DoCompleteOptionsSaveThenLoadCycle() {
+    _f__SetGlobalOptions(OptionsObject);
+    _f__GetGlobalOptions(OptionsObject);
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_16">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_16">&#182;</a>
+							</div>
+							<p>recall semi-permanently stored options</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__GetGlobalOptions(reference) {
+    reference = Cookies.getJSON(&#39;OptionsObject&#39;);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_17">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_17">&#182;</a>
+							</div>
+							<p>if we have a value set from it.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (typeof reference === &quot;undefined&quot;) {
+
+        reference = OptionsObject; // defaults
+        _f__SetGlobalOptions(reference); // save it back
+    }
+
+    /* PrintArray(reference); */
+
+    _f__SetWidgetStateFromOptionsObject(reference);
+
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_18">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_18">&#182;</a>
+							</div>
+							<p>COOKIE SECTION</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_19">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_19">&#182;</a>
+							</div>
+							<p>coookie consent</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var cc = {
+    cc: &quot;false&quot;
+};
+var ccToast = &quot;&quot;;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_20">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_20">&#182;</a>
+							</div>
+							<p>store semi-permanently our options</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__CheckCcCookieOptions(reference) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_21">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_21">&#182;</a>
+							</div>
+							<p>Check the current cookie...
+if it is junk do the required steps to make it appear valid and not break stuff.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__GetCcCookie(cc);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_22">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_22">&#182;</a>
+							</div>
+							<p>if we already set a POSITIVE cookie then just return here. It's the shortest possible path.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+    if (cc[&#39;cc&#39;] == &quot;true&quot;)
+        return;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_23">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_23">&#182;</a>
+							</div>
+							<p>Make some options and attach the callback.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    toastr.clear();
+
+    toastr.options = {
+        &quot;closeButton&quot;: false,
+        &quot;debug&quot;: false,
+        &quot;newestOnTop&quot;: false,
+        &quot;progressBar&quot;: false,
+        &quot;positionClass&quot;: &quot;toast-top-right-cc&quot;,
+        &quot;preventDuplicates&quot;: false,
+        &quot;showDuration&quot;: &quot;300&quot;,
+        &quot;hideDuration&quot;: &quot;1000&quot;,
+        &quot;timeOut&quot;: 0,
+        &quot;extendedTimeOut&quot;: 0,
+        &quot;showEasing&quot;: &quot;swing&quot;,
+        &quot;hideEasing&quot;: &quot;linear&quot;,
+        &quot;showMethod&quot;: &quot;fadeIn&quot;,
+        &quot;hideMethod&quot;: &quot;fadeOut&quot;,
+        &quot;tapToDismiss&quot;: false
+    }
+
+    toastr.options.onclick = _f__CookieCcCallback;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_24">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_24">&#182;</a>
+							</div>
+							<p>Okay so we need to show this thing...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    ccToast = toastr[&quot;cc&quot;](&quot;We may place cookies on your computer to store your options. &lt;br/&gt;More details can be found in our privacy policy &amp;nbsp;&lt;button type=&#39;button&#39; class=&#39;clear cc-ok btn clear&#39;&gt;Okay, I get it.&lt;/button&gt;&quot;, &quot;COMPLIANCE&quot;);
+
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_25">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_25">&#182;</a>
+							</div>
+							<p>Event fired on clicking "OK"</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__CookieCcCallback() {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_26">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_26">&#182;</a>
+							</div>
+							<p>debugP("global: CookieCcCallback");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    ccToast.remove();
+
+
+
+    cc = {
+        cc: &quot;true&quot;
+    };
+
+    _f__SaveCcCookie(cc);
+    _f__CheckCcCookieOptions(cc);
+
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_27">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_27">&#182;</a>
+							</div>
+							<p>recall semi-permanently stored options about the cookie consent cookie</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__GetCcCookie(reference) {
+    reference = Cookies.getJSON(&#39;cc&#39;);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_28">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_28">&#182;</a>
+							</div>
+							<p>if we DONT have a valid value.
+<br/>MAKE ONE
+<br/>Then pretend that we loaded it </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (typeof reference === &quot;undefined&quot;) {
+        reference = {
+            cc: &quot;false&quot;
+        }; // defaults
+        _f__SaveCcCookie(reference); // save it back
+    }
+
+    cc = reference;
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_29">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_29">&#182;</a>
+							</div>
+							<p>CALL FROM CONSOLE to restest.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__UndoCc() {
+
+    cc = {
+        cc: &quot;false&quot;
+    };
+    _f__SaveCcCookie(cc);
+
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_30">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_30">&#182;</a>
+							</div>
+							<p><em>f</em>_SaveCcCookie lets us set a semi permanant cookie for the cc auth</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SaveCcCookie(reference) {
+    Cookies.set(&#39;cc&#39;, reference, {
+        expires: 2147
+    });
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_31">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_31">&#182;</a>
+							</div>
+							<p>HMS to decimals conversion helper </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__DMS2Decimaled(days, minutes, seconds) {
+	 var decimaled = &quot;Error?&quot; 
+	 if(days &lt; 0) 
+	 {    decimaled = parseFloat(days) -     (  parseFloat(minutes)/60) - (parseFloat(seconds)/(60*60));	 }
+	 else
+	 {    decimaled = parseFloat(days) +     (  parseFloat(minutes)/60) + (parseFloat(seconds)/(60*60));	 } 	
+	return decimaled;
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_32">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_32">&#182;</a>
+							</div>
+							<p>Vast logic required to tidy up a few boxes of input dynamically.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__LimitCertainKeystrokes() {
+    $(&#39;#uk-lat,#uk-lat-tar&#39;).focus(function () {
+        oldUkLatValue = $(this).val();
+        $(this).val(&#39;&#39;);
+    }).blur(function () {
+        if ($(this).val() == &#39;&#39;) {
+            $(this).val(oldUkLatValue);
+        } else {
+            $(this).val($(this).val().replace(/[^\d.-]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;).trim());
+        }
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_33">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_33">&#182;</a>
+							</div>
+							<p>DO HMS to decimals conversion if present using helper</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		var dms = $(this).val().split(&quot; &quot;);
+		var spaceCount = (dms.length - 1)
+		if (spaceCount ==2) {$(this).val(_f__DMS2Decimaled(dms[0],dms[1],dms[2]  )	)  }
+		if (spaceCount ==1) {$(this).val(_f__DMS2Decimaled(dms[0],dms[1],0  )	)  }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_34">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_34">&#182;</a>
+							</div>
+							<p>if (spaceCount ==1) {$(this).val(dms[0]); <em>f</em>_infoP("DECIMAL or D M S" ,2000);  }</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		
+        lat = $(this).val();q
+    })[0].maxLength = INPUT_BOX_LENGTH;
+
+    $(&#39;#uk-lon,#uk-lon-tar&#39;).focus(function () {
+        oldUkLonValue = $(this).val();
+        $(this).val(&#39;&#39;);
+    }).blur(function () {
+        if ($(this).val() == &#39;&#39;) {
+            $(this).val(oldUkLonValue);
+        } else
+			{
+            $(this).val($(this).val().replace(/[^\d.-]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;));
+        }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_35">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_35">&#182;</a>
+							</div>
+							<p>DO HMS to decimals conversion if present using helper</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		var dms = $(this).val().split(&quot; &quot;);
+		var spaceCount = (dms.length - 1)
+		if (spaceCount ==2) {$(this).val(_f__DMS2Decimaled(dms[0],dms[1],dms[2]  )	)  }
+		if (spaceCount ==1) {$(this).val(dms[0]) ; _f__infoP(&quot;DECIMAL or D M S&quot; ,2000); }
+        lon = $(this).val();
+    })[0].maxLength = INPUT_BOX_LENGTH;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_36">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_36">&#182;</a>
+							</div>
+							<p>'location:' seems to do nothing</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&#39;#uk-picker&#39;).locationpicker({
+        location: {
+            latitude: 51.566520,
+            longitude: -0.1394648
+        },
+        radius: 0,
+        inputBinding: {
+            latitudeInput: $(&#39;#uk-lat&#39;),
+            longitudeInput: $(&#39;#uk-lon&#39;),
+            locationNameInput: $(&#39;#uk-address&#39;)
+        },
+        enableAutocomplete: true,
+        onchanged: function (currentLocation) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_37">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_37">&#182;</a>
+							</div>
+							<pre><code> $('#uk-lat').prop('value', currentLocation.latitude.toString().substring(0, INPUT_BOX_LENGTH));
+ $('#uk-lon').prop('value', currentLocation.longitude.toString().substring(0, INPUT_BOX_LENGTH));
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_38">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_38">&#182;</a>
+							</div>
+							<p>$('#uk-lat')[0].maxLength = INPUT<em>LAT</em>LON<em>LENGTH;
+ $('#uk-lon')[0].maxLength = INPUT</em>LAT<em>LON</em>LENGTH;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_39">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_39">&#182;</a>
+							</div>
+							<p>debugP("Location changed. New location (" + currentLocation.latitude + ", " + currentLocation.longitude + ")");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        }
+    });
+    $(&#39;#uk-dialog&#39;).on(&#39;shown.bs.modal&#39;, function () {
+        $(&#39;#uk-picker&#39;).locationpicker(&#39;autosize&#39;);
+    });
+
+
+
+    $(&#39;#uk-dob, #uk-dob-tar&#39;).bind(&#39;focus&#39;, function () {
+            if ($(this).val() == &#39;00 00 0000&#39;) {
+                $(this).val(&#39;&#39;);
+            }
+        })
+        .bind(&#39;blur&#39;, function () {
+            if ($(this).val().trim() == &#39;&#39;) {
+                $(this).val(&#39;00 00 0000&#39;);
+            }
+            $(this).val($(this).val().replace(/[^\d.-]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;));
+
+            var ukTobVal = $(&#39;#uk-tob&#39;).val();
+
+            var splitDob = $(this).val().split(&#39; &#39;);
+            var splitTob = ukTobVal.split(&#39; &#39;);
+
+
+            if ($(this).val().trim() != &#39;&#39; &amp;&amp; ukTobVal != &#39;00 00&#39; &amp;&amp; ukTobVal != &#39;&#39;) {
+                OptionsObjectDateTime = new Date(splitDob[2], splitDob[1], splitDob[0], splitTob[0], splitTob[1]);
+            }
+
+
+        })
+
+
+        .on(&#39;paste&#39;, function () {
+
+            var self = $(this);
+            setTimeout(function () { // Magically replace letters with a space.
+                $(self).val($(self).val().replace(/[^\d.-]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;));
+            }, REPLACE_LETTERS_WITH_SPACE_LENGTH);
+
+        }).on(&#39;keyup&#39;, function () {
+
+            var self = $(this);
+            setTimeout(function () { // Magically replace letters with a space.
+                $(self).val($(self).val().replace(/[^\d.-]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;));
+            }, REPLACE_LETTERS_WITH_SPACE_LENGTH);
+
+        })
+
+    ;
+    $(&#39;#uk-tob, #uk-tob-tar&#39;).bind(&#39;focus&#39;, function () {
+            if ($(this).val() == &#39;00 00&#39;) {
+                $(this).val(&#39;&#39;);
+            }
+        })
+        .bind(&#39;blur&#39;, function () {
+            if ($(this).val().trim() == &#39;&#39;) {
+                $(this).val(&#39;00 00&#39;);
+            }
+            $(this).val($(this).val().replace(/[^\d.]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;));
+
+
+            var ukDobVal = $(&#39;#uk-dob&#39;).val();
+
+            var splitTob = $(this).val().split(&#39; &#39;);
+            var splitDob = ukDobVal.split(&#39; &#39;);
+
+
+            if ($(this).val().trim() != &#39;&#39; &amp;&amp; ukDobVal != &#39;00 00 00&#39; &amp;&amp; ukDobVal != &#39;&#39;) {
+                OptionsObjectDateTime = new Date(splitDob[2], splitDob[1], splitDob[0], splitTob[0], splitTob[1]);
+            }
+
+
+            if ($(this).val().trim() != &#39;&#39;) {
+                OptionsObjectDateTime = $(this).val();
+            }
+        })
+        .on(&#39;paste&#39;, function () {
+            var self = $(this);
+            setTimeout(function () { // Magically replace letters with a space.
+                $(self).val($(self).val().replace(/[^\d.]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;));
+            }, REPLACE_LETTERS_WITH_SPACE_LENGTH);
+
+        }).on(&#39;keyup&#39;, function () {
+
+            var self = $(this);
+            setTimeout(function () { // Magically replace letters with a space.
+                $(self).val($(self).val().replace(/[^\d.]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;));
+            }, REPLACE_LETTERS_WITH_SPACE_LENGTH);
+
+        });
+
+    /*} */
+
+}
+
+
+function initToZero(nameOfThing){
+	
+	$(&#39;#&#39;+nameOfThing).val(&#39;0&#39;);
+	
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_40">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_40">&#182;</a>
+							</div>
+							<p>var smamOnly;// = 0;
+Link together all the logic ready for the first run </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__InitPage() {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_41">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_41">&#182;</a>
+							</div>
+							<p>largely deprecated</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    useLookups = 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_42">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_42">&#182;</a>
+							</div>
+							<p>smamOnly = 0;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_43">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_43">&#182;</a>
+							</div>
+							<p>we just do this here, for sanities sake.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	initToZero(&#39;uk-lat-tar&#39;);
+	initToZero(&#39;uk-lon-tar&#39;);
+	initToZero(&#39;uk-lon&#39;);
+	initToZero(&#39;uk-lat&#39;);
+	
+	
+    new Clipboard(&#39;.copy-btn&#39;);
+
+    var fileInput = document.getElementById(&#39;fileInput&#39;);
+	
+	 var coeffsInput = document.getElementById(&#39;CoeffsInput&#39;);
+	
+    var fileDisplayArea = document.getElementById(&#39;fileDisplayArea&#39;);
+	
+	
+	function handleFileSelect(event) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_44">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_44">&#182;</a>
+							</div>
+							<p>Check File API support</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (window.File &amp;&amp; window.FileList &amp;&amp; window.FileReader) {
+
+        var files = event.target.files; //FileList object
+        var output = document.getElementById(&quot;result&quot;);
+
+		
+		if(files.length != 2)
+		{
+			_f__infoP(&quot;REMEMBER TO SELECT TWO FILES&quot;, 1000);
+		}
+		
+		   var ourNamesFileReader = new FileReader();
+			
+			var ourDataFileReader = new FileReader();
+
+		   var textType = /text.*/;
+		
+        for (var i = 0; i &lt; files.length; i++) {
+            var file = files[i];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_45">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_45">&#182;</a>
+							</div>
+							<p>Only pics
+ if (!file.type.match(textType)) continue;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+			
+			if(file.name.includes(&quot;_names.txt&quot;))
+			{
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_46">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_46">&#182;</a>
+							</div>
+							<p>var ournamesfilereader = new filereader();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            ourNamesFileReader.onload = (function(e) 
+            {
+				
+				 var contents = ourNamesFileReader.result;
+               curveNameSet =    JSON.parse(contents).split(&quot;\n&quot;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_47">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_47">&#182;</a>
+							</div>
+							<p>debugP(curveNameSet.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+debugP(curveNameSet.join('<br />'));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            });
+
+            ourNamesFileReader.readAsText(file);
+			
+			
+			 }
+			
+			if(file.name.includes(&quot;_data.txt&quot;))
+			{
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_48">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_48">&#182;</a>
+							</div>
+							<p>var ourDataFileReader = new FileReader();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            ourDataFileReader.onload = (function(eData) 
+            {
+				 var contents = ourDataFileReader.result;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_49">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_49">&#182;</a>
+							</div>
+							<p>debugP(contents);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>              curveDataSet = JSON.parse(contents);
+            });
+
+            ourDataFileReader.readAsText(file);
+			 }
+		}
+    } else {
+        console.log(&quot;Your browser does not support File API&quot;);
+    }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_50">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_50">&#182;</a>
+							</div>
+							<p>debugP("global.js Import Complete");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_51">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_51">&#182;</a>
+							</div>
+							<p>WAIT FOR THE BIG FILES TO FINISH READING.  Stupid thing.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	setTimeout(_f__coeffAnalysis, FILE_LOAD_TIMEOUT);
+	setTimeout(	CloseTheImportWindow, IMPORT_POPUP_TIMEOUT);
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_52">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_52">&#182;</a>
+							</div>
+							<p>This is fired to close the importer window automatically after import.  SHIFT+ALT+X to re-open it quickly</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function CloseTheImportWindow(){
+		$( &quot;#exporterHolder&quot; ).dialog(&#39;close&#39;);
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_53">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_53">&#182;</a>
+							</div>
+							<p>SO - SPECIFICALLY - THE FOLLOWING DECLARATION POINT THE COEFFS INPUT HANDLER TO the handleFileSelect() method which ultimately calls <em>f</em>_coeffAnalysis()</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+coeffsInput.addEventListener(&#39;change&#39;, handleFileSelect, false);
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_54">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_54">&#182;</a>
+							</div>
+							<p>Whereas HERE we attach the other input called "fileInput" to the generic handler defined below which ultimately calls <em>f</em><em>handle</em>return()</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+
+var totalDelay =0;
+
+function setup_reader(files, i) {
+
+
+
+if (typeof window.FileReader !== &#39;function&#39;) {
+        alert(&quot;The file API isn&#39;t supported on this browser yet.&quot;);
+    }
+
+    var file = files[i];
+    var name = file.name;
+    var reader = new FileReader();
+    reader.onload = function(e){
+                        readerLoaded(e, files, i, name);
+                    };
+    reader.readAsBinaryString(file);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_55">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_55">&#182;</a>
+							</div>
+							<p>After reading, read the next file.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+
+
+
+function readerLoaded(e, files, i, name) {
+    
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_56">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_56">&#182;</a>
+							</div>
+							<p>get file content  </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var bin = e.target.result;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_57">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_57">&#182;</a>
+							</div>
+							<p>do sth with text</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+		setTimeout(function(){ 
+   
+	debugP(&#39;importing &#39;+files[i].name);
+   	_f__handle_returnIMPORT(bin, files[i].name);
+
+}, totalDelay);
+
+	totalDelay += (bin.length / 100.0) * time_delay;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_58">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_58">&#182;</a>
+							</div>
+							<p>debugP('next processing sync delay '+(totalDelay / 1000).toPrecision(5) + ' from ' + bin.length + ' chars of data ');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_59">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_59">&#182;</a>
+							</div>
+							<p>If there's a file left to load</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (i &lt; files.length - 1) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_60">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_60">&#182;</a>
+							</div>
+							<p>Load the next file</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        setup_reader(files, i+1);
+    }else{
+
+
+ debugP(&#39;processing delay &#39;+(totalDelay/ 1000).toPrecision(5) );
+
+
+setTimeout(function(){ 
+   
+	_f__infoP(&quot;IMPORTS COMPLETE&quot;, 5000);
+
+}, totalDelay+ 5000);
+}
+}
+
+
+
+   fileInput.addEventListener(&#39;change&#39;, function (e) {
+totalDelay = 0;
+  setup_reader(fileInput.files, 0);
+
+
+
+});
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_61">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_61">&#182;</a>
+							</div>
+							<p>// var file = fileInput.files[0];
+// var textType = /text.*/;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_62">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_62">&#182;</a>
+							</div>
+							<p>// if (file.type.match(textType)) {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_63">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_63">&#182;</a>
+							</div>
+							<p>// ClearCurrentSelection();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_64">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_64">&#182;</a>
+							</div>
+							<p>// var reader = new FileReader();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_65">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_65">&#182;</a>
+							</div>
+							<p>// reader.onload = function (e) {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_66">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_66">&#182;</a>
+							</div>
+							<p>// <em>f</em><em>handle</em>returnIMPORT(reader.result);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>  
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_67">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_67">&#182;</a>
+							</div>
+							<p>// //   fileDisplayArea.innerHTML  = reader.result;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_68">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_68">&#182;</a>
+							</div>
+							<p>// }</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_69">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_69">&#182;</a>
+							</div>
+							<p>// reader.readAsText(file);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_70">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_70">&#182;</a>
+							</div>
+							<p>// } else {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_71">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_71">&#182;</a>
+							</div>
+							<p>// fileDisplayArea.innerHTML = "File not supported!";
+// }</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_72">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_72">&#182;</a>
+							</div>
+							<p>// // TODO _ FIX THI TO SELECT EACH RECORD.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_73">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_73">&#182;</a>
+							</div>
+							<p>// //ClearCurrentSelection();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_74">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_74">&#182;</a>
+							</div>
+							<p>});</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_75">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_75">&#182;</a>
+							</div>
+							<p>fileInput.addEventListener('change', function (e) {
+var file = fileInput.files[0];
+var textType = /text.*/;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_76">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_76">&#182;</a>
+							</div>
+							<p>if (file.type.match(textType)) {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_77">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_77">&#182;</a>
+							</div>
+							<p>ClearCurrentSelection();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_78">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_78">&#182;</a>
+							</div>
+							<p>var reader = new FileReader();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_79">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_79">&#182;</a>
+							</div>
+							<p>reader.onload = function (e) {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_80">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_80">&#182;</a>
+							</div>
+							<p><em>f</em><em>handle</em>returnIMPORT(reader.result);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>  
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_81">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_81">&#182;</a>
+							</div>
+							<p>//  fileDisplayArea.innerHTML  = reader.result;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_82">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_82">&#182;</a>
+							</div>
+							<p>}</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_83">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_83">&#182;</a>
+							</div>
+							<p>reader.readAsText(file);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_84">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_84">&#182;</a>
+							</div>
+							<p>} else {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_85">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_85">&#182;</a>
+							</div>
+							<p>fileDisplayArea.innerHTML = "File not supported!";
+}</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_86">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_86">&#182;</a>
+							</div>
+							<p>// TODO _ FIX THI TO SELECT EACH RECORD.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_87">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_87">&#182;</a>
+							</div>
+							<p>//ClearCurrentSelection();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_88">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_88">&#182;</a>
+							</div>
+							<p>});</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+	var nameSelectionListIMPORT = [];
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_89">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_89">&#182;</a>
+							</div>
+							<p>This is now the working importer code.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__handle_returnIMPORT(returnedString, filenameBeingProcessed) {
+	
+
+	nameSelectionListIMPORT = [];
+	ClearCurrentSelection();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_90">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_90">&#182;</a>
+							</div>
+							<p>we are going to walk over the list, unmangle it a couple of times and then push it back into storage, raw;  Hot potato style.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	var updateCount = 0;
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_91">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_91">&#182;</a>
+							</div>
+							<p>var uncoded = returnedString.split(USEFUL<em>FILE</em>END_DELIMETER);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+    var uncoded = returnedString.trim(-1).split(delimeter);
+
+    var name = &quot;&quot;;
+
+	var nameList = &quot;&quot;;
+	
+	
+	
+    $.each(uncoded, function (index, val) {
+
+        var result = &quot;&quot;;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_92">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_92">&#182;</a>
+							</div>
+							<p>skips empty import records on improper imports
+fix the balking</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		if (val == &quot;&quot;)
+		{return;}
+		
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_93">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_93">&#182;</a>
+							</div>
+							<p>val = val.replace(',-','--');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_94">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_94">&#182;</a>
+							</div>
+							<p>val = val.replace(', ','--');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	
+	 name = val.split(&#39;|&#39;)[0];
+	
+	
+	var dataGetter = val.split(&#39;|&#39;)[1];
+	
+        var secondLeveluncoded = dataGetter.split(&#39;,&#39;);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_95">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_95">&#182;</a>
+							</div>
+							<p>name = secondLeveluncoded[0];</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_96">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_96">&#182;</a>
+							</div>
+							<p>secondLeveluncoded.shift();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_97">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_97">&#182;</a>
+							</div>
+							<p>$.each(secondLeveluncoded, function (index, val) {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_98">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_98">&#182;</a>
+							</div>
+							<pre><code>  result += val //.trim(0, -1);
+   result += ',';
+</code></pre>
+
+<p>})</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+		
+		updateCount ++;
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_99">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_99">&#182;</a>
+							</div>
+							<p>remangle</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_100">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_100">&#182;</a>
+							</div>
+							<p>var myNewArray =  <em>f</em>_decode(result).trim(0, -1).split(',');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_101">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_101">&#182;</a>
+							</div>
+							<p>var myNewArray = result.trim(0, -1).split(',');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	var myNewArray = dataGetter.split(&#39;,&#39;);
+		
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_102">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_102">&#182;</a>
+							</div>
+							<p>unmangle , again.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		var SubjectsValues =  [myNewArray[0], myNewArray[2], myNewArray[4],myNewArray[6], myNewArray[8],myNewArray[10], myNewArray[12], myNewArray[14], myNewArray[16],myNewArray[18], myNewArray[20], myNewArray[22]     ];
+		
+		var subjectProcessedData =  [myNewArray[1], myNewArray[3], myNewArray[5],myNewArray[7], myNewArray[9],myNewArray[11], myNewArray[13], myNewArray[15], myNewArray[17],myNewArray[19], myNewArray[21], myNewArray[23]     ];
+		
+		
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_103">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_103">&#182;</a>
+							</div>
+							<p>Needs to be 27 not 24?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		var myShakyOptionsArray = myNewArray.slice(24);
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_104">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_104">&#182;</a>
+							</div>
+							<p>re-spruce name</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		name = name.replace(&#39;--&#39;,&#39;, &#39;);
+		name = name.replace(&#39;,-&#39;,&#39;, &#39;);
+		
+		
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_105">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_105">&#182;</a>
+							</div>
+							<p>create useful selection list</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		
+		nameSelectionListIMPORT[nameSelectionListIMPORT.length] =  name;
+		
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_106">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_106">&#182;</a>
+							</div>
+							<p>create attractive report list</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		var addon = &quot;, &quot;;
+		if(updateCount % 3 == 0)
+		{
+			addon = &quot; ...&lt;br /&gt;&quot;;
+		}
+		nameList += &quot;[&quot;+updateCount+&quot;: &quot;+ name+&quot;] &quot;+addon;
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_107">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_107">&#182;</a>
+							</div>
+							<p>save - dont look behind the curtain...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		_f__StorageSaveOperation(name,SubjectsValues,subjectProcessedData,myShakyOptionsArray   );
+
+    })
+	
+	_f__updatedP(&quot;Updated &quot;+updateCount+&quot; Records for&lt;br /&gt;&quot;+nameList);
+	
+	
+	
+
+
+	 $.each(nameSelectionListIMPORT, function (index, val){
+		 
+setTimeout(function(){
+	
+		$(&#39;#SubjectName&#39;).val(val);
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_108">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_108">&#182;</a>
+							</div>
+							<p>do it by magic</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		_f__ClickedLoadForImport(&#39;subject&#39;);
+
+	
+		 _f__SaveChangesGetChart(&#39;subject&#39;, false, val);
+
+		}, (index * time_delay) +2);
+
+		 
+	 });
+
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_109">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_109">&#182;</a>
+							</div>
+							<p>by here we can have built a list - walk over this list and add the class "selected" to each record in the records list that matches the exact string in this list.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	setTimeout(function(){__f_SelectAndSaveIMPORT(filenameBeingProcessed) }, (nameSelectionListIMPORT.length * (time_delay + 200))  );
+	
+	
+	
+}
+
+
+function __f_SelectAndSaveIMPORT(filenameBeingProcessed){
+	__f_SelectListIMPORT(nameSelectionListIMPORT); 
+	SaveCurrentSelectionWithName(filenameBeingProcessed.substr(0, filenameBeingProcessed.length-4));
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_110">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_110">&#182;</a>
+							</div>
+							<p>Make tests</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	SaveCurrentSelectionWithName(filenameBeingProcessed.substr(0, filenameBeingProcessed.length-4)+&#39; TEST&#39;)
+	
+}
+
+
+function __f_SelectListIMPORT(listToSelect){
+	
+	$(listToSelect).each( function(ind, val){     __f_SelectbyNameIMPORT(val)    }  )
+	
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_111">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_111">&#182;</a>
+							</div>
+							<p>we need to walk over each person in nameSelectionListIMPORT and load their name into the SubjectName box</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+	
+
+function  __f_SelectbyNameIMPORT(nameToSelect)
+{
+	
+	$(&#39;#person option&#39;).each( function(ind, val){  if (  $(val).text() == nameToSelect   ){    $(val).prop(&#39;selected&#39;, true)     }                        }  )
+	
+}
+
+	
+	
+	
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_112">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_112">&#182;</a>
+							</div>
+							<p>END OF THE RECORD IMPORTER</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+
+	
+
+    _f__GetGlobalOptions(OptionsObject);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_113">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_113">&#182;</a>
+							</div>
+							<p>Here we PHYSICALLY BUILD the options buttons.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__buildOptions();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_114">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_114">&#182;</a>
+							</div>
+							<p>now we embed that into a dialog box :)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&quot;#optionsHolder&quot;).dialog({
+        autoOpen: false,
+        width: 180,
+        minWidth: 180,
+        height: 600,
+        minHeight: 600,
+        modal: false,
+        resizable: true,
+        title: &quot;Options&quot;,
+        dialogClass: &quot;optionsHolder&quot;,
+        position: {
+            my: &quot;left bottom&quot;,
+            at: &quot;right top&quot;,
+            of: &quot;#logo&quot;
+        },
+        show: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        },
+        hide: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        }
+
+    });
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_115">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_115">&#182;</a>
+							</div>
+							<p>we will IDEALLY in the end be able to resize this box AFTER the charts have rendered.
+TODO THIS NEEDS DOING...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_116">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_116">&#182;</a>
+							</div>
+							<p>now we embed that into a dialog box :)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&quot;#chartsHolder&quot;).dialog({
+        autoOpen: false,
+        width: 400,
+        minWidth: 400,
+        height: 720,
+        minHeight: 720,
+        modal: false,
+        resizable: true,
+        title: &quot;Charts&quot;,
+        dialogClass: &quot;chartsHolder&quot;,
+        position: {
+            my: &quot;left bottom&quot;,
+            at: &quot;right top&quot;,
+            of: &quot;#logo&quot;
+        },
+        show: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        },
+        hide: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        },
+        buttons: {
+            &quot;Report&quot;: function () {
+
+                lastFullChartReport.sort(function (a, b) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_117">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_117">&#182;</a>
+							</div>
+							<p>debugP("values "+a[1]+" "+b[1]+" "+(b[1] - a[1]));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                    return b[1] - a[1];
+                });
+
+
+                _f__flagP(lastFullChartReport);
+            },
+            &quot;Close&quot;: function () {
+                $(this).dialog(&quot;close&quot;);
+            }
+        }
+
+    });
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_118">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_118">&#182;</a>
+							</div>
+							<p>now we embed that into a dialog box :)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&quot;#xchartsHolder&quot;).dialog({
+        autoOpen: false,
+        width: 400,
+        minWidth: 400,
+        height: 630,
+        minHeight: 610,
+        modal: false,
+        resizable: true,
+        title: &quot;xProfile Charts&quot;,
+        dialogClass: &quot;xchartsHolder&quot;,
+        position: {
+            my: &quot;left bottom&quot;,
+            at: &quot;right top&quot;,
+            of: &quot;#logo&quot;
+        },
+        show: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        },
+        hide: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        },
+        buttons: [{
+                text: &quot;Report&quot;,
+                click: function () {
+                    _f__flagP(lastFullChartReport);
+                },
+                class: &quot;overideReport&quot;,
+                style: &quot;color:#fff !important&quot;
+            },
+            {
+                text: &quot;Close&quot;,
+                click: function () {
+                    $(this).dialog(&quot;close&quot;);
+                },
+                class: &quot;overideClose&quot;,
+                style: &quot;color:#fff !important&quot;
+            }
+        ]
+
+    });
+
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_119">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_119">&#182;</a>
+							</div>
+							<p>// // buttons: [{
+// "Report": function() {
+// <em>f</em>_flagP( lastFullChartReport);
+// },
+// "Close": function() {
+// $( this ).dialog( "close" );
+// }
+// }]</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_120">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_120">&#182;</a>
+							</div>
+							<p>we will IDEALLY in the end be able to resize this box AFTER the charts have rendered.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_121">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_121">&#182;</a>
+							</div>
+							<p>now we embed that into a dialog box :)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&quot;#exporterHolder&quot;).dialog({
+        autoOpen: false,
+        width: 400,
+        minWidth: 400,
+        height: 280,
+        minHeight: 200,
+        modal: false,
+        resizable: false,
+        title: &quot;EXPORT / IMPORT&quot;,
+        dialogClass: &quot;exporterHolder&quot;,
+        position: {
+            my: &quot;left bottom&quot;,
+            at: &quot;right top&quot;,
+            of: &quot;#logo&quot;
+        },
+        show: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        },
+        hide: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        }
+        /*   ,
+	  buttons: {
+        &quot;Save Current Selection&quot;: function() {
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_122">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_122">&#182;</a>
+							</div>
+							<p>rememeber to create this</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+        SaveCurrentSelection();
+        },
+        &quot;Close&quot;: function() {
+          $( this ).dialog( &quot;close&quot; );
+        }
+	  } */
+
+    });
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_123">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_123">&#182;</a>
+							</div>
+							<p><em>f</em>_BindKeys Link the hidden key bindings for the devs</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__BindKeys();
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_124">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_124">&#182;</a>
+							</div>
+							<p>_f<strong>InitCharts Make the charts stuff be ready to print us some
+superseded by global declaration at start of output.js. Function deprecated by Will
+   _f</strong>InitCharts();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_125">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_125">&#182;</a>
+							</div>
+							<p><em>f</em>_InitChartsAdd the actual boxes in the page that allow us the enter data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__AppendRecordHTML();
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_126">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_126">&#182;</a>
+							</div>
+							<p>Put something in the RIGHT HAND SIDE record LIST from stored data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__populateRecordsList();
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_127">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_127">&#182;</a>
+							</div>
+							<p>Put something in our hidden selections listings.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__populateSelectionsList();
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_128">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_128">&#182;</a>
+							</div>
+							<p>Enable the RIGHT HAND SIDE record LIST to filter based on keystrokes</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__InitSearching();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_129">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_129">&#182;</a>
+							</div>
+							<p>Put something in the current VIRTUAL copy of the Positions and themes
+Possibly just defaults. Maybe Lookup data.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__populateValueArraysFromScreenValues();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_130">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_130">&#182;</a>
+							</div>
+							<p>Convert that data to stuff in the POSITION ENTRY boxes (via the hidden decimal boxes). </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__populateHMSArraysFromValueArraysValues();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_131">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_131">&#182;</a>
+							</div>
+							<p>Prevent the typing of stupid characters. Mangle stupid input into good input.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>   _f__LimitCertainKeystrokes();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_132">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_132">&#182;</a>
+							</div>
+							<p>Enable the user to easily tab between boxes.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__AutoSetupTheTabbingOrder();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_133">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_133">&#182;</a>
+							</div>
+							<p>additional possible methods for popups</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    /*        $(&#39;#clearlasttoast&#39;).click(function  () {
+            toastr.clear(getLastToast());
+        }); */
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_134">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_134">&#182;</a>
+							</div>
+							<p>make the big hidden button clear stuff.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&#39;#cleartoasts&#39;).click(function () {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_135">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_135">&#182;</a>
+							</div>
+							<p>TODO: Fix this rubbish function. by using a [] that we walk over and  .remove() ourselves.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        toastr.clear();
+        $(this).blur();
+    });
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_136">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_136">&#182;</a>
+							</div>
+							<p>The no-longer elided map lookup feature.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (typeof (dataPassed) === &quot;undefined&quot;) {
+        useLookups = 0;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_137">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_137">&#182;</a>
+							</div>
+							<p>warnP("HTML used directly. perl not detected. Map features hidden"); 
+ $('.requiresOnline').hide();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    } else {
+        var maphtml = &quot;&lt;div class=&#39;modal-dialog&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;div class=&#39;modal-content&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;div class=&#39;modal-header&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;button type=&#39;button&#39; class=&#39;close&#39; data-dismiss=&#39;modal&#39; aria-label=&#39;Close&#39;&gt;&lt;span aria-hidden=&#39;true&#39;&gt;&amp;times;&lt;/span&gt;&lt;/button&gt; &lt;h4 class=&#39;modal-title&#39;&gt;Enter Your Birth Details&lt;/h4&gt; &lt;/div&gt; &lt;div class=&#39;detailsForm&#39; style=&#39;pointer-events: none; height: 130px; margin-top: 10px;&#39; &gt; &lt;form id=&#39;f2&#39; style=&#39;width:800px;&#39; name=&#39;f2&#39; class=&#39;n-t-small&#39; action=&#39;index.pl&#39; method=&#39;get&#39;&gt; &lt;div class=&#39;entry-holder&#39; &gt; &lt;span style=&#39;white-space:nowrap;&#39;&gt; &lt;label style=&#39;padding-right: 20px; width:180px &#39; for=&#39;uk-dob-map&#39; class=&#39;control-label defaultedValueDob&#39; &gt;DOB&lt;/label&gt; &lt;input type=&#39;text&#39; title=&#39;Enter the Day, Month and year separated by spaces&#39; class=&#39;form-control clickable uk-dob&#39; style=&#39;&#39; id=&#39;uk-dob-map&#39; name=&#39;dob-map&#39; value=&#39;00 00 0000&#39; /&gt;&lt;br/&gt;&lt;label style=&#39;&#39; for=&#39;uk-tob-map&#39; class=&#39;control-label defaultedValueTob &#39;&gt;TOB (if known)&lt;/label&gt; &lt;input type=&#39;text&#39; class=&#39;form-control clickable uk-tob&#39; title=&#39;Enter the Hour and minute separated by a space&#39; style=&#39;&#39; id=&#39;uk-tob-map&#39; name=&#39;tob&#39; value=&#39;00 00&#39; /&gt;&lt;/span&gt; &lt;/div&gt; &lt;label for=&#39;uk-address&#39; style=&#39;float:left;&#39; class=&#39;control-label&#39;&gt;Location:&lt;/label&gt;&lt;div class=&#39;col-sm-10&#39; style=&#39;width:auto;&#39;&gt;&lt;input style=&#39;margin-left:4px;  width :363px&#39; type=&#39;text&#39; class=&#39;form-control clickable&#39; id=&#39;uk-address&#39;/&gt;&lt;/div&gt;&lt;/form&gt; &lt;/div&gt; &lt;div class=&#39;modal-body requiresOnline&#39; style=&#39;margin-top: 0px;&#39;&gt; &lt;div class=&#39;form-horizontal&#39; style=&#39;width: 550px&#39;&gt; &lt;div class=&#39;form-group&#39;&gt; &lt;/div&gt; &lt;div id=&#39;uk-picker&#39; style=&#39;width: 100%; height: 250px; margin-bottom:0px; &#39;&gt;&lt;/div&gt; &lt;/div&gt; &lt;/div&gt; &lt;div class=&#39;modal-footer&#39;&gt; &lt;button type=&#39;button&#39; data-dismiss=&#39;modal&#39; class=&#39;btn btn-primary requiresOnline&#39; id=&#39;SaveChanges&#39; &gt;Save Changes + Get natal chart positions&lt;/button&gt;  &lt;button type=&#39;button&#39; class=&#39;btn btn-default&#39; data-dismiss=&#39;modal&#39;&gt;Close&lt;/button&gt; &lt;/div&gt; &lt;/div&gt; &lt;/div&gt;&quot;;
+
+        var maphtmltar = &quot; &lt;div class=&#39;modal-dialog&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;div class=&#39;modal-content&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;div class=&#39;modal-header&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;button type=&#39;button&#39; class=&#39;close&#39; data-dismiss=&#39;modal&#39; aria-label=&#39;Close&#39;&gt;&lt;span aria-hidden=&#39;true&#39;&gt;&amp;times;&lt;/span&gt;&lt;/button&gt; &lt;h4 class=&#39;modal-title&#39;&gt;Enter Your Birth Details&lt;/h4&gt; &lt;/div&gt; &lt;div class=&#39;detailsForm&#39; style=&#39;pointer-events: none; height: 130px; margin-top: 10px;&#39; &gt; &lt;form id=&#39;f3&#39; style=&#39;width:800px;&#39; name=&#39;f3&#39; class=&#39;n-t-small&#39; action=&#39;index.pl&#39; method=&#39;get&#39;&gt; &lt;div class=&#39;entry-holder-tar&#39; &gt; &lt;span style=&#39;white-space:nowrap;&#39;&gt; &lt;label style=&#39;padding-right: 20px; width:180px;&#39; for=&#39;uk-dob-map-tar&#39; class=&#39; control-label defaultedValueDob&#39; &gt;DOB&lt;/label&gt; &lt;input type=&#39;text&#39; title=&#39;Enter the Day, Month and year separated by spaces&#39; class=&#39;form-control clickable uk-dob-tar&#39; style=&#39;&#39; id=&#39;uk-dob-map-tar&#39; name=&#39;dob-tar&#39; value=&#39;00 00 0000&#39; /&gt;&lt;br/&gt;&lt;label style=&#39;&#39; for=&#39;uk-tob-map-tar&#39; class=&#39;control-label defaultedValueTob &#39;&gt;TOB (if known)&lt;/label&gt; &lt;input type=&#39;text&#39; class=&#39;form-control clickable uk-tob-tar&#39; title=&#39;Enter the Hour and minute separated by a space&#39; style=&#39;&#39; id=&#39;uk-tob-map-tar&#39; name=&#39;tob-tar&#39; value=&#39;00 00&#39; /&gt;&lt;/span&gt; &lt;/div&gt;&lt;label for=&#39;uk-address-tar&#39; style=&#39;float:left;&#39; class=&#39;control-label&#39;&gt;Location:&lt;/label&gt; &lt;div class=&#39;col-sm-10&#39; style=&#39;width:auto;&#39;&gt;&lt;input style=&#39;margin-left: 4px;  width: 363px&#39; type=&#39;text&#39; class=&#39;form-control clickable&#39; id=&#39;uk-address-tar&#39;/&gt;&lt;/div&gt; &lt;/form&gt; &lt;/div&gt; &lt;div class=&#39;modal-body requiresOnline&#39; style=&#39;margin-top: -20px;&#39;&gt; &lt;div class=&#39;form-horizontal&#39; style=&#39;width: 550px&#39;&gt; &lt;div class=&#39;form-group&#39;&gt;  &lt;/div&gt; &lt;div id=&#39;uk-picker-tar&#39; style=&#39;width: 100%; height: 250px; margin-bottom:0px; &#39;&gt;&lt;/div&gt; &lt;/div&gt; &lt;/div&gt; &lt;div class=&#39;modal-footer&#39;&gt; &lt;button type=&#39;button&#39; data-dismiss=&#39;modal&#39; class=&#39;btn btn-primary requiresOnline&#39; id=&#39;SaveChangesTar&#39; &gt;Save Changes + Get natal chart positions&lt;/button&gt;  &lt;button type=&#39;button&#39; class=&#39;btn btn-default&#39; data-dismiss=&#39;modal&#39;&gt;Close&lt;/button&gt; &lt;/div&gt; &lt;/div&gt; &lt;/div&gt;&quot;;
+
+        /*
+         var maphtmltar=&quot;&lt;div class=&#39;modal-dialog&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;div class=&#39;modal-content&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;div class=&#39;modal-header&#39; style=&#39;background-color: rgb(202, 222, 230);&#39;&gt; &lt;button type=&#39;button&#39; class=&#39;close&#39; data-dismiss=&#39;modal&#39; aria-label=&#39;Close&#39;&gt;&lt;span aria-hidden=&#39;true&#39;&gt;&amp;times;&lt;/span&gt;&lt;/button&gt; &lt;h4 class=&#39;modal-title&#39;&gt;Enter Your Birth Details&lt;/h4&gt; &lt;/div&gt; &lt;div class=&#39;detailsForm&#39; style=&#39;pointer-events: none; height: 130px; margin-top: 10px;&#39; &gt; &lt;form id=&#39;f2&#39; style=&#39;width:500px;&#39; name=&#39;f2&#39; class=&#39;n-t-small&#39; action=&#39;index.pl&#39; method=&#39;get&#39;&gt; &lt;div class=&#39;entry-holder-tar&#39; &gt; &lt;span style=&#39;white-space:nowrap;&#39;&gt; &lt;label style=&#39;padding-right: 20px&#39; for=&#39;uk-dob-map-tar&#39; class=&#39;p-r-small col-sm-1 control-label defaultedValueDob&#39; &gt;DOB&lt;/label&gt; &lt;input type=&#39;text&#39; title=&#39;Enter the Day, Month and year separated by spaces&#39; class=&#39;form-control clickable uk-dob-tar&#39; style=&#39;width: 150px; padding-right: 20px; margin-left: 50px; margin-top: -29px; float: left;&#39; id=&#39;uk-dob-map-tar&#39; name=&#39;dob-tar&#39; value=&#39;00 00 0000&#39; /&gt; &lt;label style=&#39;margin-left: 20px; padding-right: 50px;&#39; for=&#39;uk-tob-map-tar&#39; class=&#39;p-r-small col-sm-2 control-label defaultedValueTob &#39;&gt;TOB (if known)&lt;/label&gt; &lt;input type=&#39;text&#39; class=&#39;form-control clickable uk-tob-tar&#39; title=&#39;Enter the Hour and minute separated by a space&#39; style=&#39;width: 110px; margin-left: 180px; margin-top: -30px; float: left;&#39; id=&#39;uk-tob-map-tar&#39; name=&#39;tob-tar&#39; value=&#39;00 00&#39; /&gt;&lt;/span&gt; &lt;/div&gt; &lt;/form&gt; &lt;/div&gt; &lt;div class=&#39;modal-body requiresOnline&#39; style=&#39;margin-top: -50px;&#39;&gt; &lt;div class=&#39;form-horizontal&#39; style=&#39;width: 550px&#39;&gt; &lt;div class=&#39;form-group&#39;&gt; &lt;label for=&#39;uk-address-tar&#39; style=&#39;margin-left: -8px; margin-top: -50px;&#39; class=&#39;col-sm-2 control-label&#39;&gt;Location:&lt;/label&gt;&lt;div class=&#39;col-sm-10&#39;&gt;&lt;input style=&#39;margin-left: 80px; margin-top: -50px; width: 370px&#39; type=&#39;text&#39; class=&#39;form-control&#39; id=&#39;uk-address-tar&#39;/&gt;&lt;/div&gt; &lt;/div&gt; &lt;div id=&#39;uk-picker-tar&#39; style=&#39;width: 100%; height: 250px; margin-bottom:0px; &#39;&gt;&lt;/div&gt; &lt;/div&gt; &lt;/div&gt; &lt;div class=&#39;modal-footer&#39;&gt; &lt;button type=&#39;button&#39; data-dismiss=&#39;modal&#39; class=&#39;btn btn-primary requiresOnline&#39; id=&#39;SaveChanges&#39; &gt;Save Changes + Get natal chart positions&lt;/button&gt;  &lt;button type=&#39;button&#39; class=&#39;btn btn-default&#39; data-dismiss=&#39;modal&#39;&gt;Close&lt;/button&gt; &lt;/div&gt; &lt;/div&gt; &lt;/div&gt;&quot;;
+        */
+        $(&#39;#uk-dialog&#39;).html(maphtml);
+		
+		
+
+        $(&#39;#uk-dialog-tar&#39;).html(maphtmltar);
+
+    }
+
+    /* Assign the click  */
+    $(&#39;#SaveChangesTar&#39;).on(&#39;click&#39;, function () {
+        _f__SaveChangesGetChart(&quot;target&quot;, true);
+    });
+
+    /* Assign the click  */
+    $(&#39;#SaveChanges&#39;).on(&#39;click&#39;, function () {
+        _f__SaveChangesGetChart(&quot;subject&quot;, true);
+    });
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_138">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_138">&#182;</a>
+							</div>
+							<p>just init the vars once. Will 08/02/2017</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var currentLat;
+    var currentLon;
+    var currentDob;
+    var currentTob;
+
+ 
+    currentLat = $(&#39;#uk-lat&#39;).prop(&#39;value&#39;);
+    currentLon = $(&#39;#uk-lon&#39;).prop(&#39;value&#39;);
+    currentDob = $(&#39;#uk-dob&#39;).prop(&#39;value&#39;);
+    currentTob = $(&#39;#uk-tob&#39;).prop(&#39;value&#39;);
+
+
+
+    $(&#39;#uk-picker&#39;).locationpicker({
+        location: {
+            latitude: currentLat,
+            longitude: currentLon
+        },
+        radius: 0,
+        inputBinding: {
+            latitudeInput: $(&#39;#uk-lat&#39;),
+            longitudeInput: $(&#39;#uk-lon&#39;),
+            locationNameInput: $(&#39;#uk-address&#39;)
+        },
+        enableAutocomplete: true,
+        onchanged: function (currentLocation) {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_139">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_139">&#182;</a>
+							</div>
+							<pre><code> $('#uk-lat').prop('value', currentLocation.latitude.toString().substring(0, CURRENT_LOCATION_LAT_LON));
+ $('#uk-lon').prop('value', currentLocation.longitude.toString().substring(0, CURRENT_LOCATION_LAT_LON));
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_140">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_140">&#182;</a>
+							</div>
+							<pre><code> $('#uk-lat')[0].maxLength = LAT_LON_MAXLENGTH;
+ $('#uk-lon')[0].maxLength = LAT_LON_MAXLENGTH;
+</code></pre>
+
+<p>debugP("Location changed. New location (" + currentLocation.latitude + ", " + currentLocation.longitude + ")");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        }
+    });
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_141">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_141">&#182;</a>
+							</div>
+							<p>WE SHOULD RUN START ON IT ONCE NOW TO FIX THE FLOOD ADJUSTMENTS THAT PREVENT AUTOCOMPLETE</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	$(&#39;#uk-picker&#39;).locationpicker(&#39;start&#39;);
+	
+	$(&#39;#uk-dialog,#uk-dialog-tar&#39;).on(&#39;hidden.bs.modal&#39;, function () {
+   DOING_MAP_LOOKUP = false;
+})
+	
+    $(&#39;#uk-dialog&#39;).on(&#39;shown.bs.modal&#39;, function () {
+  DOING_MAP_LOOKUP = true;
+        currentLat = $(&#39;#uk-lat&#39;).prop(&#39;value&#39;);
+        currentLon = $(&#39;#uk-lon&#39;).prop(&#39;value&#39;)
+        currentDob = $(&#39;#uk-dob&#39;).prop(&#39;value&#39;);
+        currentTob = $(&#39;#uk-tob&#39;).prop(&#39;value&#39;);
+
+        $(&#39;.uk-dob&#39;).prop(&#39;value&#39;, currentDob);
+        $(&#39;.uk-tob&#39;).prop(&#39;value&#39;, currentTob);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_142">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_142">&#182;</a>
+							</div>
+							<p>Here we are in the flow of when it is "shown", the shown.bs.modal event</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+        if (currentLat == 0 &amp; currentLon == 0 &amp; currentDob == &#39;00 00 0000&#39; &amp; currentTob == &#39;00 00&#39;) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_143">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_143">&#182;</a>
+							</div>
+							<p>debugP("global.js 631 InitPage hack lat, lon zero");
+currentLat = 51.4826; // reset to Greenwich!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+			 $(&#39;#uk-picker&#39;).locationpicker(&#39;location&#39;, {
+            latitude: 51.4826,
+            longitude: currentLon
+        });
+			
+        }
+		else{
+			
+			 $(&#39;#uk-picker&#39;).locationpicker(&#39;location&#39;, {
+            latitude: currentLat,
+            longitude: currentLon
+        });
+			
+		}
+
+
+       
+
+
+        $(&#39;#uk-picker&#39;).locationpicker(&#39;autosize&#39;);
+
+
+    });
+
+
+    /*  Do the Target one  */
+
+    currentLat = $(&#39;#uk-lat-tar&#39;).prop(&#39;value&#39;);
+    currentLon = $(&#39;#uk-lon-tar&#39;).prop(&#39;value&#39;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_144">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_144">&#182;</a>
+							</div>
+							<p>var currentDob = $('#uk-dob-tar').prop('value');
+var currentTob = $('#uk-tob-tar').prop('value');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    $(&#39;#uk-picker-tar&#39;).locationpicker({
+        location: {
+            latitude: currentLat,
+            longitude: currentLon
+        },
+        radius: 0,
+        inputBinding: {
+            latitudeInput: $(&#39;#uk-lat-tar&#39;),
+            longitudeInput: $(&#39;#uk-lon-tar&#39;),
+            locationNameInput: $(&#39;#uk-address-tar&#39;)
+        },
+        enableAutocomplete: true,
+        onchanged: function (currentLocation) {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_145">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_145">&#182;</a>
+							</div>
+							<p>$('#uk-lat-tar').prop('value', currentLocation.latitude.toString().substring(0, 8));
+   $('#uk-lon-tar').prop('value', currentLocation.longitude.toString().substring(0, 8));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_146">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_146">&#182;</a>
+							</div>
+							<p>$('#uk-lat-tar')[0].maxLength = LAT<em>LON</em>MAXLENGTH;
+   $('#uk-lon-tar')[0].maxLength = LAT<em>LON</em>MAXLENGTH;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_147">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_147">&#182;</a>
+							</div>
+							<pre><code>debugP("Location changed. New location (" + currentLocation.latitude + ", " + currentLocation.longitude + ")");
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        }
+    });
+  
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_148">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_148">&#182;</a>
+							</div>
+							<p>WE SHOULD RUN START ON IT ONCE NOW TO FIX THE FLOOD ADJUSTMENTS THAT PREVENT AUTOCOMPLETE</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+		$(&#39;#uk-picker-tar&#39;).locationpicker(&#39;start&#39;);
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_149">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_149">&#182;</a>
+							</div>
+							<p>Yay . Autocomplete again....</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	$(&#39;#uk-dialog-tar&#39;).on(&#39;shown.bs.modal&#39;, function () {
+
+	 DOING_MAP_LOOKUP = true;
+	
+        currentLat = $(&#39;#uk-lat-tar&#39;).prop(&#39;value&#39;);
+        currentLon = $(&#39;#uk-lon-tar&#39;).prop(&#39;value&#39;)
+        currentDob = $(&#39;#uk-dob-tar&#39;).prop(&#39;value&#39;);
+        currentTob = $(&#39;#uk-tob-tar&#39;).prop(&#39;value&#39;);
+
+
+        $(&#39;.uk-dob-tar&#39;).prop(&#39;value&#39;, currentDob);
+        $(&#39;.uk-tob-tar&#39;).prop(&#39;value&#39;, currentTob);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_150">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_150">&#182;</a>
+							</div>
+							<p>$('#uk-map-dob-tar').val(currentDob);
+$('#uk-map-tob-tar').val(currentTob);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+        if (currentLat == 0 &amp; currentLon == 0 &amp; currentDob == &#39;00 00 0000&#39; &amp; currentTob == &#39;00 00&#39;) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_151">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_151">&#182;</a>
+							</div>
+							<p>debugP("global.js 682 InitPage hack lat, lon zero");
+currentLat = 51.4826; // reset to Greenwich!  DO NOT AMEND OUR ROOT DATA!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			  $(&#39;#uk-picker-tar&#39;).locationpicker(&#39;location&#39;, {
+            latitude: 51.4826,  // Greenwich
+            longitude: currentLon
+        });
+			
+        }
+		else
+		{
+			  $(&#39;#uk-picker-tar&#39;).locationpicker(&#39;location&#39;, {
+            latitude: currentLat,
+            longitude: currentLon
+        });
+			
+		}
+
+      
+        $(&#39;#uk-picker-tar&#39;).locationpicker(&#39;autosize&#39;);
+    });
+
+
+    $(&#39;.hmsInputTypes, .bgTypes, .clearForm, .precessionFlag&#39;).selectmenu();
+    $(&#39;.hmsInputTypes , .bgTypes, .clearForm, .precessionFlag&#39;).next().addClass(&quot;hmsInputTypesExtra&quot;);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_152">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_152">&#182;</a>
+							</div>
+							<p>this allows us to bind events to the highly aloof JqueryUI select widget. Bleugh</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(function () {
+        $(&quot;.SignPrefix&quot;).selectmenu({
+            change: function (event, ui) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_153">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_153">&#182;</a>
+							</div>
+							<p>console.log(ui);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                var selected_value = ui.item.value;
+
+                var TLA = SignNeatTitles[selected_value / 30];
+
+                var theSignValueBox = $(this).next().next().next().next();
+
+                theSignValueBox.prop(&#39;title&#39;, TLA);
+                theSignValueBox.html(TLA.slice(0, 3));
+
+                theSignValueBox.removeClass(&quot;unset-sign&quot;);
+
+            }
+        });
+    });
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_154">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_154">&#182;</a>
+							</div>
+							<p>now we embed that into a dialog box :)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&quot;#selectionsHolder&quot;).dialog({
+        autoOpen: false,
+        width: 280,
+        minWidth: 280,
+        height: 645,
+        minHeight: 605,
+        modal: false,
+        resizable: true,
+        title: &quot;Selections&quot;,
+        dialogClass: &quot;selectionsHolder&quot;,
+        position: {
+            my: &quot;left bottom&quot;,
+            at: &quot;right top&quot;,
+            of: &quot;#logo&quot;
+        },
+        show: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        },
+        hide: {
+            effect: &quot;blind&quot;,
+            duration: 300
+        },
+        buttons: {
+            /*  &quot;Save Current Selection&quot;: function() {
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_155">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_155">&#182;</a>
+							</div>
+							<p>rememeber to create this</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+        SaveCurrentSelection();
+        }, */
+            &quot;Close&quot;: function () {
+                $(this).dialog(&quot;close&quot;);
+            }
+        }
+
+    });
+
+
+    $(&#39;#selection_name&#39;).keyup(function () {
+
+        if (typeof $(this).val() === &quot;undefined&quot;)
+            return;
+
+        var valThis = $(this).val().toLowerCase();
+        if (valThis == &quot;&quot;) {
+            $(&#39;#selections &gt; li&#39;).show();
+        } else {
+            $(&#39;#selections &gt; li&#39;).each(function () {
+                var text = $(this).text().toLowerCase();
+                (text.indexOf(valThis) &gt;= 0) ? $(this).show(): $(this).hide();
+            });
+        };
+    }).focus(function () {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_156">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_156">&#182;</a>
+							</div>
+							<p>To simplify renaming efforts in tests this has been disabled for now until a better solution occurs to me.
+ $(this).val('');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+    })
+
+    ;
+
+
+    /* 		//this allows us to bind events to the highly aloof JqueryUI select widget. Bleugh
+    	$(function() {
+                 $( &quot;#selections&quot; ).selectmenu({
+    				 width: 360,
+    				 height: 400,
+    				 
+                     change: function( event, ui ) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_157">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_157">&#182;</a>
+							</div>
+							<p>console.log(ui);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    					 
+    					 LoadChosenSelection(ui.item.value);
+
+                     }
+                 });
+            });
+    	 */
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_158">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_158">&#182;</a>
+							</div>
+							<p>focus is more accessible than click
+a user can't change a field without it
+more chaining = less searching</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_159">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_159">&#182;</a>
+							</div>
+							<p>Do some additional wangle to the HMS INPUTS to ensure sane input.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&#39;.hmsbox&#39;) //leave submit buttons, records area, etc alone
+        .bind(&#39;focus&#39;, function () {
+            if ($(this).val() == &quot;0 0 0&quot;) {
+                $(this).val(&#39;&#39;);
+            };
+            $(this).addClass(&#39;greened&#39;);
+        }) //more chaining = less searching
+        .bind(&#39;blur&#39;, function () {
+            _f__ConvertHMSToDecimal(this); /*  supposing you want to revert back on blur...*/
+            $(this).removeClass(&#39;greened&#39;);
+        })
+        .bind(&#39;keyup&#39;, function () {
+
+            $(this).val($(this).val().replace(/[^\d.]/g, &#39; &#39;).replace(/ +/g, &#39; &#39;).replace(/^ +/, &#39;&#39;).replace(/^ /, &#39;&#39;));
+            if ($(this).val() == &#39;&#39;) {
+                $(this).next().next().addClass(&quot;unset-sign&quot;);
+            }
+            _f__ConvertHMSToDecimal(this);
+
+        });
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_160">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_160">&#182;</a>
+							</div>
+							<p>REALLY make sure they are gone</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__clearCharts();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_161">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_161">&#182;</a>
+							</div>
+							<p>Link up our submit button to our lookup function</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&quot;#submit_btn&quot;).on(&quot;click&quot;, function () {
+        _f__SaveChangesGetChart(&quot;subject&quot;, false)
+    });
+    $(&quot;#submit_btn-tar&quot;).on(&quot;click&quot;, function () {
+        _f__SaveChangesGetChart(&quot;target&quot;, false)
+    });
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_162">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_162">&#182;</a>
+							</div>
+							<p>Do our due diligence.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__CheckCcCookieOptions(cc);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_163">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_163">&#182;</a>
+							</div>
+							<p>DECIDE WHICH MODE TO START IN  = triggering this leaves us in xProfile mode. Elide to not.
+<em>f</em>_TogglexProfile();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    $(&#39;.recordTitle&#39;).html(&#39;Activate xProfile mode&#39;);
+
+
+    /* if( ! $(&#39;.xprofile-image&#39;).first().is(&quot;:visible&quot;)   )
+    	{
+    		$(&#39;.recordTitle&#39;).html(&#39;Activate chart mode&#39;);	
+    	}
+    	else
+    	{
+    		
+    		
+    	} */
+
+}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_164">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_164">&#182;</a>
+							</div>
+							<p>Set the visual form values indirectly via the passed data from perl</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__populateBoxesFromDatastream(NameOfColumn) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_165">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_165">&#182;</a>
+							</div>
+							<p>Use starmatch's String.prototype.IsDefault test against the <strong>STRING_DEFAULTS</strong> const...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    if (!datastream.IsDefault()) {
+
+        var passedData = datastream.split(&#39;&#172;&#39;);
+        var boxes = $(&#39;.numVals-&#39; + NameOfColumn);
+        var simpleLocalIndex = 0;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_166">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_166">&#182;</a>
+							</div>
+							<p><em>f</em>_infoP(passedData + " " + CRLF, 6000);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_167">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_167">&#182;</a>
+							</div>
+							<p>Let's Jerry rig the values here then...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+ if (NameOfColumn == &quot;subject&quot;) {
+		SubjectsValues=[];
+}else{
+TargetsValues=[];
+}
+
+
+        jQuery.each(passedData, function (key, index) {
+            if (key &lt; 10 || key == 26 || key == 27) { // Sun -&gt; Pluto, Asc., MC
+                var splitted = index.split(&#39;,&#39;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_168">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_168">&#182;</a>
+							</div>
+							<p>Lets populate the boxes now...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+                boxes[simpleLocalIndex].value = (splitted[1]);
+if (NameOfColumn == &quot;subject&quot;) {
+				SubjectsValues[SubjectsValues.length]=splitted[1];
+}else
+{TargetsValues[TargetsValues.length]=splitted[1];
+}
+                _f__ConvertDecimalToHMSSingle(boxes[simpleLocalIndex]);
+                simpleLocalIndex++;
+            }
+        });
+
+
+        var activeLonNode = &quot;&quot;;
+        var activeLatNode = &quot;&quot;;
+        var activeDobNode = &quot;&quot;;
+        var activeTobNode = &quot;&quot;;
+        var activeAccNode = &quot;&quot;;
+        if (NameOfColumn == &quot;subject&quot;) {
+           
+            activeNameNode = $(&#39;#SubjectName&#39;);
+            activeLonNode = $(&#39;#uk-lon&#39;);
+            activeLatNode = $(&#39;#uk-lat&#39;);
+            activeAccNode = $(&#39;#uk-acc&#39;);
+
+        } else {
+          
+            activeNameNode = $(&#39;#TargetName&#39;);
+            activeLonNode = $(&#39;#uk-lon-tar&#39;);
+            activeLatNode = $(&#39;#uk-lat-tar&#39;);
+            activeAccNode = $(&#39;#uk-acc-tar&#39;);
+        }
+
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_169">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_169">&#182;</a>
+							</div>
+							<p>use starmatch's protoype IsDefault() tests against the <strong>NUMBER_DEFAULTS</strong> const...
+correct for swapped values (focus function problem?)
+do we still need this? NO - hence the problem. It reintroduces swapping!
+obviously now corrected somewhere else</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>/*
+        if (!lon.IsDefault())
+            activeLonNode.val(lat);
+        if (!lat.IsDefault())
+            activeLatNode.val(lon);
+*/
+
+
+
+        /*       
+	   	$(&#39;#uk-dob&#39;).val(dob.replace(&#39;-&#39;,&#39; &#39;).replace(&#39;-&#39;,&#39; &#39;));
+       	$(&#39;#uk-tob&#39;).val(tob.replace(&#39;:&#39;,&#39; &#39;));
+*/
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_170">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_170">&#182;</a>
+							</div>
+							<p>We finished processing records into the SUBJECT recordset fields.
+Let's add a helpful reminder message.
+ <em>f</em>_infoP("Remember to rename and save your new record", 2000);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    }
+
+    $(&#39;.error&#39;).hide();
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_171">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_171">&#182;</a>
+							</div>
+							<p>Move the focus to this element and make the relevant column name blank.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>   
+   
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_172">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_172">&#182;</a>
+							</div>
+							<p>dont make it blank.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 activeNameNode.focus();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_173">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_173">&#182;</a>
+							</div>
+							<p>activeNameNode.val('').focus();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_174">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_174">&#182;</a>
+							</div>
+							<p>Make the OptionsObject be the current widget values</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SetOptionsObjectFromWidgetState() {
+    var hasError = 0;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_175">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_175">&#182;</a>
+							</div>
+							<p>Magically divine the chosen options based on witchcraft. 
+<br /> And matching ids in an interesting variety of array dimensionality</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    $.each(OptionsObject, function (index, value) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_176">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_176">&#182;</a>
+							</div>
+							<p>debugP("global.js: index "+index+" value "+value);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var radioButtons = $(&#39;#optionsHolder input:radio[name=&#39; + index + &#39;]&#39;);
+
+        var selectedIndex = radioButtons.index(radioButtons.filter(&#39;:checked&#39;));
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_177">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_177">&#182;</a>
+							</div>
+							<p>Let's add some sanity checking...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if (selectedIndex &lt; 0) {
+            hasError++;
+
+            $(&quot;input:radio[name=&quot; + index + &quot;]:first&quot;).attr(&#39;checked&#39;, true);
+
+
+
+            var radioButtons = $(&#39;#optionsHolder input:radio[name=&#39; + index + &#39;]&#39;);
+
+            var selectedIndex = radioButtons.index(radioButtons.filter(&#39;:checked&#39;));
+
+            /* 	alert(selectedIndex);
+            	
+            	_f__warnDefaulted(index, &quot;0&quot;); */
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_178">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_178">&#182;</a>
+							</div>
+							<p>Let's just default</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            OptionsObject[index] = &quot;0&quot;;
+        } else {
+            OptionsObject[index] = radioButtons.filter(&#39;:checked&#39;).prop(&#39;value&#39;);
+        }
+
+
+    });
+
+    if (hasError &gt; 0) {
+        _f__SaveOptionsCookie(OptionsObject);
+        _f__GetGlobalOptions(OptionsObject);
+        /* _f__warnP(&quot;A recoverable error was encountered in the physical widget settings\n Please try again&quot;); */
+    }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_179">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_179">&#182;</a>
+							</div>
+							<p>optional sanity expose</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    /*var statement = &quot;&quot;;
+	  $.each(OptionsObject, function  (index, value) {
+	  statement += index + &quot; is &quot;+value+&quot;\n&quot;;  
+	  });
+	alert (statement);*/
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_180">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_180">&#182;</a>
+							</div>
+							<p>should really save options to record here... 
+flags forced to global options values on load by default</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_181">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_181">&#182;</a>
+							</div>
+							<p>used to actually set the values in the radio boxes for the options object</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SetWidgetStateFromOptionsObject(reference) {
+
+    $.each(reference,
+
+        function (index, value) {
+            $(&quot;input[name=&quot; + index + &quot;][value=&quot; + value + &quot;]&quot;).prop(&#39;checked&#39;, true);
+
+            var indexCopy = index.toString();
+
+            var forbiddenChars = new RegExp(&quot;[^a-zA-Z0-9]&quot;, &#39;g&#39;);
+            if (forbiddenChars.test(index)) {
+                indexCopy = index.replace(forbiddenChars, &#39;&#39;);
+            }
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_182">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_182">&#182;</a>
+							</div>
+							<p>default when something bad happens</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            if (!$.isNumeric(value)) {
+                _f__warnDefaulted(index, value);
+                value = &quot;0&quot;
+            };
+            if (parseFloat(value) &lt; 0) {
+                _f__warnDefaulted(index, value);
+                value = &quot;0&quot;
+            };
+
+            _f__SetTovalue(&#39;OptionsObject.&#39; + indexCopy, value);
+            _f__SetTovalue(indexCopy, value);
+        })
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_183">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_183">&#182;</a>
+							</div>
+							<p>used to set vars after cleansing. shudder :see<em>no</em>evil:</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SetTovalue(varString, value) {
+    eval(varString + &quot; = &quot; + value);
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_184">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_184">&#182;</a>
+							</div>
+							<p>For self-describing</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var allfunctions = [];
+
+function _f__GetAllFunctions() {
+
+    for (var i in window) {
+        if ((typeof window[i]).toString() == &quot;function&quot;) {
+            allfunctions.push(window[i].name);
+        }
+    }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_185">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_185">&#182;</a>
+							</div>
+							<p>Sort on the alpha values of the array.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    allfunctions.sort(function (a, b) {
+        return a.toUpperCase().localeCompare(b.toUpperCase());
+    });
+
+    var holder = [];
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_186">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_186">&#182;</a>
+							</div>
+							<p>remove empty entries</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    allfunctions = $.grep(allfunctions, function (n, index) {
+        return n.includes(&#39;_f__&#39;)
+    });
+
+    PrintArray(allfunctions);
+}
+
+
+function _f__DoFinalChartSteps (NameOfColumn){
+	
+	  	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_187">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_187">&#182;</a>
+							</div>
+							<p>sanity checks
+using the String.prototype.IsDefault and Number.prototype.IsDefault functions</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if (lat.IsDefault) {
+            lat = activeLatNode.val();
+        }
+        if (lon.IsDefault) {
+            lon = activeLonNode.val();
+        };
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_188">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_188">&#182;</a>
+							</div>
+							<p>ternary  - makes a true be a 1</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if (acc.IsDefault) {
+            acc = 1 * (activeAccNode.is(&#39;:checked&#39;))
+        };
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_189">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_189">&#182;</a>
+							</div>
+							<p>double check if we got junk from the boxes...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if (lat.length == 0) {
+            lat = &quot;0&quot;;
+            activeLatNode.focus();
+            _f__warnP(&quot;Enter a decimal latitude value&quot;);
+            return;
+        };
+        if (lon.length == 0) {
+            lon = &quot;0&quot;;
+            activeLonNode.focus();
+            _f__warnP(&quot;Enter a decimal longitude value&quot;);
+            return;
+        };
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_190">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_190">&#182;</a>
+							</div>
+							<p>build command referece</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        /* 	var dayOB = splitted[0];
+        var monOB = splitted[1];
+        var yearOB = splitted[2];
+
+        var minOB = splittedTime[1];
+        var hourOB = splittedTime[0]; */
+
+        var dataString = &#39;dob=&#39; + dayOB + &#39;/&#39; + monOB + &#39;/&#39; + yearOB + &#39;&amp;tob=&#39; + hourOB + &quot;:&quot; + minOB + &#39;&amp;lat=&#39; + lat.toString().trim() + &#39;&amp;lon=&#39; + lon.toString().trim() + &#39;&amp;acc=&#39; + acc.toString();
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_191">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_191">&#182;</a>
+							</div>
+							<p>alternate version demonstrating how NOT to pass the bool
+  var dataString = 'dob=' + moment(humDate).format('DD/MM/YYYY').trim() + '&amp;tob=' + moment(humDate).format('hh:mm').trim() + '&amp;lat=' + lat.trim() + '&amp;lon=' + lon.trim() + '&amp;acc=' + acc;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_192">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_192">&#182;</a>
+							</div>
+							<p>OKAY WE GOT THIS FAR. Let's assume we have good data and commit any edits to the main page.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if (IsSubjectSave) {
+
+            $(&#39;#uk-dob&#39;).val(dayOB + &#39; &#39; + monOB + &#39; &#39; + yearOB);
+            $(&#39;#uk-tob&#39;).val(hourOB + &#39; &#39; + minOB);
+        } else {
+            $(&#39;#uk-dob-tar&#39;).val(dayOB + &#39; &#39; + monOB + &#39; &#39; + yearOB);
+            $(&#39;#uk-tob-tar&#39;).val(hourOB + &#39; &#39; + minOB);
+        }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_193">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_193">&#182;</a>
+							</div>
+							<p>THAT should be it for commiting changes BACK to the page after the map dialog.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_194">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_194">&#182;</a>
+							</div>
+							<p>make request</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        $.ajax({
+
+            type: &quot;POST&quot;,
+            url: &quot;./cgi-bin/chart.pl?&quot;,
+            data: dataString,
+            success: function (response) {
+                $(&quot;#ScriptingInjectionPoint&quot;).html(response);
+
+                /* alert( &quot;Load was performed. dob:&quot;+dob+&quot; tob:&quot;+tob+&quot; lon:&quot;+lon+&quot; lat:&quot;+lat+&quot; response:&quot;+response   ); */
+
+                setTimeout(function () {
+                    _f__populateBoxesFromDatastream(NameOfColumn);
+
+					_f__LoadSubjectChartData(activeNameNode.val());
+
+					GlobalCurrentSaveOptions[0] = activeLonNode.val();
+					GlobalCurrentSaveOptions[1] = activeLatNode.val();
+					GlobalCurrentSaveOptions[2] = activeDobNode.val() + &quot; &quot; + activeTobNode.val();
+					GlobalCurrentSaveOptions[3] = activeAccNode.is(&#39;:checked&#39;) | 0;
+
+					_f__doConditionalSave(NameOfColumn, activeNameNode.val(), GlobalCurrentSaveOptions);
+
+
+                }, 150);
+                return false;
+            }
+        });
+    }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_195">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_195">&#182;</a>
+							</div>
+							<p>we are done</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	
+
+
+
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_196">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_196">&#182;</a>
+							</div>
+							<p>Shared between calls since the frames are now split over several return values...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+ var IsSubjectSave = false;
+
+  var humDate = new Date();
+    var timezone = &quot;&quot;;
+    var error = 0;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_197">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_197">&#182;</a>
+							</div>
+							<p>now do the TIME
+work out which node to use first.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var activeLonNode = &quot;&quot;;
+    var activeLatNode = &quot;&quot;;
+    var activeDobNode = &quot;&quot;;
+    var activeTobNode = &quot;&quot;;
+    var activeAccNode = &quot;&quot;;
+ 
+ 
+    var splitted = &quot;&quot;;
+    var splittedTime = &quot;&quot;;
+
+	   var timestamped =  &quot;&quot;; 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_198">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_198">&#182;</a>
+							</div>
+							<p></p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var TimeZoneName = &quot;&quot;;
+        var TimeZoneId = &quot;&quot;;
+        var RawOffset = 0;
+        var DstOffset = 0;
+        var TotalOffset = 0;
+	
+	  var dayOB = &quot;&quot;;
+        var monOB = &quot;&quot;;
+        var yearOB = &quot;&quot;;
+
+        var minOB = &quot;&quot;;
+        var hourOB = &quot;&quot;;
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_199">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_199">&#182;</a>
+							</div>
+							<p>SaveChangesGetChart
+Actually process the TOB DOB etc data and call a perl script via ajax to populate values via ephe data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SaveChangesGetChart(NameOfColumn, useMap, passThisName) {
+
+   if (typeof passThisName === &#39;undefined&#39;) { passThisName = &#39;default&#39;; }
+	
+	IsSubjectSave = false;
+
+     humDate = new Date();
+     timezone = &quot;&quot;;
+     error = 0;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_200">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_200">&#182;</a>
+							</div>
+							<p>now do the TIME
+work out which node to use first.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    activeLonNode = &quot;&quot;;
+    activeLatNode = &quot;&quot;;
+    activeDobNode = &quot;&quot;;
+    activeTobNode = &quot;&quot;;
+    activeAccNode = &quot;&quot;;
+ 
+ 
+   splitted = &quot;&quot;;
+   splittedTime = &quot;&quot;;
+	
+	
+    if (NameOfColumn.toLowerCase()  == &quot;subject&quot;) {
+        IsSubjectSave = true;
+
+    }
+
+	var activeNameNode
+
+	if( IsSubjectSave){
+			activeNameNode = $(&#39;#SubjectName&#39;)
+        } else {
+            activeNameNode = $(&#39;#TargetName&#39;)
+        };
+   
+    if (IsSubjectSave) {
+        if (useMap) {
+            activeDobNode = $(&#39;#uk-dob-map&#39;)
+        } else {
+            activeDobNode = $(&#39;#uk-dob&#39;)
+        };
+        if (useMap) {
+            activeTobNode = $(&#39;#uk-tob-map&#39;)
+        } else {
+            activeTobNode = $(&#39;#uk-tob&#39;)
+        };
+        activeLonNode = $(&#39;#uk-lon&#39;);
+        activeLatNode = $(&#39;#uk-lat&#39;);
+        activeAccNode = $(&#39;#uk-acc&#39;);
+    } else {
+        if (useMap) {
+            activeDobNode = $(&#39;#uk-dob-map-tar&#39;)
+        } else {
+            activeDobNode = $(&#39;#uk-dob-tar&#39;)
+        };
+        if (useMap) {
+            activeTobNode = $(&#39;#uk-tob-map-tar&#39;)
+        } else {
+            activeTobNode = $(&#39;#uk-tob-tar&#39;)
+        };
+        activeLonNode = $(&#39;#uk-lon-tar&#39;);
+        activeLatNode = $(&#39;#uk-lat-tar&#39;);
+        activeAccNode = $(&#39;#uk-acc-tar&#39;);
+    }
+
+    if (activeLatNode.val() == &quot;&quot;) {
+        error = 1;
+        _f__warnClear();
+        _f__warnP(&quot;Enter valid decimal latitude, e.g &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;strong&gt;53.3&lt;/strong&gt;&quot;);
+        activeLatNode.focus();
+        return;
+    }
+    if (activeLonNode.val() == &quot;&quot;) {
+        error = 1;
+        _f__warnClear();
+        _f__warnP(&quot;Enter valid decimal longitude, e.g &amp;nbsp; &amp;nbsp; &amp;nbsp; &lt;strong&gt;-1.3&lt;/strong&gt;&quot;);
+        activeLonNode.focus();
+        return;
+    }
+
+    
+
+    splitted = activeDobNode.val().split(&#39; &#39;);
+    splittedTime = activeTobNode.val().split(&#39; &#39;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_201">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_201">&#182;</a>
+							</div>
+							<p>remove empty entries</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    splitted = $.grep(splitted, function (n) {
+        return n.length &gt; 0 || n
+    });
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_202">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_202">&#182;</a>
+							</div>
+							<p>remove empty entries</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    splittedTime = $.grep(splittedTime, function (n) {
+        return n.length &gt; 0 || n
+    });
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_203">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_203">&#182;</a>
+							</div>
+							<p>fail the start of the Christian calendar...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if ((activeDobNode.val() == &quot;00 00 0000&quot;) &amp;&amp; (activeTobNode.val() == &quot;00 00&quot;)) {
+        error = 1;
+
+	
+        _f__warnP(&quot;ENTER VALID DOB/TOB (dd mm yyyy ) / (hh[ mm[ ss]]) for &quot;+passThisName + &quot; not &quot;+activeDobNode.val() )
+
+        return;
+    }
+    activeDobNode.val(activeDobNode.val());
+    activeTobNode.val(activeTobNode.val());
+    if (splittedTime.length != 2) {
+        error = 1;
+        _f__warnP(&quot;ENTER TIME OF BIRTH\n\nHH MM\n\nLike 13 00\n\nfor 1 PM for &quot;+passThisName );
+        return;
+    }
+    if (splitted.length != 3) {
+        error = 1;
+        _f__warnP(&quot;ENTER DATE OF BIRTH\n\nDD MM YYYY\n\nLike 11 09 1974\n\nfor 11th Sept. 1974 for &quot;+passThisName );
+        return;
+    }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_204">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_204">&#182;</a>
+							</div>
+							<p>Total fail coverance.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (error == 1) {
+        _f__warnClear();
+        _f__warnP(&quot;Please enter valid birth data for &quot;+passThisName );
+        return;
+    }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_205">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_205">&#182;</a>
+							</div>
+							<p>we made it - do something</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (error == 0) {
+         dayOB = splitted[0];
+         monOB = splitted[1];
+         yearOB = splitted[2];
+
+         minOB = splittedTime[1];
+         hourOB = splittedTime[0];
+
+        OptionsObjectDateTime = new Date(Date.UTC(yearOB, (parseFloat(monOB) - 1), dayOB, hourOB, minOB));
+        humDate = new Date(Date.UTC(yearOB, (parseFloat(monOB) - 1), dayOB, hourOB, minOB));
+
+          timestamped = moment(humDate).unix(); 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_206">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_206">&#182;</a>
+							</div>
+							<p></p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>         TimeZoneName = &quot;&quot;;
+         TimeZoneId = &quot;&quot;;
+         RawOffset = 0;
+         DstOffset = 0;
+         TotalOffset = 0;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_207">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_207">&#182;</a>
+							</div>
+							<p>stubs for ajax timezone lookups</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+		
+		
+		
+             var url = &quot;https://maps.googleapis.com/maps/api/timezone/json?location=&quot;+activeLatNode.val()+&quot;,&quot;+activeLonNode.val()+&quot;&amp;timestamp=&quot; + timestamped ;
+            $.ajax({
+              url: url,
+            }).done(function(response) {
+ 
+		if (response.status == &#39;OK&#39;)
+		{
+
+        	TimeZoneName = response.timeZoneName.toString();
+        	TimeZoneId = response.timeZoneId.toString();
+
+        	if ($.isNumeric(parseFloat(response.rawOffset))){  OptionsObjectUtOffset=  parseFloat(response.rawOffset); RawOffset +=  parseFloat(response.rawOffset); }
+        
+        	if ($.isNumeric( parseFloat(response.dstOffset)) ) {OptionsObjectDstOffset=parseFloat(response.dstOffset); DstOffset +=  parseFloat(response.dstOffset);	} 
+
+		}
+		
+		
+        TotalOffset += RawOffset;
+		TotalOffset -= DstOffset;
+       humDate.setSeconds(humDate.getSeconds() + TotalOffset);
+		
+		
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_208">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_208">&#182;</a>
+							</div>
+							<p>debugP("The timezone for "+TimeZoneName+", is " + TimeZoneId + ", BST offset: " +DstOffset+ ",\n\n Total offset for that place/date is "+TotalOffset+ "secs\n\nGiving us a final place/date timedate of "+humDate);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        	
+ 
+
+		if (response.status == &#39;OK&#39;)
+		{
+			if (passThisName == &#39;default&#39;)
+			  _f__infoP(&quot;BST offset: &quot; +DstOffset/3600+ &quot;,\n\n Total offset for that place/date is &quot;+TotalOffset/3600+ &quot; hour(s)\n\n&quot;, 2000); 
+			else
+			{_f__infoP (&#39;importing &#39;+passThisName, 2500 );	}	
+		}
+		else
+		{
+			if (passThisName == &#39;default&#39;)
+			 _f__warnP(&quot;No timezone data for that location so offset assumed as 0 \n\n Total offset for that place/date is  0 secs for &quot;+activeNameNode.val() , 1000); 
+			else
+			{	_f__infoP (&#39;importing &#39;+passThisName + &#39; with odd timezone&#39;, 2500 );}
+		}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_209">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_209">&#182;</a>
+							</div>
+							<p>NOW - and only now - do we need to call the final section of getting the chart....</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_210">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_210">&#182;</a>
+							</div>
+							<p>now we want to APPLY any offsets to the ORIGINALLY SUPPLIED DATE + TIME and get the REAL DATE TIME - AND PUT THAT IN OUR BOXES.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_211">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_211">&#182;</a>
+							</div>
+							<p>dayOB = humDate.getDate();
+monOB = humDate.getMonth()+1;
+  yearOB =  humDate.getUTCFullYear();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_212">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_212">&#182;</a>
+							</div>
+							<p>minOB = humDate.getMinutes();
+  hourOB = humDate.getHours()-1;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_213">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_213">&#182;</a>
+							</div>
+							<p>activeDobNode.val( humDate.getDate() + ' ' + (humDate.getMonth()+1) + ' ' + humDate.getUTCFullYear() );
+activeTobNode.val( humDate.getHours() + ' ' + humDate.getMinutes() ) //;+ ' ' + humDate.getSeconds() );</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	
+		setTimeout(function(){
+ _f__DoFinalChartSteps(NameOfColumn);
+ 
+ _f__populateRecordsList();
+ 
+			}, (time_delay  * 0.5) );
+		
+        },0);
+	}
+}
+</code></pre>
+						</td>
+					</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

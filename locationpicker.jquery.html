@@ -1,0 +1,727 @@
+<!DOCTYPE html />
+
+<html>
+<head>
+	<title>locationpicker.jquery.js</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link href="nocco.css" rel="stylesheet" media="all" type="text/css" />
+	<script src="prettify.js" type="text/javascript"></script>
+</head>
+<body onload="prettyPrint()">
+	<div id="container">
+		<div id="background"></div>
+			<div id="jump_to">
+				Jump To &hellip;
+				<div id="jump_wrapper">
+					<div id="jump_page">
+							<a class="source" href="coeffanalyse.html">
+								CoeffAnalyse.js
+							</a>
+							<a class="source" href="engine-11072018-current.html">
+								engine-11072018-current.js
+							</a>
+							<a class="source" href="engine-13072018.html">
+								engine-13072018.js
+							</a>
+							<a class="source" href="engine-30052018.html">
+								engine-30052018.js
+							</a>
+							<a class="source" href="engine-30062018.html">
+								engine-30062018.js
+							</a>
+							<a class="source" href="engine.html">
+								engine.js
+							</a>
+							<a class="source" href="engine18062018.html">
+								engine18062018.js
+							</a>
+							<a class="source" href="engine23052018.html">
+								engine23052018.js
+							</a>
+							<a class="source" href="exporter.html">
+								exporter.js
+							</a>
+							<a class="source" href="global.html">
+								global.js
+							</a>
+							<a class="source" href="importer.html">
+								importer.js
+							</a>
+							<a class="source" href="index.html">
+								index.js
+							</a>
+							<a class="source" href="locationpicker.jquery.html">
+								locationpicker.jquery.js
+							</a>
+							<a class="source" href="output.html">
+								output.js
+							</a>
+							<a class="source" href="privacy-policy.html">
+								privacy-policy.js
+							</a>
+							<a class="source" href="record.html">
+								record.js
+							</a>
+							<a class="source" href="support.html">
+								support.js
+							</a>
+							<a class="source" href="restored/exporterbackup.html">
+								RESTORED\exporterBACKUP.js
+							</a>
+							<a class="source" href="restored/global-backup.html">
+								RESTORED\global-BACKUP.js
+							</a>
+					</div>
+				</div>
+			</div>
+		<table cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th class="docs">
+						<h1>locationpicker.jquery.js</h1>
+					</th>
+					<th class="code"></th>
+				</tr>
+			</thead>
+			<tbody>
+					<tr id="section_1">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_1">&#182;</a>
+							</div>
+							
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>/*! jquery-locationpicker - v0.1.15 - 2016-09-26 */
+(function($) {
+    function GMapContext(domElement, options) {
+        var _map = new google.maps.Map(domElement, options);
+        var _marker = new google.maps.Marker({
+            position: new google.maps.LatLng(54.19335, -3.92695),
+            map: _map,
+            title: &quot;Drag Me&quot;,
+            visible: options.markerVisible,
+            draggable: options.markerDraggable,
+            icon: options.markerIcon !== undefined ? options.markerIcon : undefined
+        });
+        return {
+            map: _map,
+            marker: _marker,
+            circle: null,
+            location: _marker.position,
+            radius: options.radius,
+            locationName: options.locationName,
+            addressComponents: {
+                formatted_address: null,
+                addressLine1: null,
+                addressLine2: null,
+                streetName: null,
+                streetNumber: null,
+                city: null,
+                district: null,
+                state: null,
+                stateOrProvince: null
+            },
+            settings: options.settings,
+            domContainer: domElement,
+            geodecoder: new google.maps.Geocoder()
+        };
+    }
+	
+	var floodControl = false;
+	
+	function StopFlooding () {
+		if (floodControl) { 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_2">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_2">&#182;</a>
+							</div>
+							<p>The horror, the horror
+var id = window.setTimeout(function() {}, 0);
+while (id--) {
+   window.clearTimeout(id); // will do nothing if no timeout with id is present</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+floodControl = false;
+return; }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_3">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_3">&#182;</a>
+							</div>
+							<p>}</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+    var GmUtility = {
+        drawCircle: function(gmapContext, center, radius, options) {
+            if (gmapContext.circle != null) {
+                gmapContext.circle.setMap(null);
+            }
+            if (radius &gt; 0) {
+                radius *= 1;
+                options = $.extend({
+                    strokeColor: &quot;#0000FF&quot;,
+                    strokeOpacity: .35,
+                    strokeWeight: 2,
+                    fillColor: &quot;#0000FF&quot;,
+                    fillOpacity: .2
+                }, options);
+                options.map = gmapContext.map;
+                options.radius = radius;
+                options.center = center;
+                gmapContext.circle = new google.maps.Circle(options);
+                return gmapContext.circle;
+            }
+            return null;
+        },
+        setPosition: function(gMapContext, location, callback) {
+			if (!DOING_MAP_LOOKUP) return;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_4">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_4">&#182;</a>
+							</div>
+							<p>if (floodControl)
+{
+StopFlooding();
+return false;
+}           </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            gMapContext.location = location;
+            gMapContext.marker.setPosition(location);
+            gMapContext.map.panTo(location);
+            this.drawCircle(gMapContext, location, gMapContext.radius, {});
+            if (gMapContext.settings.enableReverseGeocode) {
+			
+			
+			
+			
+                this.updateLocationName(gMapContext, callback);
+            } else {
+                if (callback ) {
+		
+		
+		
+		
+                    callback.call(this, gMapContext);
+                }
+            }
+        },
+        locationFromLatLng: function(lnlg) {
+            return {
+                latitude: lnlg.lat(),
+                longitude: lnlg.lng()
+            };
+        },
+        addressByFormat: function(addresses, format) {
+            var result = null;
+            for (var i = addresses.length - 1; i &gt;= 0; i--) {
+                if (addresses[i].types.indexOf(format) &gt;= 0) {
+                    result = addresses[i];
+                }
+            }
+            return result || addresses[0];
+        },
+        updateLocationName: function(gmapContext, callback) {
+			
+			if (!DOING_MAP_LOOKUP) return;
+			
+            gmapContext.geodecoder.geocode({
+                latLng: gmapContext.marker.position
+            }, function(results, status) {
+				
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_5">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_5">&#182;</a>
+							</div>
+							<p>if (floodControl ) StopFlooding();                  </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>				
+				
+                if (status == google.maps.GeocoderStatus.OK &amp;&amp; results.length &gt; 0) {
+                    var address = GmUtility.addressByFormat(results, gmapContext.settings.addressFormat);
+                    gmapContext.locationName = address.formatted_address;
+                    gmapContext.addressComponents = GmUtility.address_component_from_google_geocode(address.address_components);
+                } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT ) {
+					
+
+					
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_6">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_6">&#182;</a>
+							</div>
+							<p>return setTimeout(function() {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>						
+                  
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_7">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_7">&#182;</a>
+							</div>
+							<p>GmUtility.updateLocationName(gmapContext, callback);
+   }, 1e3);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                }
+                if (callback ){
+					if (floodControl)
+					{  callback = null;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_8">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_8">&#182;</a>
+							</div>
+							<p>floodControl=false;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>						return true;}
+						else
+						{
+							floodControl=true;
+                    callback.call(this, gmapContext);
+						}
+                }
+            });
+        },
+        address_component_from_google_geocode: function(address_components) {
+            var result = {};
+            for (var i = address_components.length - 1; i &gt;= 0; i--) {
+                var component = address_components[i];
+                if (component.types.indexOf(&quot;postal_code&quot;) &gt;= 0) {
+                    result.postalCode = component.short_name;
+                } else if (component.types.indexOf(&quot;street_number&quot;) &gt;= 0) {
+                    result.streetNumber = component.short_name;
+                } else if (component.types.indexOf(&quot;route&quot;) &gt;= 0) {
+                    result.streetName = component.short_name;
+                } else if (component.types.indexOf(&quot;locality&quot;) &gt;= 0) {
+                    result.city = component.short_name;
+                } else if (component.types.indexOf(&quot;sublocality&quot;) &gt;= 0) {
+                    result.district = component.short_name;
+                } else if (component.types.indexOf(&quot;administrative_area_level_1&quot;) &gt;= 0) {
+                    result.stateOrProvince = component.short_name;
+                } else if (component.types.indexOf(&quot;country&quot;) &gt;= 0) {
+                    result.country = component.short_name;
+                }
+            }
+            result.addressLine1 = [ result.streetNumber, result.streetName ].join(&quot; &quot;).trim();
+            result.addressLine2 = &quot;&quot;;
+            return result;
+        }
+    };
+    function isPluginApplied(domObj) {
+        return getContextForElement(domObj) != undefined;
+    }
+    function getContextForElement(domObj) {
+        return $(domObj).data(&quot;locationpicker&quot;);
+    }
+    function updateInputValues(inputBinding, gmapContext) {
+		
+		 if (!inputBinding ) return;
+		 if (inputBinding.locationNameInput) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_9">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_9">&#182;</a>
+							</div>
+							<p>if (floodControl) return;
+        floodControl = true</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            inputBinding.locationNameInput.val(gmapContext.locationName).change();
+        }
+		
+        if ( !DOING_MAP_LOOKUP) return;
+	
+        var currentLocation = GmUtility.locationFromLatLng(gmapContext.marker.position);
+        if (inputBinding.latitudeInput) {
+            inputBinding.latitudeInput.val(currentLocation.latitude).change();
+        }
+        if (inputBinding.longitudeInput) {
+            inputBinding.longitudeInput.val(currentLocation.longitude).change();
+        }
+        if (inputBinding.radiusInput) {
+            inputBinding.radiusInput.val(gmapContext.radius).change();
+        }
+  
+    }
+    function setupInputListenersInput(inputBinding, gmapContext) {
+        if (inputBinding) {
+            if (inputBinding.radiusInput) {
+                inputBinding.radiusInput.on(&quot;change&quot;, function(e) {
+                    var radiusInputValue = $(this).val();
+                    if (!e.originalEvent || isNaN(radiusInputValue)) {
+                        return;
+                    }
+                    gmapContext.radius = radiusInputValue;
+                    GmUtility.setPosition(gmapContext, gmapContext.location, function(context) {
+                        context.settings.onchanged.apply(gmapContext.domContainer, [ GmUtility.locationFromLatLng(context.location), context.radius, false ]);
+                    });
+                });
+            }
+            if (inputBinding.locationNameInput &amp;&amp; gmapContext.settings.enableAutocomplete) {
+                var blur = false;
+                gmapContext.autocomplete = new google.maps.places.Autocomplete(inputBinding.locationNameInput.get(0), gmapContext.settings.autocompleteOptions);
+                google.maps.event.addListener(gmapContext.autocomplete, &quot;place_changed&quot;, function() {
+                    blur = false;
+                    var place = gmapContext.autocomplete.getPlace();
+                    if (!place.geometry) {
+                        gmapContext.settings.onlocationnotfound(place.name);
+                        return;
+                    }
+                    GmUtility.setPosition(gmapContext, place.geometry.location, function(context) {
+                        updateInputValues(inputBinding, context);
+                        context.settings.onchanged.apply(gmapContext.domContainer, [ GmUtility.locationFromLatLng(context.location), context.radius, false ]);
+                    });
+                });
+                if (gmapContext.settings.enableAutocompleteBlur) {
+                    inputBinding.locationNameInput.on(&quot;change&quot;, function(e) {
+                        if (!e.originalEvent) {
+                            return;
+                        }
+                        blur = true;
+                    });
+                    inputBinding.locationNameInput.on(&quot;blur&quot;, function(e) {
+                        if (!e.originalEvent) {
+                            return;
+                        }
+                        setTimeout(function() {
+                            var address = $(inputBinding.locationNameInput).val();
+                            if (address.length &gt; 5 &amp;&amp; blur) {
+                                blur = false;
+                                gmapContext.geodecoder.geocode({
+                                    address: address
+                                }, function(results, status) {
+                                    if (status == google.maps.GeocoderStatus.OK &amp;&amp; results &amp;&amp; results.length) {
+                                        GmUtility.setPosition(gmapContext, results[0].geometry.location, function(context) {
+                                            updateInputValues(inputBinding, context);
+                                            context.settings.onchanged.apply(gmapContext.domContainer, [ GmUtility.locationFromLatLng(context.location), context.radius, false ]);
+                                        });
+                                    }
+                                });
+                            }
+                        }, 1e3);
+                    });
+                }
+            }
+            if (inputBinding.latitudeInput) {
+                inputBinding.latitudeInput.on(&quot;change&quot;, function(e) {
+					if ( !DOING_MAP_LOOKUP) {
+						
+						return;
+					}
+                    var latitudeInputValue = $(this).val();
+                    if (!e.originalEvent || isNaN(latitudeInputValue)) {
+                        return;
+                    }
+                    GmUtility.setPosition(gmapContext, new google.maps.LatLng(latitudeInputValue, gmapContext.location.lng()), function(context) {
+                        context.settings.onchanged.apply(gmapContext.domContainer, [ GmUtility.locationFromLatLng(context.location), context.radius, false ]);
+                        updateInputValues(gmapContext.settings.inputBinding, gmapContext);
+                    });
+                });
+            }
+            if (inputBinding.longitudeInput) {
+                inputBinding.longitudeInput.on(&quot;change&quot;, function(e) {
+					if ( !DOING_MAP_LOOKUP) return;
+                    var longitudeInputValue = $(this).val();
+                    if (!e.originalEvent || isNaN(longitudeInputValue)) {
+                        return;
+                    }
+                    GmUtility.setPosition(gmapContext, new google.maps.LatLng(gmapContext.location.lat(), longitudeInputValue), function(context) {
+                        context.settings.onchanged.apply(gmapContext.domContainer, [ GmUtility.locationFromLatLng(context.location), context.radius, false ]);
+                        updateInputValues(gmapContext.settings.inputBinding, gmapContext);
+                    });
+                });
+            }
+        }
+    }
+    function autosize(gmapContext) {
+        google.maps.event.trigger(gmapContext.map, &quot;resize&quot;);
+        setTimeout(function() {
+            gmapContext.map.setCenter(gmapContext.marker.position);
+        }, 300);
+    }
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_10">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_10">&#182;</a>
+							</div>
+							<p>the Autocomplete post-init init helper to allow flood control to not kill the dropdowns.
+this matches the new calls in global.js</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	function start(gmapContext){
+		  setupInputListenersInput(gmapContext.settings.inputBinding, gmapContext);
+	}
+	
+    function updateMap(gmapContext, $target, options) {
+        var settings = $.extend({}, $.fn.locationpicker.defaults, options), latNew = settings.location.latitude, lngNew = settings.location.longitude, radiusNew = settings.radius, latOld = gmapContext.settings.location.latitude, lngOld = gmapContext.settings.location.longitude, radiusOld = gmapContext.settings.radius;
+        if (latNew == latOld &amp;&amp; lngNew == lngOld &amp;&amp; radiusNew == radiusOld) return;
+        gmapContext.settings.location.latitude = latNew;
+        gmapContext.settings.location.longitude = lngNew;
+        gmapContext.radius = radiusNew;
+        GmUtility.setPosition(gmapContext, new google.maps.LatLng(gmapContext.settings.location.latitude, gmapContext.settings.location.longitude), function(context) {
+            setupInputListenersInput(gmapContext.settings.inputBinding, gmapContext);
+            context.settings.oninitialized($target);
+        });
+    }
+    $.fn.locationpicker = function(options, params) {
+        if (typeof options == &quot;string&quot;) {
+            var _targetDomElement = this.get(0);
+            if (!isPluginApplied(_targetDomElement)) return;
+            var gmapContext = getContextForElement(_targetDomElement);
+            switch (options) {
+              case &quot;location&quot;:
+                if (params == undefined) {
+                    var location = GmUtility.locationFromLatLng(gmapContext.location);
+                    location.radius = gmapContext.radius;
+                    location.name = gmapContext.locationName;
+                    return location;
+                } else {
+                    if (params.radius) {
+                        gmapContext.radius = params.radius;
+                    }
+                    GmUtility.setPosition(gmapContext, new google.maps.LatLng(params.latitude, params.longitude), function(gmapContext) {
+                        updateInputValues(gmapContext.settings.inputBinding, gmapContext);
+                    });
+                }
+                break;
+
+              case &quot;subscribe&quot;:
+                if (params == undefined) {
+                    return null;
+                } else {
+                    var event = params.event;
+                    var callback = params.callback;
+                    if (!event || !callback) {
+                        console.error(&#39;LocationPicker: Invalid arguments for method &quot;subscribe&quot;&#39;);
+                        return null;
+                    }
+                    google.maps.event.addListener(gmapContext.map, event, callback);
+                }
+                break;
+
+              case &quot;map&quot;:
+                if (params == undefined) {
+                    var locationObj = GmUtility.locationFromLatLng(gmapContext.location);
+                    locationObj.formattedAddress = gmapContext.locationName;
+                    locationObj.addressComponents = gmapContext.addressComponents;
+                    return {
+                        map: gmapContext.map,
+                        marker: gmapContext.marker,
+                        location: locationObj
+                    };
+                } else {
+                    return null;
+                }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_11">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_11">&#182;</a>
+							</div>
+							<p>maybe...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>				break;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_12">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_12">&#182;</a>
+							</div>
+							<p>insert our helper's public callable method</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			  case &quot;start&quot;:
+                start( gmapContext);
+                return this;
+				break;
+				
+              case &quot;autosize&quot;:
+                autosize(gmapContext);
+                return this;
+            }
+            return null;
+        }
+        return this.each(function() {
+            var $target = $(this);
+            if (isPluginApplied(this)) {
+                updateMap(getContextForElement(this), $(this), options);
+                return;
+            }
+            var settings = $.extend({}, $.fn.locationpicker.defaults, options);
+            var gmapContext = new GMapContext(this, $.extend({}, settings.mapOptions, {
+                zoom: settings.zoom,
+                center: new google.maps.LatLng(settings.location.latitude, settings.location.longitude),
+                mapTypeId: settings.mapTypeId,
+                mapTypeControl: false,
+                styles: settings.styles,
+                disableDoubleClickZoom: false,
+                scrollwheel: settings.scrollwheel,
+                streetViewControl: false,
+                radius: settings.radius,
+                locationName: settings.locationName,
+                settings: settings,
+                autocompleteOptions: settings.autocompleteOptions,
+                addressFormat: settings.addressFormat,
+                draggable: settings.draggable,
+                markerIcon: settings.markerIcon,
+                markerDraggable: settings.markerDraggable,
+                markerVisible: settings.markerVisible
+            }));
+            $target.data(&quot;locationpicker&quot;, gmapContext);
+            function displayMarkerWithSelectedArea() {
+                GmUtility.setPosition(gmapContext, gmapContext.marker.position, function(context) {
+                    var currentLocation = GmUtility.locationFromLatLng(gmapContext.location);
+                    updateInputValues(gmapContext.settings.inputBinding, gmapContext);
+                    context.settings.onchanged.apply(gmapContext.domContainer, [ currentLocation, context.radius, true ]);
+                });
+            }
+            if (settings.markerInCenter) {
+                gmapContext.map.addListener(&quot;bounds_changed&quot;, function() {
+                    if (!gmapContext.marker.dragging) {
+                        gmapContext.marker.setPosition(gmapContext.map.center);
+                        updateInputValues(gmapContext.settings.inputBinding, gmapContext);
+                    }
+                });
+                gmapContext.map.addListener(&quot;idle&quot;, function() {
+					if (floodControl){ floodControl = false; return true;}
+                    if (!gmapContext.marker.dragging) {
+                        displayMarkerWithSelectedArea();
+                    }
+                });
+            }
+            google.maps.event.addListener(gmapContext.marker, &quot;drag&quot;, function(event) {
+                updateInputValues(gmapContext.settings.inputBinding, gmapContext);
+            });
+            google.maps.event.addListener(gmapContext.marker, &quot;dragend&quot;, function(event) {
+                displayMarkerWithSelectedArea();
+            });
+			 google.maps.event.addListener(gmapContext.map, &quot;click&quot;, function(event) {
+                if(gmapContext.settings.clickToMoveMarker) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_13">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_13">&#182;</a>
+							</div>
+							<p>Below code is to prevent interference with double-clicks i.e. double clicks will not move marker</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                    mapZoom = gmapContext.map.getZoom();
+                    setTimeout(function()  {
+                        if(gmapContext.map.getZoom() == mapZoom) {
+                            gmapContext.marker.setPosition(event.latLng);
+                            updateInputValues(gmapContext.settings.inputBinding, gmapContext);
+                            displayMarkerWithSelectedArea();
+                        }
+                    }, 200);
+                }
+            });
+			
+			  GmUtility.setPosition(gmapContext, new google.maps.LatLng(settings.location.latitude, settings.location.longitude), function(context) {
+                updateInputValues(settings.inputBinding, gmapContext);
+                setupInputListenersInput(settings.inputBinding, gmapContext);
+                context.settings.oninitialized($target);
+            });
+        });
+    };
+    $.fn.locationpicker.defaults = {
+        location: {
+            latitude: 40.7324319,
+            longitude: -73.82480777777776
+        },
+        locationName: &quot;&quot;,
+        radius: 500,
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        styles: [],
+        mapOptions: {},
+        scrollwheel: true,
+        inputBinding: {
+            latitudeInput: null,
+            longitudeInput: null,
+            radiusInput: null,
+            locationNameInput: null
+        },
+        enableAutocomplete: false,
+        enableAutocompleteBlur: false,
+        autocompleteOptions: null,
+        addressFormat: &quot;postal_code&quot;,
+        enableReverseGeocode: true,
+        draggable: true,
+        onchanged: function(currentLocation, radius, isMarkerDropped) {},
+        onlocationnotfound: function(locationName) {},
+        oninitialized: function(component) {},
+        markerIcon: undefined,
+		markerInCenter: true,
+        markerDraggable: true,
+        markerVisible: true,
+		clickToMoveMarker : false
+    };
+})(jQuery);
+</code></pre>
+						</td>
+					</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

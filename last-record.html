@@ -1,0 +1,4707 @@
+<!DOCTYPE html />
+
+<html>
+<head>
+	<title>last-record.js</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link href="nocco.css" rel="stylesheet" media="all" type="text/css" />
+	<script src="prettify.js" type="text/javascript"></script>
+</head>
+<body onload="prettyPrint()">
+	<div id="container">
+		<div id="background"></div>
+			<div id="jump_to">
+				Jump To &hellip;
+				<div id="jump_wrapper">
+					<div id="jump_page">
+							<a class="source" href="engine.html">
+								engine.js
+							</a>
+							<a class="source" href="exporter.html">
+								exporter.js
+							</a>
+							<a class="source" href="global.html">
+								global.js
+							</a>
+							<a class="source" href="index.html">
+								index.js
+							</a>
+							<a class="source" href="last-record.html">
+								last-record.js
+							</a>
+							<a class="source" href="output.html">
+								output.js
+							</a>
+							<a class="source" href="privacy-policy.html">
+								privacy-policy.js
+							</a>
+							<a class="source" href="record-starmatch-9.5d.html">
+								record-starmatch-9.5d.js
+							</a>
+							<a class="source" href="record.html">
+								record.js
+							</a>
+							<a class="source" href="support.html">
+								support.js
+							</a>
+					</div>
+				</div>
+			</div>
+		<table cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th class="docs">
+						<h1>last-record.js</h1>
+					</th>
+					<th class="code"></th>
+				</tr>
+			</thead>
+			<tbody>
+					<tr id="section_1">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_1">&#182;</a>
+							</div>
+							
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var OptionsObject = {
+    aoIndex: 0,
+    tfIndex: 0,
+    precessionFlag: 0,
+    orbType: 0,
+	poIndex:0,
+	chartType:0
+}; // Defaults
+/* poIndex = 0, 1 (Lilly, al-Biruni) */
+
+var OptionObjectValues = {
+    aoIndex: [0, 1, 2, 3, 4],
+    tfIndex: [0, 4],
+    precessionFlag: [0, 1],
+    orbType: [0, 1],
+	poIndex: [0 , 1],
+	chartType: [0, 1]
+};
+
+var OptionsObjectLon = 0;
+var OptionsObjectLat = 0;
+
+var OptionsObjectDateTime = 0;
+var OptionsObjectDateTimeAccurate = 0;
+
+var OptionsObjectUtOffset = 0;
+var OptionsObjectDstOffset = 0;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_2">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_2">&#182;</a>
+							</div>
+							<p>This is our go-to reference to compare state for OptionObjects</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var GlobalCurrentSaveOptions = [];
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_3">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_3">&#182;</a>
+							</div>
+							<h4> </h4>
+
+<p>positions to 5 d.p
+themes to 5</p>
+
+<h4>START C R U D</h4>
+
+<h4>REF https://en.wikipedia.org/wiki/Create,<em>read,</em>update<em>and</em>delete</h4>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var delimeter = &quot;&#172;&quot;; // IS GLOBAL 
+
+const __PLAYLIST__PREFIX__ = &quot;_&#230;&#223;&#199;_&quot;;
+
+var UniqueSubjectProcessedData = [];
+var selectionsList = [];
+var lastFullChartReport = [];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_4">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_4">&#182;</a>
+							</div>
+							<p>And finally do something...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+function _f__TheCurrentResearchOptionsMatchedTheStoredOnes(optionsArray){
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_5">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_5">&#182;</a>
+							</div>
+							<p>original, removed   </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'> _f__CreateOptionsObject(); 
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_6">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_6">&#182;</a>
+							</div>
+							<p>skipping the long/lat/dob+tob/acc/ut/dst</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var offset = 6 
+	
+	var AllTheOptionsMatch = true;
+	
+				var amountOfResearchOptions = Object.size(optionsArray) - offset ;
+				
+				for(z=0; z &lt;amountOfResearchOptions; z++ )
+				{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_7">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_7">&#182;</a>
+							</div>
+							<p>This is how we find the actual DYNAMIC research options, skipping the long/lat/dob+tob/acc/ut/dst               </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_8">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_8">&#182;</a>
+							</div>
+							<p>check the current (left) matches the saved (right)  </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>					if( parseFloat(GlobalCurrentSaveOptions[z+offset]) !=   parseFloat(optionsArray[z+offset]) )
+					{								
+						
+						AllTheOptionsMatch = false;
+
+					}
+					
+				}
+				return AllTheOptionsMatch;				
+}
+
+var currentSelectionArray = [];
+
+function LoadChosenSelection(nameOfSelectionList){
+	
+	if ( typeof nameOfSelectionList  === &quot;undefined&quot;)
+	{
+	_f__infoP(&quot;enter name of selection group in the text box&quot;);
+	return;
+	
+	}
+
+	$(&#39;#selection_name&#39;).val(nameOfSelectionList);
+	
+	 _f__populateSelectionsList();
+	
+	$(&#39;#filterTxt&#39;).val(&#39;&#39;);
+	
+	 _f__populateRecordsList();
+	
+		var nameOfSelectionGroup =  __PLAYLIST__PREFIX__+nameOfSelectionList;
+		
+		var nameOfRecord = nameOfSelectionList;
+		
+
+	
+	if  (localStorage.getItem(nameOfSelectionGroup) !== null)
+	 {	
+ 
+ 
+ var fields = localStorage.getItem(nameOfSelectionGroup).split(delimeter);
+ 
+
+ 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_9">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_9">&#182;</a>
+							</div>
+							<p>clear them all</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'> 	$(&#39;#person option&#39;).removeAttr(&#39;selected&#39;);
+
+	
+		    jQuery.each( fields, function( i, field ) {
+	
+
+ $(&#39;#person option&#39;).filter(function(index, e) { return $(e).text() == decodeURIComponent(field)}).prop(&#39;selected&#39;,true);
+	
+	});
+ 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_10">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_10">&#182;</a>
+							</div>
+							<p><em>f</em>_infoP("Updated selection group: "+nameOfSelectionGroup, 2000);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 }
+}
+
+
+function SaveCurrentSelection(){
+	
+	if($(&#39;#selection_name&#39;).val() === &quot;undefined&quot;  )
+	{
+		
+		_f__warnP(&quot;Enter a name for the selection group&quot;);
+		return;
+	}
+	if($(&#39;#selection_name&#39;).val().trim() == &quot;&quot;  )
+	{
+		
+		_f__warnP(&quot;Enter a name for the selection group&quot;);
+		return;
+	}
+	
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_11">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_11">&#182;</a>
+							</div>
+							<p>selected</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		var count = $(&#39;#person  :selected&#39;).length
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_12">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_12">&#182;</a>
+							</div>
+							<p>total</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		var length = $(&#39;#person &gt; option&#39;).length;
+	
+	if (count &lt; 1)
+	{
+		
+		
+		_f__warnP(&quot;Select some records to save as a selection group&quot;);
+		return;
+	}
+	
+	
+		var currentSelectionArray=$(&#39;#person  :selected&#39;);
+	
+		var nameOfSelectionGroup =  __PLAYLIST__PREFIX__+ $(&#39;#selection_name&#39;).val();
+		
+		
+		var nameOfRecord = $(&#39;#selection_name&#39;).val();
+		
+	
+	
+	
+	if  (localStorage.getItem(nameOfSelectionGroup) !== null)
+	 {		
+		_f__infoP(&quot;Updated selection group: &quot;+nameOfRecord);
+		
+		
+	_f__deleteRecordFromSelectionList(nameOfSelectionGroup); 
+	 }
+	 else{
+		 
+		 	_f__infoP(&quot;Saving selection group: &quot;+nameOfRecord);
+		 
+	 
+	 }
+	 
+	 
+		var exportString = &quot;&quot;;
+		
+		$.each( currentSelectionArray, function (  index,   thing  ) {
+			exportString += encodeURIComponent(thing.innerHTML)+delimeter;
+		}      )
+	 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_13">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_13">&#182;</a>
+							</div>
+							<p>sanity check then slice</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		if(exportString.length &gt; 1)
+		{
+
+			exportString = exportString.slice(0,-1);
+			
+		}else
+		{
+			_f__warnP(&quot;Nonsense in data&quot;);
+		}
+	 
+
+		  currentSelectionArray = exportString;
+		
+		 localStorage.setItem(nameOfSelectionGroup, currentSelectionArray);
+		 
+		 _f__populateSelectionsList();
+		
+}
+
+
+function _f__SelectAllRecords(){
+
+	$(&quot;#selectionsHolder&quot;).dialog( &quot;open&quot; );
+	
+}
+
+
+function DeleteCurrentSelection(){
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_14">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_14">&#182;</a>
+							</div>
+							<p>we have already chosen one and should remember that.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if (! $(&#39;#selections li&#39;).hasClass( &quot;selected&quot; ) )
+	{
+	   _f__warnP(&#39;Select a record to delete &#39;);
+	   
+	}
+
+	var thingToDel = $(&#39;#selections li.selected&#39;).text();
+
+	 if (localStorage.getItem(__PLAYLIST__PREFIX__+thingToDel)) {
+        localStorage.removeItem(__PLAYLIST__PREFIX__+thingToDel)
+    };
+    _f__populateSelectionsList();
+	
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_15">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_15">&#182;</a>
+							</div>
+							<p>populateRecordsList, We do this wholesale...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__populateSelectionsList() {
+    selectionsList = document.getElementById(&#39;selections&#39;);
+
+	var usePreviousSelection = false;
+	var lastSelectedVal = &quot;&quot;;
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_16">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_16">&#182;</a>
+							</div>
+							<p>we have already chosen one and should remember that.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if ( $(&#39;#selections li&#39;).hasClass( &quot;selected&quot; ) )
+	{
+	  usePreviousSelection = true;
+	  lastSelectedVal = $(&#39;#selections li.selected&#39;).text();
+		
+	}
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_17">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_17">&#182;</a>
+							</div>
+							<p>clear em out</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	$(&#39;#selections&#39;).empty();
+
+	
+	var name = new Array();
+ 
+    if (_f__storageAvailable(&#39;localStorage&#39;) == false) {
+        _f__warnP(&#39;Too bad, no localStorage for us. &#39;);
+        return;
+    }
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_18">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_18">&#182;</a>
+							</div>
+							<p>Now actually process real SELECTION GROUP records.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    for (var i = 0; i &lt;= localStorage.length - 1; i++) {
+      var  key = localStorage.key(i);
+      var  val = localStorage.getItem(key);
+
+		if (key.contains(__PLAYLIST__PREFIX__))
+		{	
+		
+		var tidyName  = key.replace(__PLAYLIST__PREFIX__, &#39;&#39;);
+		
+		 var opt = document.createElement(&#39;li&#39;);
+      
+	  
+	  	if ( lastSelectedVal == tidyName  ){
+			
+			opt.className = &quot;selected&quot;;
+			
+		}
+	  
+		opt.value = tidyName;
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_19">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_19">&#182;</a>
+							</div>
+							<p>NB THIS IS WHERE WE ASSIGN THE onclick FOR THE SELECTION GROUP ITEMS</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		opt.onclick = function(){
+	
+			$(&#39;#selections li&#39;).removeClass(&#39;selected&#39;);
+			$(this).addClass(&#39;selected&#39;);
+			
+			LoadChosenSelection( $(this).text() )		};
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_20">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_20">&#182;</a>
+							</div>
+							<p>opt.value = val;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	    opt.title = &quot;Select the group: &quot;+tidyName;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_21">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_21">&#182;</a>
+							</div>
+							<p>Put the name in the list too.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        opt.innerHTML = tidyName;
+        selectionsList.appendChild(opt);
+			
+		}
+			
+		}
+
+    }
+
+function _f__ClickedxProfile() {
+
+ if (typeof (SubjectProcessedData) === &quot;undefined&quot; || !_f__RecordEntriesAreNoneZero(SubjectsValues)) {
+        _f__warnP(&quot;Load a SUBJECT to profile&quot;);
+        return;
+    }
+
+    recordsList = document.getElementById(&#39;person&#39;);
+    var index = $(&#39;#person option:selected&#39;);
+
+
+    if (index.length &lt; 1) {
+        _f__warnClear();
+        _f__warnP(&quot;Please select TARGET record(s) from the list to cross-profile&quot;);
+        return;
+    }
+
+	_f__CreateOptionsObject();
+
+    var profileValues = [];
+    _f__clearCharts();
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_22">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_22">&#182;</a>
+							</div>
+							<p>debugClear();  Do NOT clear debug proactively. WJ18 request 31/01/06</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__warnClear();
+
+	_f__DoCompleteOptionsSaveThenLoadCycle();
+	
+  
+var selectedIndexLength = 	index.length;
+	
+var currentSubjectName =$(&#39;#SubjectName&#39;).val().toString();
+var currentTargetName = &quot;&quot;;
+var CurrentRecordName =&quot;&quot;;
+var reprocessedRecords = [];
+var totalFail = 0;
+var br = &quot;&lt;br /&gt;&quot;;
+var subReporter = &quot;Chart for &quot; +currentSubjectName+CRLF;
+var	reporter = [];
+reporter[reporter.length] =subReporter;	
+subReporter = &quot;&quot;;
+	
+  
+    index.each(function  (innerIndex, value) {
+	
+        var $this = $(this);
+var currentTargetName = value.text;
+		 CurrentRecordName = value.text;
+
+        if (currentSubjectName == currentTargetName )
+        {
+			if(selectedIndexLength &lt; 2)
+			{	
+				totalFail += 1;
+            _f__warnP(&quot;DONT select the SUBJECT as a TARGET from the list to cross-profile&quot;);
+            }
+			return;
+        }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_23">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_23">&#182;</a>
+							</div>
+							<p>We always need this. We assume it is current as we profile against the loaded record.
+Thank goodness for that decision.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>     _f__LoadSubjectChartData();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_24">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_24">&#182;</a>
+							</div>
+							<p>sanity check</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ($this.length) {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_25">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_25">&#182;</a>
+							</div>
+							<p>some defaults</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var positions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_26">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_26">&#182;</a>
+							</div>
+							<p>we will keep a local copy</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var LocalTheme = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_27">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_27">&#182;</a>
+							</div>
+							<p>call me paranoid.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var optionsArray = new Array(10); // going to reflect the stored state of OptionsObject
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_28">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_28">&#182;</a>
+							</div>
+							<p>new ver
+var optionsArray = new Array(13);   // num options?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_29">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_29">&#182;</a>
+							</div>
+							<p>at this point was can start populating records, We do this one at a time. </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+			
+             _f__StorageRetrieveOperation(value.text, positions, LocalTheme, optionsArray);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_30">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_30">&#182;</a>
+							</div>
+							<p>Boot non-populated records  - resuse our RecordEntriesAreNoneZero() method here.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+			if(!  _f__RecordEntriesAreNoneZero(positions) )
+			{
+				 _f__infoP(&quot;I Booted the record &quot; + value.text + &quot; It has no meaningful POSITIONS data &quot;, 10000);
+				
+			}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_31">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_31">&#182;</a>
+							</div>
+							<p>Okay we need to parse the data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			 else {
+
+			  _f__SetNativityYearAndOptionsObject(value.text);
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_32">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_32">&#182;</a>
+							</div>
+							<p>(8.6) First we need to check that the data is not already calculated properly. if so just load it. if not recalc then save - </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_33">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_33">&#182;</a>
+							</div>
+							<p>We should also save the optionsArray[6]...[n] options if they do not perfectly match the selected options.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_34">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_34">&#182;</a>
+							</div>
+							<p>We are going to generate - then save the record - with its CURRENT long/lat/etc but new flags.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>				if(!   _f__TheCurrentResearchOptionsMatchedTheStoredOnes(optionsArray) )
+				{
+			
+				/*  _f__infoP(&quot;Used generated theme data for &quot;+CurrentRecordName); */
+			
+				/* 	//debugP(&quot;Used generated Path!&quot;); */
+				
+					 getThemeValues(positions[0], positions[1], positions[2], positions[3], positions[4], positions[5], positions[6], positions[7], positions[8], positions[9], positions[10], positions[11]);
+					LocalTheme = theme.slice();
+				
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_35">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_35">&#182;</a>
+							</div>
+							<p>okay so Local theme FOR SURE has the data we want based on the above logic.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_36">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_36">&#182;</a>
+							</div>
+							<p>(8.6) refactored to be reusable</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_37">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_37">&#182;</a>
+							</div>
+							<p>We have to now create the correct OptionsObject to be able to save
+We do this here</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			 _f__CreateOptionsObjectWithPerRecordDataIntact(optionsArray);
+
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_38">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_38">&#182;</a>
+							</div>
+							<p>Store the record.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                if (!localStorage.getItem(CurrentRecordName)) {
+                    _f__StorageSaveOperation(CurrentRecordName, positions, LocalTheme, GlobalCurrentSaveOptions);
+                } else {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_39">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_39">&#182;</a>
+							</div>
+							<p>Records exists.  Delete. Update.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                    _f__deleteRecordFromRecordsList(CurrentRecordName);
+                    _f__StorageSaveOperation(CurrentRecordName, positions, LocalTheme, GlobalCurrentSaveOptions);
+                }
+			}
+
+                var sArrayTcopy = [
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], SubjectProcessedData
+                ];
+
+                var tArrayTcopy = [
+                    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], LocalTheme
+                ];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_40">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_40">&#182;</a>
+							</div>
+							<p>why is tArrayT truncated and not sArrayT?
+former is copy of store, latter caslculated...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                var numberToSave = xProfile(sArrayTcopy, tArrayTcopy);
+
+                profileValues.push([CurrentRecordName, numberToSave]);
+
+				
+				subReporter =  _f__pad(CurrentRecordName, 30, &quot; &quot;)+ _f__pad(numberToSave.toPrecision(5), 10, &quot; &quot;)  ;
+				
+				reporter[reporter.length] =subReporter;
+         
+            }
+        }
+    });
+
+		
+		if ( totalFail&gt; 0)
+		{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_41">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_41">&#182;</a>
+							</div>
+							<p>refuse to do anything in the case where we attempt to only compare against ourselves.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			return;
+		}
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_42">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_42">&#182;</a>
+							</div>
+							<p>Sort on the 2nd rank of the 2d array</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    profileValues.sort(function  (a, b) {
+        return b[1] - a[1];
+    });
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_43">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_43">&#182;</a>
+							</div>
+							<p>draw the chart</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__drawxProfileChart(&quot;xProfile chart&quot;, profileValues, &#39;chart_div_4&#39;);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_44">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_44">&#182;</a>
+							</div>
+							<p>Set the height automagically.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_45">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_45">&#182;</a>
+							</div>
+							<p>$('#chartsHolder').height( $('#chart<em>div</em>3 div:first-child').height()+70);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_46">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_46">&#182;</a>
+							</div>
+							<p>$('.chartsHolder').css('height', 'auto');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	/* var br = &quot;&lt;br /&gt;&quot;; */
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_47">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_47">&#182;</a>
+							</div>
+							<p>this should be the TITLE!! TODO!!
+var reporter = "Xprofile for " +currentSubjectName+br;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_48">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_48">&#182;</a>
+							</div>
+							<p>lets work out a sensible modulo</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	
+	/* reporter += profileValues; */
+	
+	lastFullChartReport = reporter;
+	/* 
+	var realwidth =$(window).width();
+	
+	var modulus = 1;
+	
+	if( realwidth &lt; 1080)
+       modulus = 1;
+
+    if (realwidth &lt; 1500)
+        modulus = 2;
+
+	if( realwidth &lt; 1890)
+        modulus = 3;
+	if ( realwidth &gt; 1890)
+        modulus = 4;
+     
+	
+    for (l = 0; l &lt; profileValues.length; l++) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_49">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_49">&#182;</a>
+							</div>
+							<p>//debugP("name "+profileValues[l][0] +" value "+ profileValues[l][1] +CRLF);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+		var temp = profileValues[l][0] + &quot;&amp;nbsp;&quot; + profileValues[l][1];
+
+	reporter +=	_f__pad( temp, 57, &quot;&amp;nbsp;&quot;);	
+
+		
+		if (l % modulus ==0 )
+		{  
+	reporter += br;
+	}
+	else
+	{
+		
+		reporter+= &quot;, &quot;;
+	}
+		
+	
+    } */
+	
+	/* //debugP(reporter); */
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_50">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_50">&#182;</a>
+							</div>
+							<p><em>f</em>_debugBoxP(reporter);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	
+/* 	lastFullChartReport = profileValues; */
+	
+	
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_51">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_51">&#182;</a>
+							</div>
+							<p>warnP("xProfiling complete");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>   
+}
+
+
+function _f__CreateOptionsObjectWithPerRecordDataIntact (optionsArray){
+	var passeddatetime = optionsArray[2];
+            var passedtimeAccurate = optionsArray[3];
+            var passedlatitude = optionsArray[1];
+            var passedlongitude = optionsArray[0];
+
+            var passedUt = optionsArray[4];
+            var passedDst = optionsArray[5];
+
+            var passedaoIndex = optionsArray[6];
+            var passedtfIndex = optionsArray[7];
+            var passedprecessionFlag = optionsArray[8];
+          var passedorbFlag = optionsArray[9];
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_52">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_52">&#182;</a>
+							</div>
+							<p>var passedorbType = optionsArray[9];<br />
+var passedpoindex = optionsArray[10];
+var passedcharttype = optionsArray[11];
+PrintArray(OptionsObject);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_53">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_53">&#182;</a>
+							</div>
+							<p>make one with current flags</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                _f__CreateOptionsObjectButPreservePerUserRecordVariablesToCurrentState();
+				
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_54">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_54">&#182;</a>
+							</div>
+							<p>PrintArray(OptionsObject);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>				
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_55">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_55">&#182;</a>
+							</div>
+							<p>now override a few bits to prevent data being overwritten</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                GlobalCurrentSaveOptions[0] = passedlongitude;
+                GlobalCurrentSaveOptions[1] = passedlatitude;
+
+                GlobalCurrentSaveOptions[2] = passeddatetime; // DATETIME of BIRTH
+                GlobalCurrentSaveOptions[3] = passedtimeAccurate
+
+                GlobalCurrentSaveOptions[4] = passedUt; // seconds
+                GlobalCurrentSaveOptions[5] = passedDst; // seconds
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_56">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_56">&#182;</a>
+							</div>
+							<p>OptionsObject.aoIndex,  // Ao 0 1 2 .. n  = [6]
+OptionsObject.tfIndex,  // Tf 0 4 8 .. n      = [7]
+OptionsObject.precessionFlag, // bool         = [8]
+OptionsObject.orbType                         = [9]
+Et Cetera   </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_57">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_57">&#182;</a>
+							</div>
+							<p>populateHMSArraysFromValueArraysValues
+make the hidden decimal convert what is stored in them</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__populateHMSArraysFromValueArraysValues() {
+    $(&#39;.numVals&#39;).each(function  () {
+
+        _f__ConvertDecimalToHMSSingle($(this));
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_58">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_58">&#182;</a>
+							</div>
+							<p>ConvertDecimalToHMS($(this));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    })
+}
+
+function _f__pad(n, width, z) {
+  z = z || &#39;0&#39;;
+  n = n + &#39;&#39;;
+  return n.length &gt;= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+function _f__padLeft(n, width, z) {
+  z = z || &#39;0&#39;;
+  n = n + &#39;&#39;;
+  return n.length &gt;= width ? n : n + new Array(width - n.length + 1).join(z);
+}
+
+
+function _f__SetNativityYearAndOptionsObject(NameOfRecord){
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_59">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_59">&#182;</a>
+							</div>
+							<p>Make a bool out of the flag, check it is true by ORing with nought.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if( 0 | OptionsObject.precessionFlag)
+	{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_60">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_60">&#182;</a>
+							</div>
+							<p>This should return TRUE of the YEAR != <strong>DOB_DEFAULTS</strong> and the record existed...
+WARNING! using this test implicitely SETS the nativity year to the record or 0000</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if	(_f__GetNativityYear(NameOfRecord, nativityYear))
+  {
+	  
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_61">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_61">&#182;</a>
+							</div>
+							<p>set the flag to ON for this record.
+possibly warn in the future...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	precessionFlag = 1;
+OptionsObject.precessionFlag =1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_62">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_62">&#182;</a>
+							</div>
+							<p>this is the EVERYTHING WORKED PATH...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'> /*  //debugP(NameOfRecord +&quot; &quot;+ nativityYear); */
+  }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_63">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_63">&#182;</a>
+							</div>
+							<p>We have junk stored dates or something, warn - reset the flag.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>else  
+{
+	OptionsObject.precessionFlag =0;	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_64">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_64">&#182;</a>
+							</div>
+							<p>set the flag to OFF for this record.
+possibly warn in the future...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	precessionFlag = 0;
+/* //debugP(NameOfRecord +&quot; &quot;+ nativityYear); */
+}
+}
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_65">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_65">&#182;</a>
+							</div>
+							<p>returns true/false based on the year not being junk.
+this should be run before any theme calcs since the engine will bomb without it.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__GetNativityYear(NameOfRecord, _s__OUT_forDate){
+	
+	
+	 var storedValues = [];
+	 var dateIndexInStoredRecords = 0;
+	 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_66">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_66">&#182;</a>
+							</div>
+							<p>we are actually saving the record for the first time!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if  (localStorage.getItem(NameOfRecord) === null)
+	 {
+		 
+	 _s__OUT_forDate =  nativityYear =	parseInt(&#39;0000&#39;);
+	 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_67">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_67">&#182;</a>
+							</div>
+							<p>we should WARN and SET THE OptionsObject precessionFlag to 0</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 return false;
+		 
+		 
+	 }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_68">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_68">&#182;</a>
+							</div>
+							<p>we already have a record for this</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 else
+	 {
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_69">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_69">&#182;</a>
+							</div>
+							<p>** Single record - fast retrieve - one liner.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var storedValues = _f__decode(localStorage.getItem(NameOfRecord)).split(delimeter);
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_70">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_70">&#182;</a>
+							</div>
+							<p>NB. This should never change now as lower order of records is fixed, before research options</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var dateIndexInStoredRecords = 26;
+	
+	var splitDate = storedValues[dateIndexInStoredRecords].trim().replace(/\//g,&#39; &#39;).replace(/:/g, &#39; &#39;).split(&quot; &quot;);
+	
+	  _s__OUT_forDate = nativityYear = parseInt(splitDate[2]);
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_71">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_71">&#182;</a>
+							</div>
+							<p>nativityYear = splitDate[0];</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 }
+	 
+	 
+	 var fullDOBcheck = splitDate[0]+&#39; &#39;+splitDate[1]+&#39; &#39;+splitDate[2];
+	 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_72">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_72">&#182;</a>
+							</div>
+							<p>check to see is the STORED date probably junk...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 if(  _s__OUT_forDate == &#39;0000&#39; &amp;&amp; fullDOBcheck ==  __DOB_DEFAULTS__)
+	 {
+		 return false;
+	 }
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_73">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_73">&#182;</a>
+							</div>
+							<p>we made it the flag should be fine. even if the year REALLY is 0000</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 return true;
+	 
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_74">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_74">&#182;</a>
+							</div>
+							<p>Helper to pass sensible values to WJ18's nativityYear var</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SetNativityYear(NameOfRecord){
+	
+	
+	 var storedValues = [];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_75">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_75">&#182;</a>
+							</div>
+							<p>an incorrect, default value.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 var dateIndexInStoredRecords = 0;
+	 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_76">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_76">&#182;</a>
+							</div>
+							<p>we are actually saving the record for the first time!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if  (localStorage.getItem(NameOfRecord) === null)
+	 {
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_77">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_77">&#182;</a>
+							</div>
+							<p>We will attempt to just get it from the most current setting then.<br />
+This may not be correct in all instances.
+TODO: CHECK DOB is proactively set in the Options Object whe</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var splitDate =	OptionsObjectDateTime.trim().replace(/\//g,&#39; &#39;).replace(/:/g, &#39; &#39;).split(&quot; &quot;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_78">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_78">&#182;</a>
+							</div>
+							<p>when we get it from OptionsObjectDateTime it is index 0
+NB the month VALUE might be one less/more than you'd expect</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	nativityYear = parseInt(splitDate[0]); 
+		 
+		 
+	 }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_79">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_79">&#182;</a>
+							</div>
+							<p>we already have a record for this</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 else
+	 {
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_80">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_80">&#182;</a>
+							</div>
+							<p>** Single record - fast retrieve - one liner.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var storedValues = _f__decode(localStorage.getItem(NameOfRecord)).split(delimeter);
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_81">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_81">&#182;</a>
+							</div>
+							<p>NB. This should never change now as lower order of records is fixed, before research options</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var dateIndexInStoredRecords = 26;
+	
+	var splitDate = storedValues[dateIndexInStoredRecords].trim().replace(/\//g,&#39; &#39;).replace(/:/g, &#39; &#39;).split(&quot; &quot;);
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_82">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_82">&#182;</a>
+							</div>
+							<p>when we get it DIRECT from the records it is index 2</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	nativityYear  = parseInt(splitDate[2]);
+	 }
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_83">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_83">&#182;</a>
+							</div>
+							<p>populateValueArraysFromStoredValues 
+make the screen be filled with what is stored
+This is used by the load path for storage retrieval</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__populateValueArraysFromStoredValues(NameOfRecord, NameOfColumn) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_84">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_84">&#182;</a>
+							</div>
+							<p>parse pairs into something we can process through WJ18 function</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_85">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_85">&#182;</a>
+							</div>
+							<p>we need to ensure that the correct columns are updated.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	var IsSubjectSave = false;
+	
+	 if (NameOfColumn == &quot;subject&quot;) {
+	 IsSubjectSave = true;
+	 
+	 }
+	
+	toastr.clear();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_86">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_86">&#182;</a>
+							</div>
+							<p>be proactive about expecting junk. this is real life...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var MangledDataDetectedTidyUpRequired = false;
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_87">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_87">&#182;</a>
+							</div>
+							<p>** Single record - fast retrieve - one liner.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var storedValues = _f__decode(localStorage.getItem(NameOfRecord)).split(delimeter);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_88">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_88">&#182;</a>
+							</div>
+							<p>init non run chart scenario</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__InitProcessedDataArrayToBlanksIfUndefined();
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_89">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_89">&#182;</a>
+							</div>
+							<p>set the values from the store
+positions.length + themes.length = 24</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var simpleIndex = 0;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_90">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_90">&#182;</a>
+							</div>
+							<p>let's use the stored records and not recalculate. </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var i = 24;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_91">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_91">&#182;</a>
+							</div>
+							<p>now do the LON</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    OptionsObjectLon = parseFloat(storedValues[i]);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_92">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_92">&#182;</a>
+							</div>
+							<p>Fix up stored junk</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if (    parseFloat(OptionsObjectLon).IsDefault() ||
+			OptionsObjectLon.toString().IsDefault() 	)
+	{ OptionsObjectLon =__LON_DEFAULTS__.toString(); 
+	MangledDataDetectedTidyUpRequired =true;
+  /*   //debugP(&quot;Fixed Mangled Lon&quot;);
+	alert(OptionsObjectLon); */
+	}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_93">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_93">&#182;</a>
+							</div>
+							<p>pass back the tidy up</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	storedValues[i] = OptionsObjectLon;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_94">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_94">&#182;</a>
+							</div>
+							<p>define it globally for other methods temporarily</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	lat = storedValues[i] ;
+	/* alert(lat); */
+	
+	
+	if (IsSubjectSave)
+	{	
+    $(&#39;#uk-lon&#39;).val(OptionsObjectLon);
+	}
+	else{
+	$(&#39;#uk-lon-tar&#39;).val(OptionsObjectLon);
+	}
+	i++;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_95">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_95">&#182;</a>
+							</div>
+							<p>now do the LAT</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    OptionsObjectLat = parseFloat(storedValues[i]);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_96">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_96">&#182;</a>
+							</div>
+							<p>Fix up stored junk</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if (    parseFloat(OptionsObjectLat).IsDefault() ||
+			OptionsObjectLat.toString().IsDefault() 	)
+	{ OptionsObjectLat =__LAT_DEFAULTS__.toString();  
+	/*   //debugP(&quot;Fixed Mangled Lat&quot;); */
+	MangledDataDetectedTidyUpRequired =true;	
+
+	}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_97">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_97">&#182;</a>
+							</div>
+							<p>pass back the tidy up</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	storedValues[i] = OptionsObjectLat;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_98">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_98">&#182;</a>
+							</div>
+							<p>define it globally for other methods temporarily</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	lon = storedValues[i] ;
+	/* 	alert(lon);	 */
+
+	
+	if (IsSubjectSave)
+	{
+  $(&#39;#uk-lat&#39;).val(OptionsObjectLat);
+	}
+	else
+	{
+  $(&#39;#uk-lat-tar&#39;).val(OptionsObjectLat);
+	}
+    i++;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_99">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_99">&#182;</a>
+							</div>
+							<p>now do the date.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var splitDate = storedValues[i].trim().replace(/\//g,&#39; &#39;).replace(/:/g, &#39; &#39;).split(&quot; &quot;);
+	var activeDateNode = &quot;&quot;;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_100">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_100">&#182;</a>
+							</div>
+							<p>work out which node to use first.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 if (IsSubjectSave)
+	 {
+		activeDateNode = $(&#39;#uk-dob&#39;);
+	 }
+	else	
+	{
+		activeDateNode = $(&#39;#uk-dob-tar&#39;);	
+	}	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_101">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_101">&#182;</a>
+							</div>
+							<p>Lets fix up any junk values BEFORE we post DOB. use consts to tidy if mangled</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if(typeof splitDate[1] === &quot;undefined&quot; ||  typeof splitDate[2] === &quot;undefined&quot; )
+	{
+	 /* 	//debugP(&quot;set dob defs&quot;);  */
+	MangledDataDetectedTidyUpRequired = true; // see, told ya.  Set the flag to save back the record.
+	splitDate[1] = &quot;00&quot;;  // NB. preceding a number with a zero would make it octal.. dont do that.
+	splitDate[2] = &quot;0000&quot;;
+
+	activeDateNode.val(  __DOB_DEFAULTS__ );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_102">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_102">&#182;</a>
+							</div>
+							<p>define it globally for other methods temporarily</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	dob =  __DOB_DEFAULTS__;
+	}
+	else
+	{
+	var tidiedVal = splitDate[0] + &#39; &#39; + splitDate[1] + &#39; &#39; + splitDate[2];
+	activeDateNode.val(tidiedVal);
+	dob =tidiedVal;
+    }
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_103">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_103">&#182;</a>
+							</div>
+							<p>now do the TIME</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_104">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_104">&#182;</a>
+							</div>
+							<p>work out which node to use first.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var activeTimeNode = &quot;&quot;;
+
+		if (IsSubjectSave)
+	 {
+		activeTimeNode = $(&#39;#uk-tob&#39;);
+	 }
+	else	
+	{
+		activeTimeNode = $(&#39;#uk-tob-tar&#39;);	
+	}	
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_105">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_105">&#182;</a>
+							</div>
+							<p>Lets fix up any junk values BEFORE we post TOB. use consts to tidy if mangled</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if(typeof splitDate[3] === &quot;undefined&quot; || typeof  splitDate[4] === &quot;undefined&quot; )
+	{
+		/* //debugP(&quot;set tob defs&quot;); */
+	MangledDataDetectedTidyUpRequired = true; // see, told ya.  Set the flag to save back the record.
+	splitDate[3] = &quot;00&quot;;
+	splitDate[4] = &quot;00&quot;;
+	activeTimeNode.val(  __TOB_DEFAULTS__ );
+	tob = __TOB_DEFAULTS__;
+	}
+	else
+	{
+	var tidiedVal = splitDate[3] + &#39; &#39; + splitDate[4];
+	activeTimeNode.val(tidiedVal);
+	tob = tidiedVal;
+    }
+	
+	
+    OptionsObjectDateTime = new Date(splitDate[2], splitDate[1], splitDate[0], splitDate[3], splitDate[4]);
+    var datetime = OptionsObjectDateTime;
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_106">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_106">&#182;</a>
+							</div>
+							<p>now pass it back</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	storedValues[i] = 
+	splitDate[0] + &quot; &quot; + 
+	splitDate[1] + &quot; &quot; + 
+	splitDate[2] + &quot; &quot; + 
+	splitDate[3] + &quot; &quot; + 
+	splitDate[4];  
+
+	
+    i++;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_107">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_107">&#182;</a>
+							</div>
+							<p>now do the ACC</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_108">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_108">&#182;</a>
+							</div>
+							<p>work out which node to use first.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var activeAccNode = &quot;&quot;;
+
+		if (IsSubjectSave)
+	 {
+		activeAccNode = $(&#39;#uk-acc&#39;)
+	 }
+	else	
+	{
+		activeAccNode = $(&#39;#uk-acc-tar&#39;);	
+	}	
+	
+    OptionsObjectDateTimeAccurate = parseInt(storedValues[i]);
+	
+    var isAccurate = OptionsObjectDateTimeAccurate;
+    activeAccNode.prop(&quot;checked&quot;, isAccurate);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_109">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_109">&#182;</a>
+							</div>
+							<p>pass it back</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	storedValues[i] = isAccurate;
+	acc = isAccurate;
+
+    i++;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_110">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_110">&#182;</a>
+							</div>
+							<p>Now do the UT. STORED IN WHOLE SECONDS!
+TODO: MAKE THIS MATTER</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    OptionsObjectUtOffset = parseInt(storedValues[i]);
+
+    i++;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_111">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_111">&#182;</a>
+							</div>
+							<p>Now do the DST. STORED IN WHOLE SECONDS!
+TODO: MAKE THIS MATTER</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    OptionsObjectDstOffset = parseInt(storedValues[i]);
+
+    i++;
+
+    $.each(OptionsObject, function  (index, value) {
+
+
+      OptionsObject[index] = storedValues[i];
+		i++;    
+
+	/*   	$(&#39;#$(index)&#39;).val(storedValues[i]); */
+    });
+
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_112">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_112">&#182;</a>
+							</div>
+							<p>At this point here we now could compare the stored options to the current preferred global ones and recalc the chart and WARN we saved the data sinec it needed updating.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_113">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_113">&#182;</a>
+							</div>
+							<p>This must be where it gets junked.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	_f__AppendPreparedStateNotSetFromWidgetsThenCreateOptions(NameOfColumn);
+	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_114">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_114">&#182;</a>
+							</div>
+							<p>take a copy</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var temporaryCopyOfGlobalCurrentSaveOptions= GlobalCurrentSaveOptions.slice();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_115">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_115">&#182;</a>
+							</div>
+							<p>determine if we need to reprocess theme data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var itDoesntMatch = !_f__TheCurrentResearchOptionsMatchedTheStoredOnes(temporaryCopyOfGlobalCurrentSaveOptions);
+	var itDoesMatch = !itDoesntMatch;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_116">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_116">&#182;</a>
+							</div>
+							<p>//debugP("We are now at the end of our first compare"+"\nIt 'does match' is "+itDoesMatch); </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_117">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_117">&#182;</a>
+							</div>
+							<p>SET THE NATIVTY DATE AT THIS POINT!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	_f__SetNativityYearAndOptionsObject(NameOfRecord);
+
+	
+	
+/* 	alert(storedValues); */
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_118">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_118">&#182;</a>
+							</div>
+							<p>we DO need to reprocess</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if(itDoesntMatch || MangledDataDetectedTidyUpRequired )
+	{	
+
+	/* //debugP(&quot;no match&quot;); */
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_119">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_119">&#182;</a>
+							</div>
+							<p>Process some new chart data for the record</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			if (NameOfColumn == &quot;subject&quot;) 	{_f__LoadSubjectChartData(NameOfRecord);	}
+			else							{_f__LoadTargetChartData(NameOfRecord);		}
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_120">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_120">&#182;</a>
+							</div>
+							<p>we are populating the document fields with the stored data\n Processed data should take care of itself as we just created it.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>				
+			for (internal = 0; internal &lt; 24; internal += 2) {
+				if (NameOfColumn == &quot;subject&quot;) {			
+				
+
+				SubjectsValues[simpleIndex] = document.f1.numvalue1[simpleIndex].value = parseFloat(storedValues[internal]).toFixed(5);
+
+				$(&quot;#SubjectName&quot;).val(NameOfRecord);
+				
+				} else {
+					
+					TargetsValues[simpleIndex] = document.f1.numvalue2[simpleIndex].value = parseFloat(storedValues[internal]).toFixed(5);
+					
+					$(&quot;#TargetName&quot;).val(NameOfRecord);
+				}
+				simpleIndex++;
+			}
+
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_121">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_121">&#182;</a>
+							</div>
+							<p>we need to create an options object with the latest widget details.
+CreateOptionsObjectWithPerRecordDataIntact(OptionsObject);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			_f__SetOptionsObjectFromWidgetState(NameOfColumn);
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_122">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_122">&#182;</a>
+							</div>
+							<p>Skip the long lat etc</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			
+			var fixedAmount =  6;
+
+			
+			/* alert(temporaryCopyOfGlobalCurrentSaveOptions); */
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_123">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_123">&#182;</a>
+							</div>
+							<p>take a copy and  skim it</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			GlobalCurrentSaveOptions =	temporaryCopyOfGlobalCurrentSaveOptions.slice(0, fixedAmount);
+/* 		//debugP(&quot;PreGLobal: &quot;+GlobalCurrentSaveOptions); */
+			
+			GlobalCurrentSaveOptions[0] = OptionsObjectLon = storedValues[24];
+			GlobalCurrentSaveOptions[1] = OptionsObjectLat = storedValues[25];	
+/* 		//debugP(&quot;PostGLobal: &quot;+GlobalCurrentSaveOptions); */
+			
+			_f__AppendResearchFlagsToGlobalOptionsObject();
+/* 		//debugP(&quot;PostGLobalAppend: &quot;+GlobalCurrentSaveOptions); */
+
+		/* 	_f__infoP(&#39;Updated record for &#39;+NameOfRecord+&#39; replacing record:\n&#39;+temporaryCopyOfGlobalCurrentSaveOptions+&#39;&lt;br/&gt; With &#39;+GlobalCurrentSaveOptions+&#39; for column &#39;+NameOfColumn);  */
+			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_124">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_124">&#182;</a>
+							</div>
+							<p>now save    </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			_f__doConditionalSave  (NameOfColumn, NameOfRecord, GlobalCurrentSaveOptions );	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_125">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_125">&#182;</a>
+							</div>
+							<p><em>f</em>_warnP("The Record "+NameOfRecord+"'s saved research flags did not match the current <br /> The record: '"+NameOfRecord+"' from the column '"+NameOfColumn+"' has been updated with new theme data and research flags, however existing meta data has been retained");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>				
+			}
+	else{
+	
+	  for (internal = 0; internal &lt; 24; internal += 2) {
+			if (NameOfColumn == &quot;subject&quot;) {
+				SubjectsValues[simpleIndex] = document.f1.numvalue1[simpleIndex].value = parseFloat(storedValues[internal]).toFixed(5);
+				SubjectProcessedData[simpleIndex] = parseFloat(storedValues[internal + 1]).toFixed(4);
+				$(&quot;#SubjectName&quot;).val(NameOfRecord);
+			} else {
+				TargetsValues[simpleIndex] = document.f1.numvalue2[simpleIndex].value = parseFloat(storedValues[internal]).toFixed(5);
+				TargetsProcessedData[simpleIndex] = parseFloat(storedValues[internal + 1]).toFixed(4);
+				$(&quot;#TargetName&quot;).val(NameOfRecord);
+			}
+			simpleIndex++;
+		}
+	}	
+	
+
+	
+/* 	//debugP(&quot;By now we should have a stored record that reflects the current settings.&quot;); */
+	
+
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_126">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_126">&#182;</a>
+							</div>
+							<p>SELECTION deletion</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__deleteRecordFromSelectionList(name) {
+    if (localStorage.getItem(name)) {
+        localStorage.removeItem(name)
+    };
+    _f__populateSelectionsList();
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_127">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_127">&#182;</a>
+							</div>
+							<p>RECORD deletion</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__deleteRecordFromRecordsList(name) {
+    if (localStorage.getItem(name)) {
+        localStorage.removeItem(name)
+    };
+    _f__populateRecordsList();
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_128">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_128">&#182;</a>
+							</div>
+							<p>populateRecordsList, We do this wholesale...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__populateRecordsList() {
+    recordsList = document.getElementById(&#39;person&#39;);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_129">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_129">&#182;</a>
+							</div>
+							<p>These are the   ACTUAL variable names
+var OptionsObjectPerRecordStructure = ['OptionsObjectLon','OptionsObjectLat','OptionsObjectDateTime','OptionsObjectDateTimeAccurate','OptionsObjectUtOffset','OptionsObjectDstOffset' ];</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_130">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_130">&#182;</a>
+							</div>
+							<p>These are the tidy names for our list.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var OptionsObjectPerRecordStructure = [&#39;Long&#39;, &#39;Lat&#39;, &#39;Date/Time&#39;, &#39;TimeAccurate&#39;, &#39;Offset&#39;, &#39;DstOffset&#39;];
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_131">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_131">&#182;</a>
+							</div>
+							<p>Make a holder</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var OptionsObjectCompleteStructure = [];
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_132">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_132">&#182;</a>
+							</div>
+							<p>Build the complete exhaustive list of tidy names.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    jQuery.each(OptionsObjectPerRecordStructure, function  (key, value) {
+        OptionsObjectCompleteStructure[OptionsObjectCompleteStructure.length] = value;
+    });
+
+    jQuery.each(OptionsObject, function  (key, value) {
+        OptionsObjectCompleteStructure[OptionsObjectCompleteStructure.length] = key.toString();
+    });
+
+
+    var total = 0;
+
+    if (typeof SubjectsValues !== &quot;undefined&quot;) {
+        for (i = 0; i &lt; 12; i++) {
+            total += SubjectsValues[i]
+        }
+    }
+
+    if (total &lt;= 0) {
+        $(&#39;#SubjectName&#39;).val(&quot;Subject&quot;);
+    }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_133">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_133">&#182;</a>
+							</div>
+							<p>Clear down list</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    recordsList.length = 0;
+    var name = new Array();
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_134">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_134">&#182;</a>
+							</div>
+							<p>ADD SOME FAKE RECORDS</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    if (_f__storageAvailable(&#39;localStorage&#39;) == false) {
+        _f__warnP(&#39;Too bad, no localStorage for us. &#39;);
+        return;
+    }
+
+
+    if (localStorage.length == 0) {
+
+        _f__InitProcessedDataArrayToBlanksIfUndefined();
+
+        /*  #### ADD SOME DEFAULT STUFF FOR TESTING
+             if (!localStorage.getItem(&#39;ExampleRecord&#39; + localStorage.length)) {
+              StorageSaveOperation(&#39;ExampleRecord&#39; + localStorage.length, SubjectsValues, SubjectProcessedData);
+               }
+           if (!localStorage.getItem(&#39;ExampleOtherRecord&#39; + localStorage.length)) {
+                StorageSaveOperation(&#39;ExampleOtherRecord&#39; + localStorage.length, TargetsValues, TargetsProcessedData);
+          } */
+    }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_135">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_135">&#182;</a>
+							</div>
+							<p>Now actually process real records.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    for (var i = 0; i &lt;= localStorage.length - 1; i++) {
+     var   key = localStorage.key(i);
+      var  val = localStorage.getItem(key);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_136">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_136">&#182;</a>
+							</div>
+							<p>Skip and hide special named PLAYLIST SELECTION files.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		if (key.contains(__PLAYLIST__PREFIX__))
+		{
+			continue;
+			
+		}
+		
+		
+      var  value = val.split(delimeter); //splitting string inside array to get name
+        name[i] = value[1]; // getting name from split string
+
+		
+        var opt = document.createElement(&#39;option&#39;);
+        opt.value = value;
+        var recordsCommaDelimited = _f__decode(localStorage.getItem(key)).split(delimeter);
+
+        var recordsTidyForTooltips = &quot;&quot;;
+        var ind = 0;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_137">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_137">&#182;</a>
+							</div>
+							<p>Build fancy fixed length tooltip. Effort.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        $.each(recordsCommaDelimited, function  (key, value) {
+            ++ind;
+
+            if (key &gt;= 24) {
+                var offsetter = (ind - 25);
+
+                recordsTidyForTooltips += OptionsObjectCompleteStructure[offsetter] + &quot;: &quot;;
+            }
+
+
+            var FixedLengthString = value.toString() + &quot;                &quot;;
+            FixedLengthString = FixedLengthString.slice(0, 15);
+            recordsTidyForTooltips += FixedLengthString;
+
+
+            if (ind % 2 == 0 &amp;&amp; key &lt; 24) {
+                recordsTidyForTooltips += &quot;\n&quot;;
+            } else if (key &gt;= 24) {
+                recordsTidyForTooltips += &quot;\n&quot;;
+            }
+
+        })
+        opt.title = recordsTidyForTooltips;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_138">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_138">&#182;</a>
+							</div>
+							<p>Put the name in the list too.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        opt.innerHTML = key;
+        recordsList.appendChild(opt);
+    }
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_139">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_139">&#182;</a>
+							</div>
+							<p>Provide a way to save data, expects string and arrays</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__StorageSaveOperation(nameOfThing, positions, themes, options) {
+    var storedValues = &quot;&quot;;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_140">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_140">&#182;</a>
+							</div>
+							<p>set the values in the store
+positions.length + themes.length = 24</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    for (i = 0; i &lt; 12; i++) {
+        storedValues += parseFloat(positions[i]).toFixed(5)
+        storedValues += delimeter;
+        storedValues += parseFloat(themes[i]).toFixed(5);
+        storedValues += delimeter;
+    }
+
+    $.each(options, function  (index, value) {
+        storedValues += value;
+        storedValues += delimeter;
+    });
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_141">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_141">&#182;</a>
+							</div>
+							<p>remove last delimeter.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    storedValues = storedValues.slice(0, -1);
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_142">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_142">&#182;</a>
+							</div>
+							<p>//debugP("ToSTORE:"+storedValues);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    storedValues = _f__encode(storedValues);
+  
+    localStorage.setItem(nameOfThing, storedValues);
+    _f__populateRecordsList();
+}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_143">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_143">&#182;</a>
+							</div>
+							<p>Provide a way to retrieve data<br />
+This will populate the passed arrays with the values  </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__StorageRetrieveOperation(nameOfThing, positions, themes, options) {
+    var storedValues = _f__decode(localStorage.getItem(nameOfThing)).split(delimeter);
+   
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_144">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_144">&#182;</a>
+							</div>
+							<p>set the values from the store
+positions.length + themes.length = 24</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var simpleIndex = 0;
+    for (i = 0; i &lt; 24; i += 2) {
+        positions[simpleIndex] = parseFloat(storedValues[i]).toFixed(5);
+        themes[simpleIndex] = parseFloat(storedValues[i + 1]).toFixed(4);
+        simpleIndex++;
+    }
+
+    var simpleIndexForJustHere = 0;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_145">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_145">&#182;</a>
+							</div>
+							<p>only export the values we have.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    for (i = 24; i &lt; storedValues.length; i++) {
+        options[simpleIndexForJustHere] = storedValues[i];
+        simpleIndexForJustHere++;
+        simpleIndex++;
+    }
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_146">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_146">&#182;</a>
+							</div>
+							<p>nativityYear = OptionsObjectDateTime.getUTCFullYear();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>  
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_147">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_147">&#182;</a>
+							</div>
+							<p><em>f</em>_function to create information dialogs</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__fnOpenDeleteDialog() {
+	
+	 var index = $(&quot;#person&quot;).prop(&#39;selectedIndex&#39;);
+	 
+	  var chosen = $(&quot;#person :selected&quot;);
+	 
+	 var namer = &quot;&quot;;
+	 
+	 
+    if (index &lt; 0) {
+		
+		  _f__warnClear();
+        _f__warnP(&quot;Please select a single record from the list to delete&quot;);
+		return;
+	}
+	
+	var texter = &quot;Really Delete &quot;;
+	
+		$.each(chosen, function (key, value){
+		
+		texter += &quot;&lt;br /&gt;&quot;+ value.text + &quot; &quot;;
+		namer += value.text + &quot; &quot;;
+		})
+		
+	texter += &quot;?&quot;;
+	
+	
+	
+    $(&quot;#dialog-confirm&quot;).html(texter);
+	$(&quot;#dialog-confirm&quot;).show();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_148">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_148">&#182;</a>
+							</div>
+							<p>Define the Dialog and its properties.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&quot;#dialog-confirm&quot;).dialog({
+        resizable: false,
+        modal: true,
+        title: &quot;DELETE &quot;+namer,
+        height: 250,
+        width: 400,
+        buttons: {
+                &quot;No&quot;: function  () {
+                $(this).dialog(&#39;close&#39;);
+				_f__warnP(&quot;record NOT deleted&quot;);
+			  callback(false);
+            }, &quot;Yes&quot;: function  () {
+                $(this).dialog(&#39;close&#39;);
+               _f__ClickedRemove();
+            }
+        }
+    }).dialog(&#39;widget&#39;).position({ my: &#39;top&#39;, at: &#39;top+100&#39;, of: window });
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_149">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_149">&#182;</a>
+							</div>
+							<h4>Click Events. REMOVE</h4>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__ClickedRemove() {
+	
+	var chosen = $(&quot;#person :selected&quot;);
+ 
+  _f__warnClear();
+ 
+	$.each(chosen, function (key, value){
+		
+	 _f__deleteRecordFromRecordsList(value.text);
+      
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_150">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_150">&#182;</a>
+							</div>
+							<p><em>f</em>_warnP("Deleted " + value.text);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	})	
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_151">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_151">&#182;</a>
+							</div>
+							<p>do count of the subject values (celestial positions) return bool</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__RecordEntriesAreNoneZero(arrayToCheck) {
+    var ret = false
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_152">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_152">&#182;</a>
+							</div>
+							<p>Check it is not junk.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var total = 0;
+
+    for (i = 0; i &lt; 12; i++) {
+        total += parseFloat(arrayToCheck[i])
+    }
+
+    if (total &gt;= 1)
+        ret = true;
+
+    return ret;
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_153">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_153">&#182;</a>
+							</div>
+							<p>Functional Save section when requested directly</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__ClickedSave(event, NameOfColumn) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_154">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_154">&#182;</a>
+							</div>
+							<p>new ver 
+_f<strong>CreateOptionsObject();  // current
+_f</strong>CreateOptionsObjectWithAssumedState();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+var IsSubjectSave = false;
+
+if (NameOfColumn == &quot;subject&quot;) {
+	 IsSubjectSave = true;
+ 
+	 }
+	 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_155">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_155">&#182;</a>
+							</div>
+							<p>work out which node to use first.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var activeLonNode = &quot;&quot;;
+var activeLatNode = &quot;&quot;;
+var activeDobNode = &quot;&quot;;	
+var activeTobNode = &quot;&quot;;	
+var activeAccNode = &quot;&quot;;
+var activeNameNode = &quot;&quot;;
+
+		if (IsSubjectSave)
+	 {
+		activeLonNode = $(&#39;#uk-lon&#39;);
+		activeLatNode =$(&#39;#uk-lat&#39;);
+		activeDobNode = $(&#39;#uk-dob&#39;);
+		activeTobNode =$(&#39;#uk-tob&#39;);
+		activeAccNode =$(&#39;#uk-acc&#39;);
+		activeNameNode =  $(&#39;#SubjectName&#39;);
+	 }
+	else	
+	{
+		activeLonNode = $(&#39;#uk-lon-tar&#39;);
+		activeLatNode =$(&#39;#uk-lat-tar&#39;);
+		activeDobNode =$(&#39;#uk-dob-tar&#39;);
+		activeTobNode =$(&#39;#uk-tob-tar&#39;);
+		activeAccNode =$(&#39;#uk-acc-tar&#39;);
+		activeNameNode =  $(&#39;#TargetName&#39;);
+	}	
+	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_156">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_156">&#182;</a>
+							</div>
+							<p>override the relevant sections with the current values.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+	GlobalCurrentSaveOptions[0] = activeLonNode.val();
+	GlobalCurrentSaveOptions[1] = activeLatNode.val();
+	GlobalCurrentSaveOptions[2] = activeDobNode.val()+&quot; &quot;+activeTobNode.val() ;
+	GlobalCurrentSaveOptions[3] = activeAccNode.is(&#39;:checked&#39;) | 0  ;
+
+ 	/* PrintArray(GlobalCurrentSaveOptions);  */
+	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_157">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_157">&#182;</a>
+							</div>
+							<p>Update those hidden decimal columns!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__populateHMSArraysFromValueArraysValues();
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_158">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_158">&#182;</a>
+							</div>
+							<p>now read the values</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__populateValueArraysFromScreenValues();
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_159">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_159">&#182;</a>
+							</div>
+							<p>lets make sure we have defined things to save themes in</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__InitProcessedDataArrayToBlanksIfUndefined();
+
+	
+    if (IsSubjectSave) {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_160">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_160">&#182;</a>
+							</div>
+							<p>Load up the Subject data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if (!_f__RecordEntriesAreNoneZero(SubjectsValues)   ||  activeNameNode.val().length &lt; 1 ) {
+            _f__warnClear();
+            _f__warnP(&quot;Enter some values, Choose your subjects name&quot;);
+           activeNameNode.val(&quot;Subject&quot;);
+            return;
+        }
+
+		
+   _f__LoadSubjectChartData(activeNameNode.val());
+   
+    } else {
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_161">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_161">&#182;</a>
+							</div>
+							<p>Load up the Subject data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if (!_f__RecordEntriesAreNoneZero(TargetsValues) ||  activeNameNode.val().length &lt; 1 ) {
+            _f__warnClear();
+            _f__warnP(&quot;Enter some values, Choose your &quot;+NameOfColumn+&quot; name&quot;);
+           activeNameNode.val(&quot;Target&quot;);
+            return;
+        }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_162">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_162">&#182;</a>
+							</div>
+							<p>Load up the target data. </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>       _f__LoadTargetChartData(activeNameNode.val());
+
+    }
+	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_163">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_163">&#182;</a>
+							</div>
+							<p>reread, prevent the
+getThemeValues method adjusting the SubjectsValues array mattering...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_164">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_164">&#182;</a>
+							</div>
+							<p>Update those hidden decimal columns!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__populateHMSArraysFromValueArraysValues();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_165">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_165">&#182;</a>
+							</div>
+							<p>Now read the values.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__populateValueArraysFromScreenValues();
+	
+/* 	//debugP(&quot;GlobalCurrentSaveOptions in the save path&quot;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_166">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_166">&#182;</a>
+							</div>
+							<p>PrintArray(GlobalCurrentSaveOptions);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 */
+	
+		
+	_f__doConditionalSave  (NameOfColumn, activeNameNode.val(), GlobalCurrentSaveOptions);
+	
+	 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_167">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_167">&#182;</a>
+							</div>
+							<p>PrintArray(GlobalCurrentSaveOptions);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_168">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_168">&#182;</a>
+							</div>
+							<p>We made it.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_169">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_169">&#182;</a>
+							</div>
+							<p>save based on column and name.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__doConditionalSave  (ColumnToSave, nameOfRecord, SaveOptions)
+{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_170">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_170">&#182;</a>
+							</div>
+							<p>warnClear();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var positionsToSave; // array
+    var arrayToSave; // Theme
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_171">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_171">&#182;</a>
+							</div>
+							<p>chose the right data based on column name</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (ColumnToSave == &quot;subject&quot;) {
+        arrayToSave = SubjectProcessedData;
+        positionsToSave = SubjectsValues;
+    } else
+
+    {
+        if (ColumnToSave == &quot;target&quot;) {
+            arrayToSave = TargetsProcessedData;
+            positionsToSave = TargetsValues;
+        }
+    }
+
+	/*//debugP(positionsToSave);*/
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_172">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_172">&#182;</a>
+							</div>
+							<p>PrintArray(SaveOptions);
+return;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_173">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_173">&#182;</a>
+							</div>
+							<p>WILL BE ALL ZERO IS NOT ALREADY CALCULATED FOR NOW.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (!localStorage.getItem(nameOfRecord)) {
+        _f__StorageSaveOperation(nameOfRecord, positionsToSave, arrayToSave, SaveOptions);
+    } else {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_174">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_174">&#182;</a>
+							</div>
+							<p>Records exists.  Delete. Update.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        _f__deleteRecordFromRecordsList(nameOfRecord);
+        _f__StorageSaveOperation(nameOfRecord, positionsToSave, arrayToSave, SaveOptions);
+    }
+	
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_175">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_175">&#182;</a>
+							</div>
+							<p>when we actually click load in the form</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__ClickedLoad(event, ColumnToSave) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_176">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_176">&#182;</a>
+							</div>
+							<p>StorageRetrieveOperation</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var placeToLoad;
+    if (ColumnToSave == &quot;subject&quot;) {
+        placeToLoad = $(&quot;#SubjectName&quot;).prop(&#39;value&#39;); // SubjectName
+    } else {
+        placeToLoad = $(&quot;#TargetName&quot;).prop(&#39;value&#39;); // SubjectName		
+    }
+	
+	
+    recordsList = document.getElementById(&#39;person&#39;);
+
+    var index = $(&#39;#person option:selected&#39;);
+
+
+    if (index.length &gt; 1) {
+        _f__warnClear();
+        _f__warnP(&quot;Please select a single record from the list to load&quot;);
+        return;
+
+    }
+
+    if (index.length == 1) {
+        _f__populateValueArraysFromStoredValues($(&quot;#person option:selected&quot;).text(), ColumnToSave);
+
+    } else {
+        _f__warnClear();
+        _f__warnP(&quot;Please select a single record from the list to load&quot;);
+    }
+
+
+    _f__populateHMSArraysFromValueArraysValues();
+    _f__clearCharts();
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_177">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_177">&#182;</a>
+							</div>
+							<p>populateValueArraysFromScreenValues
+Here we fill the internal arrays from the form values we scrape from the screen</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__populateValueArraysFromScreenValues() {
+
+var    colNum = 12;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_178">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_178">&#182;</a>
+							</div>
+							<p>SubjectsValues = new Array();
+TargetsValues = new Array();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'> var   HorX = new Array();
+    var j = 0;
+	var i = 0;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_179">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_179">&#182;</a>
+							</div>
+							<p>parse pairs into something we can process through WJ18 function</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    for ( i = 0; i &lt; colNum; i++) {
+
+        if (document.f1.numvalue1[i].value != &#39;&#39; &amp;&amp; parseInt(document.f1.numvalue1[i].value) &gt;= 0) {
+         var   PlanetNeatTitles = [&quot;Sun&quot;, &quot;Moon&quot;, &quot;Mercury&quot;, &quot;Venus&quot;, &quot;Mars&quot;, &quot;Jupiter&quot;, &quot;Saturn&quot;, &quot;Uranus&quot;, &quot;Neptune&quot;, &quot;Pluto&quot;, &quot;Ascendant&quot;, &quot;Midheaven&quot;];
+         var   PlanetNeatSymbols = [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;, &quot;10&quot;, &quot;11&quot;, &quot;12&quot;];
+            HorX[j] = PlanetNeatSymbols[i]; //   document.f1.label[i].value;
+            SubjectsValues[j] = document.f1.numvalue1[i].value;
+
+            TargetsValues[j] = document.f1.numvalue2[i].value;
+            j++;
+        }
+    }
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_180">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_180">&#182;</a>
+							</div>
+							<p>Here we create the OptionsObject and the GlobalCurrentSaveOptions
+This type of create knows nothing about records and does it blindly from 
+the current long lat (etc.) INPUT vals()s  in the html form - or passed by perl</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__CreateOptionsObject() {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_181">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_181">&#182;</a>
+							</div>
+							<p>This will create us a partially valid GlobalCurrentSaveOptions object.
+It will still need the current valid flags appending.
+new ver
+<em>f</em>_CreateOptionsObjectWithAssumedState();  // need this here for xProfile
+First populate the ACTUAL Option Object with the values selected in the radio buttons
+If something goes wrong we should warn the user and actively save a fixed version
+of the semi-permenant storage object</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__SetOptionsObjectFromWidgetState();
+	
+/* 	PrintArray(OptionsObject); */
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_182">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_182">&#182;</a>
+							</div>
+							<p>Make the LONG LAT DOBTOB ACC UST DST values be the ones in the perl vars.
+or failing that populate them from the screen values
+we need these globally declared vars for <em>f</em>_CreateOptionsObjectWithAssumedState()</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	_f__PopulatePerUserRecordVariableFromPassedPerlVariablesOrScreenValues();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_183">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_183">&#182;</a>
+							</div>
+							<p>original, removed from new
+This will create us a partially valid GlobalCurrentSaveOptions object.
+It will still need the current valid flags appending.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__CreateOptionsObjectWithAssumedState();
+	
+/* 	PrintArray(GlobalCurrentSaveOptions); */
+/* 	PrintArray(OptionsObject);  */
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_184">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_184">&#182;</a>
+							</div>
+							<p>Stick the current flags on the end of the global GlobalCurrentSaveOptions object again</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__AppendResearchFlagsToGlobalOptionsObject();
+	
+	/*  //debugP(&quot;final GlobalCurrentSaveOptions after _f__CreateOptionsObject&quot;); */
+	/* PrintArray(GlobalCurrentSaveOptions);  */
+	
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_185">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_185">&#182;</a>
+							</div>
+							<p>Here we create the OptionsObject and the GlobalCurrentSaveOptions</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__CreateOptionsObjectButPreservePerUserRecordVariablesToCurrentState() {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_186">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_186">&#182;</a>
+							</div>
+							<p>First populate the ACTUAL Option Object with the values selected in the radio buttons
+If something goes wrong we should warn the user and actively save a fixed version
+of the semi-permenant storage object</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__SetOptionsObjectFromWidgetState();
+	
+	/* 	PrintArray(GlobalCurrentSaveOptions); */
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_187">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_187">&#182;</a>
+							</div>
+							<p>original, removed from new<br />
+This will create us a partially valid GlobalCurrentSaveOptions object.
+It will still need the current valid flags appending.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>_f__CreateOptionsObjectWithAssumedState();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_188">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_188">&#182;</a>
+							</div>
+							<p>Stick the current flags on the end of the global GlobalCurrentSaveOptions object again</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__AppendResearchFlagsToGlobalOptionsObject();
+	
+ /* 	PrintArray(GlobalCurrentSaveOptions);  */
+	
+}
+
+
+function _f__AppendPreparedStateNotSetFromWidgetsThenCreateOptions(NameOfColumn){
+
+	_f__PopulatePerUserRecordVariableFromPassedPerlVariablesOrScreenValues(NameOfColumn);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_189">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_189">&#182;</a>
+							</div>
+							<p>original, removed from new</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__CreateOptionsObjectWithAssumedState();
+	
+	_f__AppendResearchFlagsToGlobalOptionsObject();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_190">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_190">&#182;</a>
+							</div>
+							<p>PrintArray(GlobalCurrentSaveOptions);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+}
+  
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_191">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_191">&#182;</a>
+							</div>
+							<p>here we take some major liberties that would not pass strict checking. Hey ho.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__PopulatePerUserRecordVariableFromPassedPerlVariablesOrScreenValues(NameOfColumn){
+
+	var IsSubjectSave = false;
+	if (typeof NameOfColumn === &quot;undefined&quot;)
+	{ IsSubjectSave = true;
+/* alert (&quot;creating a default object...&quot;); */
+
+	}
+else if (NameOfColumn == &quot;subject&quot;) {
+	 IsSubjectSave = true;
+	 
+	 }
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_192">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_192">&#182;</a>
+							</div>
+							<p>Actively dertermine the path</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	  if (parseFloat(lat).IsDefault()) {
+	
+		if (IsSubjectSave)
+			{
+		  lat = $(&#39;#uk-lat&#39;).val().trim();
+			}
+			else
+			{
+		  lat = $(&#39;#uk-lat-tar&#39;).val().trim();
+			}				  
+    };
+	
+    if (parseFloat(lon).IsDefault()) {
+		
+		if (IsSubjectSave)
+			{
+		 lon = $(&#39;#uk-lon&#39;).val().trim();
+			}
+			else
+			{
+		 lon = $(&#39;#uk-lon-tar&#39;).val().trim();
+			}
+    };
+	
+	var activeDateNode =  $(&#39;#uk-dob&#39;); // Defaults to subject!
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_193">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_193">&#182;</a>
+							</div>
+							<p>autofix any issues with is being processed internally as a datetime (8.4)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (dob.IsDefaultDOB()) {
+		
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_194">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_194">&#182;</a>
+							</div>
+							<p>work out which node to use first.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 if (IsSubjectSave)
+	 {
+		activeDateNode = $(&#39;#uk-dob&#39;);
+	 }
+	else	
+	{
+		activeDateNode = $(&#39;#uk-dob-tar&#39;);	
+	}	
+
+       /* _f__warnP(&quot;using undefined dob path - since this is all blanks&quot;); */
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_195">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_195">&#182;</a>
+							</div>
+							<p>replace the slashes with space. Hideous reg exp</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        dob = activeDateNode.val().trim().replace(/\//g,&#39; &#39;);
+		if(!$.isNumeric(dob.replace(/ /g,&#39;&#39;))){_f__warnP(dob+&quot; doesnt look numeric...&quot;)}
+    };
+	if(dob.trim() == __DOB_DEFAULTS__)
+	{
+		if (activeDateNode.val().trim().replace(/\//g,&#39; &#39;) == __DOB_DEFAULTS__)
+		{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_196">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_196">&#182;</a>
+							</div>
+							<p><em>f<strong>warnP('Both DOB are '+</strong>DOB</em>DEFAULTS__+', enter a real date and save');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		}
+		else
+		{
+			dob = activeDateNode.val().trim().replace(/\//g,&#39; &#39;);
+		if(!$.isNumeric(dob.replace(/ /g,&#39;&#39;))){_f__warnP(dob+&quot; doesnt look numeric...&quot;);} 
+		}
+	}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_197">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_197">&#182;</a>
+							</div>
+							<p>DOB can not be <strong>DOB_DEFAULTS</strong> by now</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	else
+	{
+	if(dob.trim() != activeDateNode.val().trim().replace(/\//g,&#39; &#39;))
+		{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_198">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_198">&#182;</a>
+							</div>
+							<p>probably should test for intent via widget visibilty too..</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			if( activeDateNode.is(&#39;:visible&#39;)   )
+			{		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_199">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_199">&#182;</a>
+							</div>
+							<p>This could be a serious mistake... but shouldn't be by now</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>				if (activeDateNode.val().trim().replace(/\//g,&#39; &#39;) != __DOB_DEFAULTS__)
+				{			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_200">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_200">&#182;</a>
+							</div>
+							<p>better not be junk then... hmmm</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		
+			dob = 	activeDateNode.val().trim().replace(/\//g,&#39; &#39;);
+				}
+			}
+		}
+	}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_201">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_201">&#182;</a>
+							</div>
+							<p>work out which node to use first. DEFAULT TO SUBJECT</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var activeTimeNode = $(&#39;#uk-tob&#39;);
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_202">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_202">&#182;</a>
+							</div>
+							<p>autofix any issues with is being processed internally as a datetime (8.4)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (tob.IsDefaultTOB()) {
+	
+		if (IsSubjectSave)
+	 {
+		activeTimeNode = $(&#39;#uk-tob&#39;);
+	 }
+	else	
+	{
+		activeTimeNode = $(&#39;#uk-tob-tar&#39;);	
+	}	
+	
+		
+        tob = activeTimeNode.val().trim().replace(/:/g, &#39; &#39;);
+		if(!$.isNumeric(tob.replace(/ /g,&#39;&#39;))){_f__warnP(tob+&quot; doesnt look numeric...&quot;)}
+    };
+	if(tob.trim() == __DOB_DEFAULTS__)
+	{
+		if (activeTimeNode.val().trim().replace(/\//g,&#39; &#39;) == __TOB_DEFAULTS__)
+		{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_203">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_203">&#182;</a>
+							</div>
+							<p><em>f<strong>warnP('Both TOB are '+</strong>TOB</em>DEFAULTS__+', enter a real time and save');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		}
+		else
+		{
+			tob = activeTimeNode.val().trim().replace(/\//g,&#39; &#39;);
+		if(!$.isNumeric(tob.replace(/ /g,&#39;&#39;))){_f__warnP(tob+&quot; doesnt look numeric...&quot;);} 
+		}
+	}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_204">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_204">&#182;</a>
+							</div>
+							<p>TOB can not be <strong>DOB_DEFAULTS</strong> by now</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	else
+	{
+	if(tob.trim() != activeTimeNode.val().trim().replace(/\//g,&#39; &#39;))
+		{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_205">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_205">&#182;</a>
+							</div>
+							<p>probably should test for intent via widget visibilty too..</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			if( activeTimeNode.is(&#39;:visible&#39;)   )
+			{		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_206">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_206">&#182;</a>
+							</div>
+							<p>This could be a serious mistake... but shouldn't be by now</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>				if (activeTimeNode.val().trim().replace(/\//g,&#39; &#39;) != __TOB_DEFAULTS__)
+				{			
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_207">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_207">&#182;</a>
+							</div>
+							<p>better not be junk then... hmmm</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>			tob = 	activeTimeNode.val().trim().replace(/\//g,&#39; &#39;);
+				}
+			}
+		}
+	}
+
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_208">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_208">&#182;</a>
+							</div>
+							<p>only update this thing if the ACC value is visible AND different than what we have stored.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_209">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_209">&#182;</a>
+							</div>
+							<p>work out which node to use first. // default to subject.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var activeAccNode = $(&#39;#uk-acc&#39;);
+	
+    if (parseInt(acc).IsDefault()) {
+	
+		if (IsSubjectSave)
+	 {
+		activeAccNode = $(&#39;#uk-acc&#39;)
+	 }
+	else	
+	{
+		activeAccNode = $(&#39;#uk-acc-tar&#39;);	
+	}	
+	
+		
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_210">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_210">&#182;</a>
+							</div>
+							<p>times by 1 will evaluate to a boolen result come hell or high water. Dont ask.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        acc = 1 * (activeAccNode.is(&#39;:checked&#39;));
+		}
+	else
+		if( activeAccNode.is(&#39;:visible&#39;)   )
+		{	
+		
+		if (acc != 1 * (activeAccNode.is(&#39;:checked&#39;)))
+			{
+			acc =1 * (activeAccNode.is(&#39;:checked&#39;));
+			}
+		
+		}
+
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_211">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_211">&#182;</a>
+							</div>
+							<p>if we still have junk after all that effort throw out 0's</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (lat.length == 0) {
+        lat = &quot;0&quot;;
+    };
+    if (lon.length == 0) {
+        lon = &quot;0&quot;;
+    };
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_212">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_212">&#182;</a>
+							</div>
+							<p>industrial grade corner-case checking ends.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_213">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_213">&#182;</a>
+							</div>
+							<p>Here we create the OptionsObject and the GlobalCurrentSaveOptions</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__CreateOptionsObjectWithAssumedState() {
+    OptionsObjectLon = lon;
+    OptionsObjectLat = lat;
+    OptionsObjectDateTimeAccurate = acc;
+	OptionsObjectDateTime = &quot;&quot;;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_214">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_214">&#182;</a>
+							</div>
+							<p>We pre-create some blank values for now. Then run the create</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    GlobalCurrentSaveOptions = [
+
+        OptionsObjectLon, // LONG
+        OptionsObjectLat, // LAT
+
+        OptionsObjectDateTime, // DATETIME of BIRTH
+        OptionsObjectDateTimeAccurate, // Certain of TOB
+
+        OptionsObjectUtOffset, //OptionsObjectUtOffset, // seconds
+        OptionsObjectDstOffset //OptionsObjectDstOffset, // seconds
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_215">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_215">&#182;</a>
+							</div>
+							<p>OptionsObject.aoIndex,  // Ao 0 1 2 .. n
+OptionsObject.tfIndex,  // Tf 0 4 8 .. n 
+OptionsObject.precessionFlag, // bool
+OptionsObject.orbType
+Et Cetera   </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    ];
+
+}
+
+function _f__AppendResearchFlagsToGlobalOptionsObject(){
+	
+    $.each(OptionsObject, function  (index, value) {
+
+        GlobalCurrentSaveOptions[GlobalCurrentSaveOptions.length] = value;
+    });
+
+	/*  $.each(GlobalCurrentSaveOptions, function  (index, value) {
+	 
+
+	 })
+	 */
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_216">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_216">&#182;</a>
+							</div>
+							<p>PrintArray(GlobalCurrentSaveOptions);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_217">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_217">&#182;</a>
+							</div>
+							<p>create the dropdown radio boxes to adjust the research options.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__buildOptions() {
+    var listOfIdsToEnable = [];
+
+    var htmlAppend = &quot;&quot;;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_218">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_218">&#182;</a>
+							</div>
+							<p>walk over the OptionObject values</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    jQuery.each(OptionObjectValues, function  (key, value) {
+
+        var outer = key;
+
+        var arry = value;
+
+        htmlAppend += &#39;&lt;span class=&quot;span-radio&quot;&gt;&lt;span class=&quot;span-radio-title&quot;&gt;&#39; + outer.toLowerCase().substring(0,10) + &#39;&lt;/span&gt;&lt;br/&gt;&#39;;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_219">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_219">&#182;</a>
+							</div>
+							<p>Walk over the actual value pairs inside each option object.
+We pass the exhautive declarative form of the OptionObject so we can enumerate all possible options.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        jQuery.each(arry, function  (key, value) {
+
+            var command = &#39;javascript:OptionsObject.&#39; + outer + &#39;=&#39; + value;
+
+            htmlAppend += &#39;	  &lt;input class=&quot;options-radio&quot; onchange=&quot;&#39; + command + &#39; ;_f__DoCompleteOptionsSaveThenLoadCycle();&quot; type=&quot;radio&quot; id=&#39; + outer + &#39;&#39; + value + &#39; name=&quot;&#39; + outer + &#39;&quot; value=&quot;&#39; + value + &#39;&quot;/&gt;&#39; + value + &#39;&lt;br/&gt;&#39;;
+
+            listOfIdsToEnable.push([(outer + &#39;&#39; + value), &#39;Set&#39; + &#39;&#39; + outer + &#39;(&#39; + value + &#39;)&#39;]);
+
+        })
+
+        htmlAppend += &quot;&lt;/span&gt;&quot;;
+
+    })
+
+    $(&#39;#optionsHolder&#39;).html(htmlAppend);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_220">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_220">&#182;</a>
+							</div>
+							<p>one var to rule them all...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    _f__GetGlobalOptions(OptionsObject);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_221">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_221">&#182;</a>
+							</div>
+							<p>we have completed the list and saved all the options</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_222">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_222">&#182;</a>
+							</div>
+							<p>Ensure the init of SubjectProcessedData &amp; TargetsProcessedData</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__InitProcessedDataArrayToBlanksIfUndefined() {
+    if (typeof SubjectProcessedData === &quot;undefined&quot;) {
+        SubjectProcessedData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+    if (typeof TargetsProcessedData === &quot;undefined&quot;) {
+        TargetsProcessedData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+
+}
+
+function _f__LoadBothChartsData(subjectName, targetName){
+	_f__LoadSubjectChartData(subjectName);
+    _f__LoadTargetChartData(targetName);
+   
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_223">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_223">&#182;</a>
+							</div>
+							<p>Load up the theme data for the Subject. decoupled for clarity</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__LoadSubjectChartData(name)
+{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_224">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_224">&#182;</a>
+							</div>
+							<p>Now sets var nativityYear pre-processing</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	_f__SetNativityYear(name);
+	
+	    getThemeValues(SubjectsValues[0], SubjectsValues[1], SubjectsValues[2], SubjectsValues[3], SubjectsValues[4], SubjectsValues[5], SubjectsValues[6], SubjectsValues[7], SubjectsValues[8], SubjectsValues[9], SubjectsValues[10], SubjectsValues[11]);
+		
+    SubjectProcessedData = theme.slice();	
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_225">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_225">&#182;</a>
+							</div>
+							<p>Load up the theme data for the Subject. decoupled for clarity</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__LoadTargetChartData(name)
+{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_226">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_226">&#182;</a>
+							</div>
+							<p>Now sets var nativityYear pre-processing</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		_f__SetNativityYear($(&#39;#TargetName&#39;).val());
+	
+	 getThemeValues(TargetsValues[0], TargetsValues[1], TargetsValues[2], TargetsValues[3], TargetsValues[4], TargetsValues[5], TargetsValues[6], TargetsValues[7], TargetsValues[8], TargetsValues[9], TargetsValues[10], TargetsValues[11]);
+     TargetsProcessedData = theme.slice();
+	
+}
+
+
+function _f__UpdateAcc(){
+	
+	
+	 acc = 1 * ($(&#39;#uk-acc&#39;).is(&#39;:checked&#39;));
+	
+	
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_227">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_227">&#182;</a>
+							</div>
+							<h6>################################################## //</h6>
+
+<h6>################################################## //</h6>
+
+<h6>##############  HELPER ET AL ##################### //</h6>
+
+<h6>################################################## //</h6>
+
+<h6>################################################## //</h6>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_228">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_228">&#182;</a>
+							</div>
+							<p>check we can use web storage</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__storageAvailable(type) {
+    try {
+        var storage = window[type],
+            x = &#39;__storage_test__&#39;;
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_229">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_229">&#182;</a>
+							</div>
+							<p>helper to let the developer know which values got defaulted.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__warnDefaulted(name, value){
+	
+	 _f__warnP(&quot;defaulted &quot;+name+&quot; to &quot;+value);
+	
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_230">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_230">&#182;</a>
+							</div>
+							<p>helper class for show/hiding groups</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__ToggleOptionsVisiblity() {
+    $(&#39;. PreviouslyHideableOptionsComponent&#39;).toggleClass(&quot;options-hidden-record&quot;);
+
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_231">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_231">&#182;</a>
+							</div>
+							<p>unused stub for debug output</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__DebugAlertOptions() {
+
+    /*	//debugP(&quot;OPTIONS: aoIndex:&quot;+OptionsObject.aoIndex+&quot;tfIndex:&quot;+OptionsObject.tfIndex+&quot;orbType:&quot;+OptionsObject.orbType+&quot;precessionFlag:&quot;+OptionsObject.precessionFlag   );	*/
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_232">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_232">&#182;</a>
+							</div>
+							<p>Superceded See SaveChangesGetChart()</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__SaveChanges() { 
+    /* 	$(&#39;#uk-dob&#39;).val(dayOB+&quot;/&quot;+monOB+&quot;/&quot;+yearOB);
+    	$(&#39;#uk-tob&#39;).val() */
+    $(&#39;#uk-dialog&#39;).modal(&#39;hide&#39;);
+    warnP(&quot;TODO: Make this save just the DOB/TOB  LONG/LAT when offline&quot;);
+}
+
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_233">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_233">&#182;</a>
+							</div>
+							<p>check for bogus chars in variable name input</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__Cleanse(thing) {
+    var ret = &quot;&quot;;
+    var forbiddenChars = new RegExp(&quot;[^a-zA-Z0-9]&quot;, &#39;g&#39;);
+    if (forbiddenChars.test(thing)) {
+        ret = thing.replace(forbiddenChars, &#39;&#39;);
+    }
+
+    return ret;
+}
+
+function PrintArray(thing){
+	
+	var stringToPrint =&quot;&quot;;
+	
+	$.each(thing,function  (index, value) {
+		
+		/* stringToPrint += index +&quot; is &quot;+ value+&quot;\n&quot;; */
+		stringToPrint += index +&quot; is &quot;+ value+&quot;&lt;br /&gt;&quot;;
+	}    )
+
+	_f__infoP(stringToPrint);
+	
+}
+
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+
+function _f__buildStringForInfo(theString){
+	
+	
+	
+}
+
+
+function _f__AppendRecordHTML() {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_234">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_234">&#182;</a>
+							</div>
+							<p>Let's append the record sets.  We always call this exactly 12 times per Subject.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    var externalIndexRef = 0;
+    var internalModuloIndex = 1;
+    var modulus = 12;
+
+    $(&quot;.recordHolder&quot;).each(function  () {
+
+
+   /*      $(this).html(&quot;&lt;tr class=&#39;record&#39;&gt;&lt;td class=&#39;record&#39;&gt;&lt;span style=&#39;white-space: nowrap&#39;&gt;&lt;span class=&#39;ui-icon  ui-icon-search sign-selector&#39; style=&#39;display:inline-block; &#39;&gt;&lt;/span&gt;&lt;select  name=&#39;SPI&#39; class=&#39;SignPrefix&#39; &gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;0&#39;&gt;Aries&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;30&#39;&gt;Taurus&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;60&#39;&gt;Gemini&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;90&#39;&gt;Cancer&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;120&#39;&gt;Leo&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;150&#39;&gt;Virgo&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;180&#39;&gt;Libra&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;210&#39;&gt;Scorpio&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;240&#39;&gt;Sagittarius&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;270&#39;&gt;Capricorn&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;300&#39;&gt;Aquarius&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;330&#39;&gt;Pisces&lt;/option&gt;&lt;/select&gt;&lt;input class=&#39;hmsBox&#39; type=&#39;text&#39; size=&#39;20&#39;  name=&#39;hms&#39; value=&#39;&#39; &gt;&amp;nbsp;&lt;input class=&#39;numVals hideable&#39; type=&#39;decimal&#39; size=&#39;4&#39;  name=&#39;numvalue&quot; + internalModuloIndex + &quot;&#39; value=&#39;0&#39; disable onblur=&#39;ConvertDecimalToHMSSingle(this)&#39;&gt;&lt;div class=&#39;sign-label unset-sign&#39;&gt;ARI&lt;/div&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);
+ */
+ 
+		var prettyColName = &quot;&quot;;
+		
+		if(internalModuloIndex == 1)
+		{ prettyColName = &quot;subject&quot;  }
+		else
+		{ prettyColName = &quot;target&quot; }
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_235">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_235">&#182;</a>
+							</div>
+							<p>generate the dynamic HTML, note that we have to hook up events later for the Jquery UI Select onchange.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>		$(this).html(&quot;&lt;tr class=&#39;record&#39;&gt;&lt;td class=&#39;record&#39;&gt;&lt;span style=&#39;white-space: nowrap&#39;&gt;&lt;span class=&#39;ui-icon ui-icon-search sign-selector&#39; style=&#39;display:inline-block; &#39;&gt;&lt;/span&gt;&lt;select id=&#39;combobox&#39; class=&#39;SignPrefix&#39;&gt; &lt;option class=&#39;SignPrefixChoice&#39; value=&#39;0&#39;&gt;Aries&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;30&#39;&gt;Taurus&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;60&#39;&gt;Gemini&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;90&#39;&gt;Cancer&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;120&#39;&gt;Leo&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;150&#39;&gt;Virgo&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;180&#39;&gt;Libra&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;210&#39;&gt;Scorpio&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;240&#39;&gt;Sagittarius&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;270&#39;&gt;Capricorn&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;300&#39;&gt;Aquarius&lt;/option&gt;&lt;option class=&#39;SignPrefixChoice&#39; value=&#39;330&#39;&gt;Pisces&lt;/option&gt;&lt;/select&gt;&lt;input class=&#39;hmsBox hms-&quot;+prettyColName+&quot;&#39; type=&#39;text&#39; size=&#39;20&#39;  name=&#39;hms&#39; value=&#39;&#39; &gt;&amp;nbsp;&lt;input class=&#39;numVals numVals-&quot;+prettyColName+&quot; hideable&#39; type=&#39;decimal&#39; size=&#39;4&#39;  name=&#39;numvalue&quot; + internalModuloIndex + &quot;&#39; value=&#39;0&#39; disable onblur=&#39;_f__ConvertDecimalToHMSSingle(this)&#39;&gt;&lt;div class=&#39;sign-label unset-sign&#39;&gt;ARI&lt;/div&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&quot;);
+		
+	
+
+        externalIndexRef++;
+        if (externalIndexRef &gt;= modulus) {
+            internalModuloIndex++;
+            externalIndexRef = 0;
+        }
+
+    });
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_236">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_236">&#182;</a>
+							</div>
+							<p>Now we pass back over that stuff and add in unique ID's for the methods that we just attached the onblur event (Which means leave the field, in this case)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&quot;.seconds, .minutes, .hours, .numVals, .hmsBox&quot;).each(function  () {
+        $(this).uniqueId()
+    });
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

@@ -1,0 +1,3517 @@
+<!DOCTYPE html />
+
+<html>
+<head>
+	<title>removed-engine-lint.js</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link href="nocco.css" rel="stylesheet" media="all" type="text/css" />
+	<script src="prettify.js" type="text/javascript"></script>
+</head>
+<body onload="prettyPrint()">
+	<div id="container">
+		<div id="background"></div>
+			<div id="jump_to">
+				Jump To &hellip;
+				<div id="jump_wrapper">
+					<div id="jump_page">
+							<a class="source" href="coeffanalyse.html">
+								CoeffAnalyse.js
+							</a>
+							<a class="source" href="engine.html">
+								engine.js
+							</a>
+							<a class="source" href="exporter.html">
+								exporter.js
+							</a>
+							<a class="source" href="exporterbackup.html">
+								exporterBACKUP.js
+							</a>
+							<a class="source" href="global-backup.html">
+								global-BACKUP.js
+							</a>
+							<a class="source" href="global.html">
+								global.js
+							</a>
+							<a class="source" href="index.html">
+								index.js
+							</a>
+							<a class="source" href="locationpicker.jquery.html">
+								locationpicker.jquery.js
+							</a>
+							<a class="source" href="output.html">
+								output.js
+							</a>
+							<a class="source" href="privacy-policy.html">
+								privacy-policy.js
+							</a>
+							<a class="source" href="record.html">
+								record.js
+							</a>
+							<a class="source" href="removed-engine-lint.html">
+								removed-engine-lint.js
+							</a>
+							<a class="source" href="support.html">
+								support.js
+							</a>
+					</div>
+				</div>
+			</div>
+		<table cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th class="docs">
+						<h1>removed-engine-lint.js</h1>
+					</th>
+					<th class="code"></th>
+				</tr>
+			</thead>
+			<tbody>
+					<tr id="section_1">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_1">&#182;</a>
+							</div>
+							
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>/* ********************************************************************************* */
+/* **************************** IN MEMORIAM **************************************** */
+/* ************************** Claudius Ptolemy ************************************* */
+/* ********************************************************************************* */
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_2">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_2">&#182;</a>
+							</div>
+							<p>In lieu of copyright
+This method of analysis by summing related occurrences of signifiers I found
+in a work by an American woman astrologer whose name, and book title, I do
+not unfortunately recall, about 3 or 4 decades ago.
+Since it is a sensible and logical approach I have followed it here, with some
+modifications.
+Will 18, 2016, 2017.
+wj18@talktalk.net, eighteenwill@gmail.com</p>
+
+<p>Credits:
+Program: twobob
+Engine: Will 18</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var Engine={version: &quot;7.6.4g-linted&quot;};
+/* ********************************************************************************** */
+
+ /*   This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;. */
+
+var DEBUG = 1;    // allow function expression printout
+
+var rp = -1;    // ruling planet ( number )
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_3">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_3">&#182;</a>
+							</div>
+							<p>AspectValues a: Conjunction, Opposition, Trine, Square, Sextile, Semi-square, Semi-sextile</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var a = [0,180,120,90,60,45,30];    // FIXED
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_4">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_4">&#182;</a>
+							</div>
+							<p>Aspect Factor af: Conjunction, Opposition, Trine, Square, Sextile, Semi-square, Semi-sextile
+values calculated as <em>reciprocals</em> of:
+1<em>sqrt(1), 2</em>sqrt(1), 3<em>sqrt(1), 2</em>sqrt(2), 3<em>sqrt(2), 2</em>sqrt(4), 3*sqrt(4) (to sqrt(2^n) I suppose...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var af = [1,0.5,0.3333,0.3536,0.2357,0.25,0.1667];    // FIXED
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_5">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_5">&#182;</a>
+							</div>
+							<p>Aspect Orb ao:  Conjunction, Opposition, Trine, Square, Sextile, Semi-square, Semi-sextile</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>/* aoIndex = 0 for default (offset into array): USER-EXTENSIBLE */
+/* Note: aspect orb sets 3,4,5 from &#39;Astrotheme.com: natal, synastry, transit */
+/* N.b. orbs traditionally have factors, applying to the planets not the aspects */
+/* orbType: 0 = aspect orbs (modern), 1 = planet orbs (traditional) */
+var orbType = 0;
+/* planet orbs: Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto */
+/* the last three are modern additions */
+var po = [[15,12,7,7,7,9,9,5,5,5],[17,12.5,7,8,8,12,10,5,5,5]];    // USER-EXTENSIBLE
+/* poIndex = 0, 1 (Lilly, al-Biruni) */
+var poIndex = 0;
+var ao = [[9,9,7,7,5,3,3],[9,9,9,9,6,2,3],[10.8,10.0,8.3,7.5,5.7,2.5,1.5],[10,8,6,6,4.5,1,1],[2.6,2.5,2.3,2.3,1.3,1,1]];
+var aoIndex = 0;
+/* Traditional factors (ancient/modern): [signNum[ruler],[exaltation],[detriment],[fall]] */
+/* tfIndex = 0 for ancient, 4, 8 for modern (offset into array): USER-EXTENSIBLE */
+var tf = [[4,3,2,1,0,2,3,4,5,6,6,5],[0,1,-1,5,-1,2,6,-1,-1,4,-1,3],[3,4,5,6,6,5,4,3,2,1,0,2],[6,-1,-1,4,-1,3,0,1,-1,5,-1,2],
+[4,3,2,1,0,2,3,9,5,6,7,8],[9,1,-1,5,8,2,6,7,-1,4,-1,3],[3,9,5,6,7,8,4,3,2,1,0,2],[6,7,-1,4,-1,3,9,1,-1,5,8,2],
+[4,3,2,1,0,2,3,9,5,6,7,8],[0,1,-1,8,5,2,6,7,-1,4,-1,9],[3,9,5,6,7,8,4,3,2,1,0,2],[6,7,-1,4,-1,9,0,1,-1,8,-1,2]];    // USER-EXTENSIBLE
+var tfIndex = 0;
+/* Traditional factors:  [signNum[polarity],[triplicity],[quadruplicity]] */
+var ptq = [[1,0,1,0,1,0,1,0,1,0,1,0],[0,1,2,3,0,1,2,3,0,1,2,3],[0,1,2,0,1,2,0,1,2,0,1,2]];    // FIXED
+/* Theme values ( t[n] in algorithm ) */
+var theme = [0,0,0,0,0,0,0,0,0,0,0,0];    // VARIABLE, RESERVED
+/* numAspects    [conjunction, opposition, trine, square, sextile, semi-square, semi-sextile] */
+var numAspects = [0,0,0,0,0,0,0];    // number of aspect types. VARIABLE, RESERVED
+/* numTradFactors [+ve, -ve, fire, earth, air, water, cardinal, fixed, mutable] */
+var numTradFactors = [0,0,0,0,0,0,0,0,0];    // totals for traditional factors. VARIABLE, RESERVED
+/* tfDominant: [polarity, triplicity, quadruplicity] - dominant pol., trip., quad. or -1 */
+var tfDominant = [0,0,0];    // VARIABLE, RESERVED
+/* psRT planet strength [planetNum,...]  - arbitrary value for contribution to event occurrence */
+/* if psRT[n] set to zero, cancels the relevant planet&#39;s effect */
+var psRT = [1,1,1,1,1,1,1,1,1,1,1,];    // VARIABLE, USER-DEFINABLE
+var precessionFlag;    // true, precess position data before theme calculation
+var precessionVal = -130;    // Hipparchus
+var precessedTheme = [0,0,0,0,0,0,0,0,0,0,0,0];    // VARIABLE, RESERVED
+var nativityYear;
+var orbValue;
+var systemPlanets;    // either 7 or 10, depending on ancient or modern trad factors: VARIABLE, RESERVED
+var charWeighting = [];    // VARIABLE, RESERVED
+var method;    // default fit
+var chartType = 0;    // 0: per-theme; 1: 3-theme moving avg.
+var avgThemeVal = [0,0,0,0,0,0,0,0,0,0,0,0];    // VARIABLE, RESERVED
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_6">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_6">&#182;</a>
+							</div>
+							<p>misc global vars</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var precision = 5;     // default 5 d.p.
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_7">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_7">&#182;</a>
+							</div>
+							<p>var saQ, sbQ, scQ, sdQ, seQ, taQ, tbQ, tcQ, tdQ, teQ;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var sdFactor = 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_8">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_8">&#182;</a>
+							</div>
+							<p>var sTP, tTP;    // num subject/target inflections (s/b local!)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var fnRatio = 1/Math.sqrt(2);    // ratio of linear to quadratic average ( 0 = quadratic, 1 = linear );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_9">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_9">&#182;</a>
+							</div>
+							<p>N.b. in tests typically 3 of the 4 cases for S/T P/T prediction have less error than with fnRatio 0.5</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_10">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_10">&#182;</a>
+							</div>
+							<p>math. functions</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    function signOf ( value )
+    {
+        if ( value &lt; 0 )
+            return -1;
+        if ( value &gt; 0 )
+            return 1;
+        return 0;
+    }
+
+    function minOf ( x, y )
+    {
+        if ( x &lt; y )
+            return x;
+        else
+            return y;
+    }
+    
+    function maxOf ( x, y )
+    {
+        if ( x &gt; y )
+            return x;
+        else
+            return y;
+    }
+
+    function fitLinearEq ( xArray, yArray, index, numValues )
+    {
+        var dataL = { slope: 0, intercept: 0 };
+        var meanComX = calcMean ( xArray, index, numValues, 1 );
+        var meanComY = calcMean ( yArray, index, numValues, 0 );
+        dataL.slope = calcSlope ( meanComX, meanComY, xArray, yArray, index, numValues, 1 );
+        dataL.intercept = calcIntercept ( meanComX, meanComY, dataL.slope );
+        return dataL;
+    }    
+
+    function calcMean ( array, index, numValues, dereference )
+    {
+        var mean = 0;
+        var length = array.length;
+        var n, m, o;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_11">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_11">&#182;</a>
+							</div>
+							<p>if dereference 0 we use the base index</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        for ( n = index; n &lt; index+numValues; n++ )
+        {
+            m = elementInBounds ( n, length );
+            if ( dereference )
+                o = n - index;
+            else
+                o = m;
+
+            mean += array[o];
+        }
+        mean /= numValues;
+        return mean;
+    }
+
+    function calcSlope ( xMean, yMean, xArray, yArray, index, numValues, dereference )
+    {
+        var length = xArray.length;
+        var slope = 0;
+        var nSum = 0;
+        var dSum = 0;
+        var n, m, o;
+
+        for ( n = index; n &lt; index+numValues; n++ )
+        {
+            m = elementInBounds ( n, length );
+            if ( dereference )
+                o = n - index;
+            else
+                o = m;
+
+            nSum += ( o - xMean ) * ( yArray[m] - yMean );
+            dSum += Math.pow ( ( xArray[o] - xMean ), 2 );
+        }
+        slope = nSum/dSum;
+        return slope;
+    }
+
+    function calcIntercept ( xMean, yMean, slope )
+    {
+        var intercept;
+        intercept = yMean - ( slope * xMean );
+        return intercept;
+    }
+
+    function fitQuadraticEq ( xArray, yArray, index, numValues )
+    {    // assumes x/y arrays are the same size and index/numValues within array bounds
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_12">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_12">&#182;</a>
+							</div>
+							<p>xArray is data location, yArray is value</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var dataQ = { aQ: 0, bQ: 0, cQ: 0, dQ: 0, eQ: 0, x0Q: 0, x1Q: 0 };
+        var aQ, bQ, cQ, dQ, eQ, x0Q, x1Q;  // previous definition here for x0Q, x1Q; 
+        var n;
+        var Sx = 0;
+        var Sy = 0;
+        var SxPow2 = 0;
+        var SxPow3 = 0;
+        var SxPow4 = 0;
+        var Sxy = 0;
+        var SxPow2y = 0;
+        var scale = 1/numValues;
+
+        for ( n = index; n &lt; index+numValues; n++ )
+        {
+            Sx += xArray[n];
+            Sy += yArray[n];
+            SxPow2 += Math.pow ( xArray[n], 2 );
+            SxPow3 += Math.pow ( xArray[n], 3 );
+            SxPow4 += Math.pow ( xArray[n], 4 );
+            Sxy += ( xArray[n] * yArray[n] );
+            SxPow2y += Math.pow ( xArray[n], 2 ) * yArray[n];
+        }
+        var sXX;
+        var sXY;
+        var sXXPow2;
+        var sXPow2Y;
+        var sXPow2XPow2;
+        var d0;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_13">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_13">&#182;</a>
+							</div>
+							<p>var x0Q;        // roots, currently unused
+var x1Q;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        sXX = SxPow2 - ( Math.pow ( Sx, 2 ) * scale );
+        sXY = Sxy - ( Sx * Sy * scale );
+        sXXPow2 = SxPow3 - ( ( SxPow2 * Sx ) * scale );
+        sXPow2Y = SxPow2y - ( ( SxPow2 * Sy ) * scale );
+        sXPow2XPow2 = SxPow4 - ( Math.pow ( SxPow2, 2 ) * scale );
+
+        aQ = ( ( sXPow2Y * sXX ) - ( sXY * sXXPow2 ) ) / ( ( sXX * sXPow2XPow2 ) - Math.pow ( sXXPow2, 2 ) );
+        bQ = ( ( sXY * sXPow2XPow2 ) - ( sXPow2Y * sXXPow2 ) ) / ( ( sXX * sXPow2XPow2 ) - Math.pow ( sXXPow2, 2 ) );
+        d0 = bQ * bQ;
+        cQ = ( Sy * scale ) - ( bQ * ( Sx * scale ) ) - ( aQ * ( SxPow2 * scale ) );
+        x0Q = ( -bQ + Math.sqrt ( d0 - ( 4 * aQ * cQ ) ) ) / ( 2 * aQ );
+        x1Q = ( -bQ - Math.sqrt ( d0 - ( 4 * aQ * cQ ) ) ) / ( 2 * aQ );
+        eQ = cQ - ( d0 / ( 4 * aQ ) );    // predicted extremum
+
+        var d1 = 4 * aQ * ( cQ - eQ );
+        var d2 = Math.sqrt ( Math.abs ( d0 - d1) );
+        var d3 = -bQ + d2;
+        var d4 = 2 * aQ;
+        dQ = d3 / d4;    // (float!) location of extremum
+        
+        dataQ.aQ = aQ;
+        dataQ.bQ = bQ;
+        dataQ.cQ = cQ;
+        dataQ.dQ = dQ;
+        dataQ.eQ = eQ;
+        dataQ.x0Q = x0Q;
+        dataQ.x1Q = x1Q;
+        return dataQ;
+    }
+
+    function curveAnalyse ( xArray, yArray, centrePos, curveBounds )
+    {    // xArray and yArray must have same size
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_14">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_14">&#182;</a>
+							</div>
+							<p>curveData: a, b, c coefficients of quadratic eq. y = ax^2+bx+c
+m, c coefficients of linear eq. y = mx+c for L and R halves of the quadratic</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var curveData = { aQ: 0, bQ: 0,  cQ: 0, m0: 0, c0: 0, m1: 0, c1: 0, centre: 0, distL:0, distR: 0 };
+        var ixL = centrePos - curveBounds.distL
+        var ixR = centrePos + curveBounds.distR
+        var themesMax = xArray.length;
+        var xOffset = elementInBounds ( ixL, themesMax );
+        var qData, lData;
+        var transform = [];
+        curveData.distL = curveBounds.distL;
+        curveData.distR = curveBounds.distR;
+        transform = transposeArray ( ixL, ixR, yArray );    // so &#39;feature&#39; start is in array[0]
+        qData = fitQuadraticEq ( xArray, transform, 0, transform.length );
+if ( DEBUG )
+{
+debugP(&quot;x element of [&quot;+elementInBounds( ixL, themesMax )+&quot;, &quot;+elementInBounds ( ixR, themesMax )+&quot;], centre &quot;+centrePos); // _signed_ min, max usable x values in fn
+
+debugP(&quot;Q fn: y = &quot;+pNum(qData.aQ, precision)+&quot;(x-&quot;+xOffset+&quot;)^2+&quot;+pNum(qData.bQ, precision)+&quot;(x-&quot;+xOffset+&quot;)+&quot;+pNum(qData.cQ, precision));
+}
+        curveData.aQ = qData.aQ;
+        curveData.bQ = qData.bQ;
+        curveData.cQ = qData.cQ;
+        curveData.xOff = centrePos - curveBounds.distL;
+        curveData.centre = centrePos;
+        lData = fitLinearEq ( xArray, transform, 0, curveBounds.distL+1 );
+if ( DEBUG )
+debugP(&quot;L fn: y = &quot;+pNum(lData.slope, precision)+&quot;(x-&quot;+xOffset+&quot;)+&quot;+pNum(lData.intercept, precision));
+        curveData.m0 = lData.slope;
+        curveData.c0 = lData.intercept;
+        lData = fitLinearEq ( xArray, transform, curveBounds.distL, curveBounds.distR+1 );
+if ( DEBUG )
+debugP(&quot;R fn: y = &quot;+pNum(lData.slope, precision)+&quot;(x-&quot;+centrePos+&quot;)+&quot;+pNum(lData.intercept, precision));
+        curveData.m1 = lData.slope;
+        curveData.c1 = lData.intercept;
+        return curveData;
+    }
+
+    function predictValues ( curveData, referenceArray)
+    {    // index and numValues of predicted data must be within bounds of referenceArray
+        var v, x, y, y0, y1, y2;
+        var aQ = curveData.aQ;
+        var bQ = curveData.bQ;
+        var cQ = curveData.cQ;
+        var xQ = curveData.xQ;
+        var m0 = curveData.m0;
+        var c0 = curveData.c0;
+        var m1 = curveData.m1;
+        var c1 = curveData.c1;
+        var xOffset = curveData.centre - curveData.distL;
+        var numValues = curveData.distL+curveData.distR;
+
+        if ( numValues &lt; referenceArray.length )
+            numValues++;        // include RH endpoint value (default if numValues = refArray.length)
+        var total = xOffset+numValues;
+        debugP(&quot;Loc.___Predict___Real____% error&quot;);
+        var index = 0;    // calculated fn values always refer start theme x value to zero
+
+        for ( v = xOffset; v &lt; total; v++ )
+        {
+            x = elementInBounds ( v, referenceArray.length );
+            y0 = aQ * Math.pow ( index, 2 ) + bQ * index + cQ;    // quadratic
+
+            if ( v &lt; curveData.centre )
+            {
+                y1 = m0 * index + c0;    // LHS fn
+                y2 = 0;
+                }
+            else
+            {
+                y2 = m1 * ( index - curveData.distL ) + c1;
+                y1 = 0;
+            }
+            index++;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_15">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_15">&#182;</a>
+							</div>
+							<p>(skewed) average better than RMS (quadratic has greater error with larger skew)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            y = y0 * ( 1 - fnRatio ) + ( y1 + y2 ) * fnRatio;
+            y0 = referenceArray[x];
+            debugP(&quot;x = &quot;+x+&quot; y = &quot;+pNum(y, precision)+&quot; &quot;+pNum(referenceArray[x], precision)+&quot; &quot;+pNum(100*(1-(y0/y)), precision));
+        }
+    }
+
+    function transposeArray ( indexL, indexR, sourceArray )
+    {    // indices (signed) are relative to centre (extremum) value
+        var n, m;
+        var transpose = [];
+
+        if ( ( indexR - indexL ) &lt; sourceArray.length )
+            indexR++;    // include both endpoints if not using entire array
+
+        for ( n = indexL; n &lt; indexR; n++ )
+        {
+            m = elementInBounds ( n, sourceArray.length );
+            transpose.push( sourceArray[m] );
+         }
+        return transpose;
+    }
+
+    function elementInBounds ( index, length )
+    {
+        var n, m;
+
+        n = index;
+        m = n;     // default
+
+        if ( n &lt; 0 )
+            m = length + n;
+        else
+            if ( n &gt;= length )
+                m = n -  length;
+        return m;
+    }
+
+    function peakLimits ( array, centrePos, arrayTruthTable )
+    {    // allocate truth array and curveBounds values
+        var curveBounds = { distL: 0, distR: 0 };
+        var distL = 0;
+        var distR = 0;
+        var length = array.length;
+        var k;
+
+        for ( k = 0; k &lt; length; k++ )
+            arrayTruthTable[k] = 0;
+
+        arrayTruthTable[centrePos] = 1; // at least
+        var peakL, peakR;
+        var testValue = array[ centrePos ];
+        peakL = centrePos-1;
+
+        if ( peakL == -1 )
+            peakL = length-1;
+
+        while ( array[ peakL ] &lt; testValue )
+        {
+
+            arrayTruthTable[peakL] = 1;
+            testValue = array[ peakL ];
+            peakL--;
+            distL++;
+            
+            if ( peakL &lt; 0 )
+                peakL = length-1;
+        }
+        testValue = array[ centrePos ];
+        peakR = centrePos+1;
+        
+        if ( peakR == length )
+            peakR = 0;
+
+        while ( array[ peakR ] &lt; testValue )
+        {
+            arrayTruthTable[peakR] = 1;
+            testValue = array[ peakR ];
+            peakR++;
+            distR++;
+            
+            if ( peakR &gt; length-1 )
+                peakR = 0;
+        }
+        curveBounds.distL = distL;
+        curveBounds.distR = distR;
+        return curveBounds;    // number of elements L/R of extremum pos&#39;n
+    }
+
+    function troughLimits ( array, centrePos, arrayTruthTable )
+    {    // allocate truth array and curveBounds values
+        var curveBounds = { distL: 0, distR: 0 };
+        var distL = 0;
+        var distR = 0;
+        var length = array.length;
+        var k;
+
+        for ( k = 0; k &lt; length; k++ )
+            arrayTruthTable[k] = 0;
+
+        arrayTruthTable[centrePos] = 1;
+        var troughL, troughR;
+        var testValue = array[ centrePos ];
+        troughL = centrePos-1;
+
+        if ( troughL == -1 )
+            troughL = length-1;
+
+        while ( array[ troughL ] &gt;  testValue )
+        {
+            arrayTruthTable[troughL] = 1;
+            testValue = array[ troughL ];
+            troughL--;
+            distL++;
+
+            if ( troughL &lt; 0 )
+                troughL = length-1;
+        }
+        testValue = array[ centrePos ];
+        troughR = centrePos+1;
+
+        if ( troughR == length )
+            troughR = 0;
+
+        while ( array[ troughR ] &gt; testValue )
+        {
+            arrayTruthTable[troughR] = 1;
+            testValue = array[ troughR ];
+            troughR++;
+            distR++;
+            
+            if ( troughR &gt; ( length-1 ) )
+                troughR = 0;
+        }
+        curveBounds.distL = distL;
+        curveBounds.distR = distR;
+        return curveBounds;    // number of elements L/R of extremum pos&#39;n
+    }
+
+    function statAnalyse ( array, start, numValues, stats )
+    {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_16">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_16">&#182;</a>
+							</div>
+							<p>standard statistical analysis</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var n;
+        var mean = 0;
+        mean = calcMean ( array, start, numValues );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_17">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_17">&#182;</a>
+							</div>
+							<p>Math.sqrt(variance) is population std deviation (sigma)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var sd = 0;
+        var tmp = 0;
+
+        for ( n = start; n &lt; numValues; n++)
+        {
+           var m = elementInBounds ( n, numValues );
+            tmp += Math.pow ( (array[m] -  mean), 2 );
+        }
+        tmp /= numValues;
+        sd = Math.sqrt ( tmp );
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_18">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_18">&#182;</a>
+							</div>
+							<p>skew (method of moments)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var m3 = 0;
+        var pow3 = 0;
+        var skew = 0;
+        tmp = 0;
+        for ( n = start; n &lt; numValues; n++ )
+        {
+            m = elementInBounds ( n, numValues );
+            tmp += Math.pow((array[m] -  mean), 3);
+        }
+        m3 = tmp/numValues;
+        tmp = Math.pow(sd, 2);
+        pow3 = Math.pow ( tmp, 1.5 );    // power (3/2)
+        skew = m3/pow3;
+        stats.mean = mean;
+        stats.sd = sd;
+        stats.skew = skew;
+        return stats;
+    }
+
+    function pNum ( longNum, precision )
+    {
+        var num;
+        var num2;
+        var factor;
+        factor = Math.pow ( 10, precision );
+        num = longNum * factor;
+        num2 = Math.round ( num + 0.5 ) / Math.pow ( 10, precision );
+        return num2;
+    }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_19">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_19">&#182;</a>
+							</div>
+							<p>utility functions</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    function themeFit ( sArrayVal, tArrayVal, sTpSgn, tTpSgn, statsS, statsT )
+    {    // s, t theme values, s, t inflection sign at theme value, s,t limit values (mean +/- SD default)
+        var fit = 0;
+        var sMin, sMax, tMin, tMax;    // limit values
+         
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_20">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_20">&#182;</a>
+							</div>
+							<p>these limits are FIXED here by use of stats struct</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        sMin = statsS.mean - statsS.sd;
+        sMax = statsS.mean + statsS.sd;
+        tMin = statsT.mean - statsT.sd ;
+        tMax = statsT.mean + statsT.sd ;
+    
+        if ( sTpSgn == tTpSgn )
+        {    // signs both the same hence shapes are similar
+            if ( sTpSgn == 1 )    // trough, don&#39;t need to check both
+            {
+                if ( ( sArrayVal &lt; sMin ) &amp;&amp; ( tArrayVal &lt; tMin ) )    // ONLY if both below limit
+                    fit = Math.abs( sArrayVal - tArrayVal );
+            }
+            else
+            {    // sgn of BOTH is -ve, check peak
+                if ( ( sArrayVal &gt; sMax ) &amp;&amp; ( tArrayVal &gt; tMax ) )    // ONLY if both above limit
+                    fit = Math.abs( sArrayVal - tArrayVal );
+            }
+        }
+        else
+        {    // signs differ so shapes are mutually inverse (complementary)
+            if ( ( sTpSgn == 1 ) &amp;&amp; ( tTpSgn == -1 ) )
+            {    // trough/peak so &lt;limit, &gt;limit
+                if ( ( sArrayVal &lt; sMin ) &amp;&amp; ( tArrayVal &gt; tMax ) )
+                {    // find diff as if in same _range_ as similarity
+                    fit = -Math.abs ( sArrayVal - ( tArrayVal - tMax ) )
+                }
+            }
+            else
+            {
+                if ( ( sTpSgn == -1 ) &amp;&amp; ( tTpSgn == 1 ) )
+                {    // peak/trough so &gt;limit, &lt;limit
+                    if ( ( sArrayVal &gt; sMax ) &amp;&amp; ( tArrayVal &lt; tMin ) )
+                        fit = -Math.abs ( tArrayVal - ( sArrayVal - sMax ) )
+                }
+            }
+        }
+        return fit;
+    }
+    
+    function scaleFactor ( sCentre, tCentre )
+    {
+        var sf;
+        sf = Math.abs(sCentre-tCentre);
+    
+        if ( sf &gt; 6 )
+            sf = 12 - sf;
+    
+        sf = Math.cos((sf/6)*(3.14159/2));    // miserable approx to PI/2, should find the js one...
+        return sf;
+    }
+
+    function Qdump ( saQ, taQ, sdQ, tdQ, seQ, teQ )
+    {
+        debugP(&quot;s TP &quot;+pNum ( sdQ, 0 )+&quot; t TP &quot;+pNum ( tdQ, 0 ) );
+        debugP(&quot;saQ &quot;+pNum(saQ, precision)+&quot; taQ &quot;+pNum(taQ, precision));
+        if ( saQ &gt; 0 )
+            debugP(&quot;subject concave&quot;);
+        if ( saQ &lt; 0 )
+            debugP(&quot;subject convex&quot;);
+        if ( saQ == 0)
+            debugP(&quot;subject linear?&quot;);
+        if ( taQ &gt; 0 )
+            debugP(&quot;target concave&quot;);
+        if ( taQ &lt; 0 )
+            debugP(&quot;target convex&quot;);
+        if ( taQ == 0)
+            debugP(&quot;target linear?&quot;);
+        if ( ( sdQ &lt; 0 ) || ( sdQ &gt; 11 ) )    // note s/b exL but this is too limiting for approx. curve
+            debugP(&quot;WARNING! extremum seQ &quot;+pNum(seQ, precision)+&quot; location failed: sdQ &quot;+pNum(sdQ, precision));
+        if ( ( tdQ &lt; 0 ) || ( tdQ &gt; 11 ) )    // note s/b exL but this is too limiting for approx. curve
+            debugP(&quot;WARNING! extremum teQ &quot;+pNum(teQ, precision)+&quot; location failed: tdQ &quot;+pNum(tdQ, precision));
+    }
+
+    function isAspect ( pos1, pos2, aspect, orb )
+    {
+        var diff = Math.abs(pos1-pos2);
+        diff = ( diff &gt; 180 ? 360-diff : diff );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_21">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_21">&#182;</a>
+							</div>
+							<p>if diff within aspect-orb and aspect+orb, is aspect</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( ( aspect-orb &lt; diff ) &amp;&amp; ( aspect+orb &gt; diff ) )
+            return 1;
+        return 0;
+    }
+            
+    function aspectStrength ( pos1, pos2, aspect, orb, factor )
+    {    // -ve return is not-an-aspect
+        var strength = 0;
+        var pDiff = Math.abs ( pos1- pos2 );
+        pDiff = ( pDiff &gt; 180 ? 360 - pDiff : pDiff );
+        strength = 1 - ( Math.abs ( pDiff - aspect ) / orb );
+        strength =strength*factor;
+        return strength;
+    }
+    
+    function signNum ( pos )
+    {
+        var value = pos/30-0.5;
+        value = ( value&lt;0 ? 0 : value );
+        value = Math.round ( value );
+        value = ( value&gt;=12 ? -1 : value );
+        return value;
+    }
+
+    function house ( pos, ascendant )
+    {
+        var value = ( pos - ascendant ) / 30-0.5;
+        value = Math.round ( value );
+        value = ( value &lt; 0 ? value + 12 : value );
+        value = ( value &gt; 12 ? value - 12 : value );
+        return value+1;
+    }
+
+    function relStrength ( sArrayT, tArrayT )
+    {
+        var v;
+        for ( v = 0; v &lt; 12; v++ )
+        {
+            charWeighting[0] = 0;
+            charWeighting[1] = 0;
+        }
+
+        for ( v = 0; v &lt; 12; v++ )
+        {
+            charWeighting[0] += sArrayT[v];    // add theme values
+            charWeighting[1] += tArrayT[v];
+        }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_22">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_22">&#182;</a>
+							</div>
+							<p>normalise results</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var total  = charWeighting[0]+charWeighting[1];
+        charWeighting[0] /= total;
+        charWeighting[1] /= total;    // redundant for graphical purposes
+    }
+
+    function locateThemeMax ( array, index, numValues )
+    {
+        var themeMaxValue = 0;
+        var themeMaxNum = -1;
+        var v;
+
+        for ( v = index; v &lt; index+numValues; v++ )
+            if ( array[v] &gt; themeMaxValue )
+            {
+                themeMaxValue = array[v];
+                themeMaxNum = v;
+            }
+        return themeMaxNum;
+    }
+
+    function locateThemeMin ( array, index, numValues )
+    {
+        var themeMinValue = 1;
+        var themeMinNum = -1;
+        var v;
+
+        for ( v = index; v &lt; index+numValues; v++ )
+            if ( array[v] &lt;= themeMinValue )
+            {
+                themeMinValue = array[v];
+                themeMinNum = v;
+            }
+        return themeMinNum;
+    }
+
+    function movingAverage ( array )
+    {
+        var t, u, v;
+        for ( v = 0; v &lt; 12; v++ )
+            avgThemeVal[v] = 0;
+
+        for ( v = 0; v &lt; 12; v++ )
+        {
+            for ( u = -1; u &lt; 2; u++ )
+            {
+                t = v+u;
+                
+                if ( t &gt; 11 )
+                    t -= 12;
+                if ( t &lt; 0 )
+                    t = 12+t
+                
+                avgThemeVal[v] += array[t];
+            }
+            avgThemeVal[v] /= 3;
+        }
+    }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_23">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_23">&#182;</a>
+							</div>
+							<p>main algorithm</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    function getThemeValues(Sun,Moon,Mercury,Venus,Mars,Jupiter,Saturn,Uranus,Neptune,Pluto,Ascendant,Midheaven)
+     {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_24">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_24">&#182;</a>
+							</div>
+							<p>functions internal to getThemeValues()</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        function numPlanetsInHouse ( houseNum )
+        {
+            numPlanets = 0;
+            for ( n = 0; n &lt; systemPlanets; n++ )
+                if ( house ( planet[n], planet[10] ) == houseNum )
+                    numPlanets++;
+            return numPlanets;
+        }
+
+        function numStrongPlanetsInHouse ( houseNum )
+        {
+            numStrong = 0;
+            for ( n = 0; n &lt; systemPlanets; n++ )
+                if ( house ( planet[n], planet[10] ) == houseNum )    // planet n in house 1
+                {
+                    if ( tf[tfIndex][signNum(planet[n])] == n )    // ruler?
+                        numStrong++;
+                    if ( tf[tfIndex+1][signNum(planet[n])] != -1 )
+                        if ( tf[tfIndex+1][signNum(planet[n])] == n )    // exalted?
+                            numStrong++;
+                }
+            return numStrong;
+        }
+        
+        function numPlanetsInSign ( sign )
+        {
+            numPlanets = 0;
+            for ( n = 0; n &lt; systemPlanets; n++ )
+                if ( signNum ( planet[n] ) == sign )
+                    numPlanets++;
+            return numPlanets;
+        }
+        
+        function numStrongPlanetsInSign ( sign )
+        {
+            numStrong = 0;
+            for ( n = 0; n &lt; systemPlanets; n++ )    // for all planets
+            {
+                if ( signNum ( planet[n] ) == sign )
+                {
+                    if ( tf[tfIndex][sign] == n )    // ruler
+                        numStrong++;
+                    if ( tf[tfIndex+1][signNum(planet[n])] != -1 )
+                        if ( tf[tfIndex+1][sign] == n )    // exalted
+                            numStrong++;
+                }
+            }
+            return numStrong;
+        }
+    
+        function isMutualReception ( Px )
+        {
+            var signY = signNum(planet[Px]);
+    
+            if ( tf[tfIndex][signY] != Px )
+            {
+                var signX;
+                for ( m = 0; m &lt; systemPlanets; m++ )
+                {
+                    if ( tf[tfIndex][m] == Px )
+                    {
+                        signX = m;
+                        if ( signNum(planet[tf[tfIndex][signY]]) == signX )
+                            return signNum(planet[tf[tfIndex][signY]]);
+                    }
+                }
+            }
+            return -1;
+        }
+    
+        /* Precession of equinoxes - shift of 1st. point of Aries (Ras Hammel still corresponds
+        in the Hindu system of sidereal astrology) is now in Pisces.
+        Does this make an astrological Aries (outside the sidereal system) a Pisces?
+        Precession of equinoxes gives great circle of approx. 25772 years. First point of
+        Aries defined in 130 BCE by Hipparchus.
+        Current first point of Aries is thus 360*(currentYear+130)/25772, or about 0 Pisces.
+        */
+        function precession ( year )
+        {
+            var elapsedYears;
+            elapsedYears = Math.abs ( year - precessionVal );
+            return elapsedYears;            
+        }
+        
+        function precessPositions ( nativityYear )
+        {
+            var degrees = precession (nativityYear );
+            for ( n = 0; n &lt; 12; n++ )
+            {
+                planet[n] -= degrees;
+                planet[n] = ( planet[n] &lt; 0 ? 360+planet[n] : planet[n] );
+                planet[n] = ( planet[n] &gt; 360 ? planet[n]-360 : planet[n] );
+            }
+        }
+
+        function calculateThemeValue ( themeNum, signRuler, rulerWeighting )    // 1 - 12
+        {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_25">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_25">&#182;</a>
+							</div>
+							<p>split allocation between alternate rulers if modern trad. factgors selected</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var weighting = ( rulerWeighting == 0.5 ? 0.5 : 1 )
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_26">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_26">&#182;</a>
+							</div>
+							<p>avoid adding contribution from non-ruler associations twice</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var themeValue, inMR;
+            themeValue = 0;
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_27">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_27">&#182;</a>
+							</div>
+							<p>i)  Are any of the following in House themeNum? 
+ruler of sign themeNum-1, Sun, Moon, Ascendant ruler, a strong
+planet, two or more planets  (allocate one point ( * weighting ) for each).</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            if ( signRuler != -1 )    // check for sign ruler in House themeNum
+            {    // is ruler in House?
+                themeValue += ( house ( planet[signRuler], planet[10] ) == themeNum ? ps[signRuler]*rulerWeighting : 0 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_28">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_28">&#182;</a>
+							</div>
+							<p>is the ruler in mutual reception?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                inMR = isMutualReception ( signRuler );
+                if ( inMR != -1 )
+                {    // effective conjunction affects theme of both planets involved
+                    themeValue += ps[signRuler];    // add a point - note: we do not consider aspect just sign
+                    theme[inMR] += ps[tf[0][inMR]];
+                }
+            }
+            if ( themeNum != 5 )    // Sun in House themeNum (not Leo)?
+                themeValue += ( house ( planet[0], planet[10] ) == themeNum ? ps[0]*weighting : 0 );
+            if ( themeNum != 4 )    // // Moon in House themeNum (not Cancer)?
+                themeValue += ( house ( planet[1], planet[10] ) == themeNum ? ps[1]*weighting : 0 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_29">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_29">&#182;</a>
+							</div>
+							<p>Asc. ruler in House themeNum?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            if ( rp != - 1)
+                themeValue += ( house ( planet[rp], planet[10] ) == themeNum ? ps[rp]*weighting : 0 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_30">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_30">&#182;</a>
+							</div>
+							<p>any strong planets? Add extra point
+it is  possible for more than 1 planet to be in exaltation, depending on
+rules in tf[planetNum, 1]</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            themeValue += ( numStrongPlanetsInHouse ( themeNum ) &gt; 1 ? weighting : 0 );    // 1 point for each?
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_31">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_31">&#182;</a>
+							</div>
+							<p>2 or more planets in house 1?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            themeValue += ( numPlanetsInHouse ( themeNum ) &gt; 1 ? weighting :  0 );
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_32">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_32">&#182;</a>
+							</div>
+							<p>ii)  Are any of the following in sign themeNum?  Sign ruler, Sun, Moon, Ascendant
+a strong planet, two or more planets?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            if ( signRuler != -1 )    // check for signRuler in sign
+                themeValue += ( signNum ( planet[signRuler] ) == themeNum-1 ? ps[signRuler]*rulerWeighting : 0 );
+
+            if ( themeNum != 5 )
+                themeValue += ( signNum ( planet[0] ) == themeNum-1 ? ps[0]*weighting : 0 );
+            if ( themeNum != 4 )
+                themeValue += ( signNum ( planet[1] ) == themeNum-1 ? ps[1]*weighting : 0 );
+            themeValue += ( signNum ( planet[10] ) == themeNum-1 ? weighting : 0 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_33">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_33">&#182;</a>
+							</div>
+							<p>strong planets in sign include both rp and exalted</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            themeValue += ( numStrongPlanetsInSign ( themeNum-1 ) &gt; 0 ? weighting : 0 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_34">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_34">&#182;</a>
+							</div>
+							<p>2 or more planets in sign themeNum-1?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            themeValue += ( numPlanetsInSign ( themeNum-1 ) &gt; 1 ? weighting : 0 );
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_35">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_35">&#182;</a>
+							</div>
+							<p>iii) Check for: sign ruler aspecting the Sun, Moon, Ascendant (add
+strength of the aspect).</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            for ( n = 0; n &lt; 7; n++ )    // aspect list
+            {
+                if ( orbType == 0 )    // aspect orbs
+                    orbValue = ao[aoIndex][n];
+                else
+                    orbValue = 0.5*(po[poIndex][0]+po[poIndex][signRuler]);    // half sum of planet orbs
+
+                if ( themeNum != 5 )
+                {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_36">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_36">&#182;</a>
+							</div>
+							<pre><code>               if ( orbType == 0 )    // aspect orbs
+                   orbValue = ao[aoIndex][n];
+               else
+                   orbValue = 0.5*(po[poIndex][0]+po[poIndex][signRuler]);    // half sum of planet orbs
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                    if ( isAspect ( planet[0], planet[signRuler], a[n], orbValue ) )    // signRuler/Sun aspect
+                        themeValue += ps[0]*ps[signRuler]*weighting * rulerWeighting * aspectStrength ( planet[0], planet[signRuler], a[n], orbValue, af[n] );
+                }
+
+                if ( themeNum != 4 )
+                {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_37">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_37">&#182;</a>
+							</div>
+							<pre><code>               if ( orbType == 0 )    // aspect orbs
+                   orbValue = ao[aoIndex][n];
+               else
+                   orbValue = 0.5*(po[poIndex][1]+po[poIndex][signRuler]);
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                    if ( isAspect ( planet[1], planet[signRuler], a[n], orbValue ) )    // signRuler/Moon aspect
+                        themeValue += ps[1]*ps[signRuler]*weighting * rulerWeighting * aspectStrength ( planet[1], planet[signRuler], a[n], orbValue, af[n] );
+                }
+                
+                if ( orbType == 1 )    // planet orb override for Asc. and M.C. since they don&#39;t have one
+                    orbValue = po[poIndex][signRuler];    // we don&#39;t have a planet orb for asc.
+
+                if ( isAspect ( planet[10], planet[signRuler], a[n], orbValue ) )    // signRuler/Ascendant aspect
+                {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_38">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_38">&#182;</a>
+							</div>
+							<pre><code>               if ( orbType == 0 )    // aspect orbs
+                   orbValue = ao[aoIndex][n];
+               else
+                   orbValue = po[poIndex][signRuler];    // we don't have a planet orb for asc.
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                    themeValue +=ps[signRuler]* weighting * aspectStrength ( planet[10], planet[signRuler], a[n], orbValue, af[n] );
+                }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_39">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_39">&#182;</a>
+							</div>
+							<pre><code>           if ( themeNum != 1 )    // don't consider MC in Aries?
+           {
+               if ( orbType == 0 )    // aspect orbs
+                   orbValue = ao[aoIndex][n];
+               else
+                   orbValue = po[poIndex][signRuler];    // we don't have a planet orb for MC
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                    if ( isAspect ( planet[11], planet[signRuler], a[n], orbValue ) )    // signRuler/Midheaven aspect
+                        themeValue += ps[signRuler]*weighting * aspectStrength ( planet[11], planet[signRuler], a[n], orbValue, af[n] );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_40">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_40">&#182;</a>
+							</div>
+							<pre><code>           }
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+            }
+            theme[themeNum-1] += themeValue;    // allow for multiple calls
+        }
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_41">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_41">&#182;</a>
+							</div>
+							<p>Create f prefixed usable values</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var fSun = TidyUpAndFloat(Sun);
+        var fMoon = TidyUpAndFloat(Moon);
+        var fMercury = TidyUpAndFloat(Mercury);
+        var fVenus = TidyUpAndFloat(Venus);
+        var fMars = TidyUpAndFloat(Mars);
+        var fJupiter = TidyUpAndFloat(Jupiter);
+        var fSaturn = TidyUpAndFloat(Saturn);
+        var fUranus = TidyUpAndFloat(Uranus);
+        var fNeptune = TidyUpAndFloat(Neptune);
+        var fPluto = TidyUpAndFloat(Pluto);
+        var fAscendant = TidyUpAndFloat(Ascendant);
+        var fMidheaven = TidyUpAndFloat(Midheaven);
+        var numPlanets = 0;
+        var numStrong = 0;
+        /* Planetary positions */
+        var planet = [fSun,fMoon,fMercury,fVenus,fMars,fJupiter,fSaturn,fUranus,fNeptune,fPluto,fAscendant,fMidheaven];
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_42">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_42">&#182;</a>
+							</div>
+							<p>algorithm main starts here</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var m,n,o;    // loop vars.
+        var k,tmp;
+        var ps = [0,0,0,0,0,0,0,0,0,0,0,0];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_43">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_43">&#182;</a>
+							</div>
+							<p>initialise theme array</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+        for ( n = 0; n &lt; 12; n++ )
+        {
+            theme[n] = 0;
+            avgThemeVal[n] = 0;
+            ps[n] = psRT[n];        // reset to initialised values (1)
+        }
+
+        systemPlanets = 10;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_44">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_44">&#182;</a>
+							</div>
+							<p>no modern planets if factors are traditional not modern (or user defined)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfIndex == 0 )
+        {
+            for ( n= 9; n &lt; 12; n++ )
+                ps[n] = 0;    // No Uranus, Neptune, Pluto - weighting zero
+            systemPlanets = 7;
+        }
+    
+        if ( precessionFlag != 0 )
+            precessPositions ( nativityYear  );
+    
+        for ( n = 0; n&lt; 9; n++ )
+            numTradFactors[n] = 0;
+        for ( n = 0; n&lt; 3; n++ )
+            tfDominant[n] = 0;
+        for ( n = 0; n &lt; 8; n++ )
+            numAspects[n] = 0;
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_45">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_45">&#182;</a>
+							</div>
+							<p>find number of polarities, triplicities, quadruplicities
+-ve, +ve, fire, earth, air, water, card, fix, mut totals</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        for ( n = 0; n &lt;12; n++)    // for all planets, Asc., M.C.    
+        {
+            k = signNum ( planet[n] )
+    
+            if ( ptq[0][k] == 1 )    // can only be [0,1]
+                numTradFactors[0]++;    // +ve sign
+            else
+                numTradFactors[1]++;    // -ve sign
+    
+            if ( ptq[1][k] == 0 )
+                numTradFactors[2]++;    // fire
+            if ( ptq[1][k] ==1 )
+                numTradFactors[3]++;    // earth
+            if ( ptq[1][k] == 2 )
+                numTradFactors[4]++;    // air
+            if ( ptq[1][k] == 3 )
+                numTradFactors[5]++;    // water
+            
+            if ( ptq[2][k] == 0 )
+                numTradFactors[6]++;    // cardinal
+            if ( ptq[2][k] == 1 )
+                numTradFactors[7]++;    // fixed
+            if ( ptq[2][k] == 2 )
+                numTradFactors[8]++;    // mutable
+        }
+        
+        if ( numTradFactors[0] &gt; numTradFactors[1] )    // polarity
+            tfDominant[0] = 1;        // +ve dominant
+        else
+            tfDominant[0] = 0;        // -ve dominant
+    
+        tfDominant[1] = 0;        // default fire
+    
+        for ( n = 3; n &lt; 6; n++ )
+            if ( numTradFactors[n] &gt; tfDominant[1] )
+                tfDominant[1] = numTradFactors[n];
+    
+        for ( n = 3; n &lt; 6; n++ )
+            if ( n != tfDominant[1] )
+                if ( numTradFactors[n] == tfDominant[1] )    // no dominant trip.
+                    tfDominant[1] = -1;
+    
+        tfDominant[2] = 0;        // default cardinal
+        for ( n = 6; n &lt; 9; n++ )
+            if ( numTradFactors[n] &gt; tfDominant[2] )
+                tfDominant[2] = numTradFactors[n];
+    
+        for ( n = 6; n &lt; 9; n++ )
+            if ( n != tfDominant[2] )
+                if ( numTradFactors[n] == tfDominant[2] )    // no dominant trip.
+                    tfDominant[2] = -1;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_46">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_46">&#182;</a>
+							</div>
+							<p>find number of each aspect
+for each planet, then for each aspect, if aspect, add 1</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( orbType == 0 )
+        {
+            for ( n = 0; n &lt; 12; n++ )
+                for ( m = n+1; m &lt; 12; m++ )
+                    if ( n != m )
+                    {
+                        if ( !( ( ( systemPlanets == 7 ) &amp;&amp; ( ( n &gt; 6 ) &amp;&amp; ( n &lt; 10 ) ) ) ) )
+                        {
+                            for ( o = 0; o &lt; a.length; o++ )    // aspect list
+                                if ( isAspect ( planet[n], planet[m], a[o], ao[aoIndex][o] ) )
+                                    numAspects[o]++;
+                        }
+                    }
+        }
+        else
+        {
+            for ( n = 0; n &lt; systemPlanets; n++ )    // aspects between planets
+                for ( m = n+1; m &lt; systemPlanets; m++ )
+                    if ( n != m )
+                    {
+                        orbValue = 0.5*(po[poIndex][n]+po[poIndex][m]);
+                        for ( o = 0; o &lt; a.length; o++ )
+                            if ( isAspect ( planet[n], planet[m], a[o], orbValue ) )
+                                numAspects[o]++;
+                    }
+
+            for ( n = 0; n &lt; systemPlanets; n++ )    // aspects from planets to Asc. and M.C.
+                for ( m = 10; m &lt; 12; m++ )
+                {
+                    orbValue = po[poIndex][n];
+                    for ( o = 0; o &lt; a.length; o++ )
+                    {
+                        if ( isAspect ( planet[n], planet[m], a[o], orbValue ) )
+                            numAspects[o]++;
+                    }
+                }
+        }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_47">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_47">&#182;</a>
+							</div>
+							<p>find dominant aspect (if any)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        tmp = 0;
+        for ( n = 0; n &lt; a.length; n++ )    // n is aspect number
+            if ( numAspects[n] &gt; tmp )
+                tmp = n;
+    
+        for ( m = 0; m &lt; a.length; m++ )
+            if ( m != tmp )
+            {
+                if ( numAspects[m] == tmp )    // no dominant aspect type
+                    tmp = -1;
+            }
+        var dominantAspect = tmp;
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_48">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_48">&#182;</a>
+							</div>
+							<p>check for debility/fall in planets and reduce contribution</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        for ( n = 0 ; n &lt; systemPlanets; n++ )    // not Ascendant or Midheaven
+        {
+            var sign = signNum ( planet[n] );
+            
+            if ( ( tf[3][sign] == n ) || ( tf[4][sign] == n ) )
+                ps[n] = 0.5;    // reduce contribution
+        }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_49">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_49">&#182;</a>
+							</div>
+							<p>Ascendant ruler ( chart ruler )</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        rp = tf[tfIndex][signNum ( planet[10] )];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_50">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_50">&#182;</a>
+							</div>
+							<h5>end initialisation</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_51">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_51">&#182;</a>
+							</div>
+							<p>Chart analysis - calculate theme values
+n.b. signs are numbered [0,11], houses are [1,12]</p>
+
+<h5>Theme 1</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 1, tf[tfIndex][0],1 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_52">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_52">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on any of the following:  fire, cardinal, conjunctions?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 0 )        // fire dominant?
+            theme[0] += 1;
+        if ( tfDominant[2] == 0 )        // cardinal dominant?
+            theme[0] += 1;
+        if ( dominantAspect == 0 )        // conjunctions dominant
+            theme[0] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_53">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_53">&#182;</a>
+							</div>
+							<h5>end Theme 1</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_54">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_54">&#182;</a>
+							</div>
+							<h5>Theme 2</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 2, tf[tfIndex][1], 1 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_55">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_55">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on any of the following:  earth, fixed</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 1 )        // earth dominant?
+            theme[1] += 1;
+        if ( tfDominant[2] == 1 )        // fixed dominant?
+            theme[1] += 1;
+        if ( dominantAspect == 6 )        // semi-sextiles dominant
+            theme[1] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_56">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_56">&#182;</a>
+							</div>
+							<p>should include the semi-sextile here
+qusetionable allocation of extra point, remove?
+       theme[1] = ( theme[1] > 3 ? theme[1]+1 : theme[1] );    // this requires max aspect strength!
+debugP("theme 2: value "+theme[1]);</p>
+
+<h5>end Theme 2</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_57">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_57">&#182;</a>
+							</div>
+							<h5>Theme 3</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 3, tf[tfIndex][2], 1 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_58">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_58">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on any of the following:  air, mutable, sextile</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 2 )        // air dominant?
+            theme[2] += 1;
+        if ( tfDominant[2] == 2 )        // mutable dominant?
+            theme[2] += 1;
+        if ( dominantAspect == 4 )        // sextiles dominant
+            theme[2] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_59">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_59">&#182;</a>
+							</div>
+							<h5>end Theme 3</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_60">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_60">&#182;</a>
+							</div>
+							<h5>Theme 4</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 4, tf[tfIndex][3], 2 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_61">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_61">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on water, cardinal, square aspects?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 3 )        // water dominant?
+            theme[3] += 1;
+        if ( tfDominant[2] == 0 )        // cardinal dominant?
+            theme[3] += 1;
+        if ( dominantAspect == 3 )        // squares dominant
+        theme[3] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_62">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_62">&#182;</a>
+							</div>
+							<h5>end Theme 4</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_63">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_63">&#182;</a>
+							</div>
+							<h5>Theme 5</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 5, tf[tfIndex][4], 2 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_64">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_64">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on fire, fixed, trine aspects?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 0 )        // fire dominant?
+            theme[4] += 1;
+        if ( tfDominant[2] == 1 )        // fixed dominant?
+            theme[4] += 1;
+        if ( dominantAspect == 2 )        // trines dominant
+            theme[4] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_65">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_65">&#182;</a>
+							</div>
+							<h5>end Theme 5</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_66">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_66">&#182;</a>
+							</div>
+							<h5>Theme 6</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 6, tf[tfIndex][5], 1 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_67">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_67">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on earth, mutable?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 1 )        // earth dominant?
+            theme[5] += 1;
+        if ( tfDominant[2] == 2 )        // mutable dominant?
+            theme[5] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_68">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_68">&#182;</a>
+							</div>
+							<p>should deal with presence of quincunx aspect here but we don't include it in aspect list
+since its strength is not in the series
+       if ( dominantAspect == 5 )        // semi-square in lieu of quincunx? not really
+           theme[5] += 1;
+       theme[5] = ( theme[5] > 3 ? theme[5]+1 : theme[5] );    // arbitrary
+debugP("theme 6: value "+theme[5]);</p>
+
+<h5>end Theme 6</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_69">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_69">&#182;</a>
+							</div>
+							<h5>Theme 7</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 7, tf[tfIndex][6], 1 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_70">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_70">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on any of the following:  air, cardinal,
+oppositions?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 2 )        // air dominant?
+            theme[6] += 1;
+        if ( tfDominant[2] == 0 )        // cardinal dominant?
+            theme[6] += 1;
+        if ( dominantAspect == 1 )        // oppositions dominant
+            theme[6] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_71">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_71">&#182;</a>
+							</div>
+							<h5>end Theme 7</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_72">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_72">&#182;</a>
+							</div>
+							<h5>Theme 8</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var ruler = tf[tfIndex][7];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_73">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_73">&#182;</a>
+							</div>
+							<p>debugP("theme 8: ruler is "+ruler+" tfIndex "+tfIndex);
+separate use of ancient ruler(s) from modern ruler
+sort on tfIndex</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>/*
+        if ( ruler == 9 )    // Pluto, modern ruler of Scorpio
+        {
+            calculateThemeValue ( 8, ruler, 0.5 );
+            calculateThemeValue ( 8, 4, 0.5 );    // add contribution from ancient ruler Mars
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_74">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_74">&#182;</a>
+							</div>
+							<p>also check Mars/Pluto aspects
+do we need to do this if the rulers are separate? this is a hybrid...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            for ( n = 0; n &lt; 7; n++ )
+            {
+                if ( orbType == 0 )
+                    orbValue = ao[aoIndex][n];
+                else
+                    orbValue =  0.5*(po[poIndex][4]+po[poIndex][ruler]);
+
+                if ( isAspect ( planet[4], planet[ruler], a[n], orbValue ))    // signRuler/Mars aspect
+                    theme[7] += ps[4]*ps[ruler]*aspectStrength ( planet[4], planet[ruler], a[n], orbValue, af[n] );
+            }
+
+        }
+        else
+*/
+            calculateThemeValue ( 8, ruler, 1 );    // just use ancient ruler Mars
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_75">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_75">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on any of the following:  water, fixed</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 3 )        // water dominant?
+            theme[7] += 1;
+        if ( tfDominant[2] == 1 )        // fixed dominant?
+            theme[7] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_76">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_76">&#182;</a>
+							</div>
+							<pre><code>   if ( dominantAspect == 5 )        // semi-square in lieu of quincunx? not really
+       theme[7] += 1;
+</code></pre>
+
+<p>should also by rights consider quincunx here
+use presence of semi-squares? indicates tension as does quincunx
+       theme[7] = ( theme[7] > 3 ? theme[7]+1 : theme[7] );
+debugP("theme 8: value "+theme[7]);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_77">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_77">&#182;</a>
+							</div>
+							<h5>end Theme 8</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_78">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_78">&#182;</a>
+							</div>
+							<h5>Theme 9</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 9, tf[tfIndex][8], 1 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_79">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_79">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on any of the following:  fire, mutable, trine aspects</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 0 )        // fire dominant?
+            theme[8] += 1;
+        if ( tfDominant[2] == 2 )        // mutable dominant?
+            theme[8] += 1;
+        if ( dominantAspect == 2 )        // trines dominant
+            theme[8] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_80">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_80">&#182;</a>
+							</div>
+							<h5>end Theme 9</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_81">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_81">&#182;</a>
+							</div>
+							<h5>Theme 10</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        calculateThemeValue ( 10, tf[tfIndex][9], 1 );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_82">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_82">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on any of the following:  fire, mutable, trine aspects</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 1 )        //  earth dominant?
+            theme[9] += 1;
+        if ( tfDominant[2] == 0 )        // cardinal dominant?
+            theme[9] += 1;
+        if ( dominantAspect == 3 )        // squares dominant
+            theme[9] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_83">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_83">&#182;</a>
+							</div>
+							<h5>end Theme 10</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_84">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_84">&#182;</a>
+							</div>
+							<h5>Theme 11</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        ruler = tf[tfIndex][10];
+/*
+        if ( ruler == 7 )    // Uranus, modern ruler of Aquarius
+        {
+            calculateThemeValue ( 11, ruler, 0.5 );
+            calculateThemeValue ( 11, 6, 0.5 );    // add contribution from ancient ruler Saturn
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_85">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_85">&#182;</a>
+							</div>
+							<p>also check Saturn/Uranus aspects</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            for ( n = 0; n &lt; 7; n++ )
+            {
+                if ( orbType == 0 )
+                    orbValue = ao[aoIndex][n];
+                else
+                    orbValue =  0.5*(po[poIndex][4]+po[poIndex][ruler]);
+
+                if ( isAspect ( planet[6], planet[ruler], a[n], orbValue ))    // signRuler/Mars aspect
+                    theme[10] += ps[6]*ps[ruler]*aspectStrength ( planet[6], planet[ruler], a[n], orbValue, af[n] );
+            }
+        }
+        else
+*/
+            calculateThemeValue ( 11, ruler, 1 );    // just use ancient ruler Saturn
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_86">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_86">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on air, fixed, sextile aspects?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 2 )        // air dominant?
+            theme[10] += 1;
+        if ( tfDominant[2] == 1 )        // fixed dominant?
+            theme[10] += 1;
+        if ( dominantAspect == 4 )        // sextiles dominant
+            theme[10] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_87">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_87">&#182;</a>
+							</div>
+							<h5>end Theme 11</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_88">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_88">&#182;</a>
+							</div>
+							<h5>Theme 12</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        ruler = tf[tfIndex][11];
+/*
+        if ( ruler == 8 )    // Neptune, modern ruler of Pisces
+        {
+            calculateThemeValue ( 12, ruler, 0.5 );
+            calculateThemeValue ( 12, 5, 0.5 );    // add contribution from ancient ruler Jupiter
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_89">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_89">&#182;</a>
+							</div>
+							<p>also check Jupiter/Neptune aspects</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            for ( n = 0; n &lt; 7; n++ )
+            {
+                if ( orbType == 0 )
+                    orbValue = ao[aoIndex][n];
+                else
+                    orbValue =  0.5*(po[poIndex][4]+po[poIndex][ruler]);
+
+                if ( isAspect ( planet[5], planet[ruler], a[n], orbValue ))    // signRuler/Mars aspect
+                    theme[11] += ps[5]*ps[ruler]*aspectStrength ( planet[5], planet[ruler], a[n], orbValue, af[n] );
+            }
+
+        }
+        else
+*/
+            calculateThemeValue ( 12, ruler, 1 );
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_90">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_90">&#182;</a>
+							</div>
+							<p>Is the chart emphasis on water, mutable?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[1] == 3 )        // water dominant?
+            theme[11] += 1;
+        if ( tfDominant[2] == 2 )        // mutable dominant?
+            theme[11] += 1;
+        if ( dominantAspect == 6 )        // semi-sextiles dominant
+            theme[11] += 1;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_91">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_91">&#182;</a>
+							</div>
+							<pre><code>   theme[11] = ( theme[11] &gt; 3 ? theme[11]+1 : theme[11] );
+</code></pre>
+
+<p>debugP("theme 12: value "+theme[11]);</p>
+
+<h5>end Theme 12</h5>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_92">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_92">&#182;</a>
+							</div>
+							<p>add balance of polarities to each theme, 1 extra point distributed over
+relevant themes</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( tfDominant[0] == 1 )
+        {
+            n = 0;
+            while ( n &lt; 12 )
+            {
+                theme[n] += 1/12;
+                n += 2;
+            }
+        }
+        else
+        {
+            n = 1;
+            while ( n &lt; 12 )
+            {
+                theme[n] += 1/12;
+                n += 2;
+            }
+        }
+        
+        if ( precessionFlag  != 0 )
+        {    // the First Point of Aries is not well-defined
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_93">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_93">&#182;</a>
+							</div>
+							<p>adjusted var name to "nativityYear"</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            m = Math.round(precession ( nativityYear  ) / 360  + 0.5 );     // also flaky
+            for ( n = 0; n &lt; 12; n++ )
+            {
+                k = ( n-m &lt; 0 ? 12-m : n-m );
+                precessedTheme[k] = theme[n];
+            }
+        }
+
+        if ( chartType == 1 )    // moving 3-theme average: -1, 0, 1
+        {    // display purposes only - DON&#39;T HIT &#39;SAVE&#39;     !!!
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_94">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_94">&#182;</a>
+							</div>
+							<p>find 3-theme moving average 4 times
+quadruplicities * triplicities</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            for ( m = 0; m &lt; 4; m++ )
+            {
+                movingAverage ( theme );
+                for ( n= 0 ; n &lt; 12; n++ )
+                    theme[n] = avgThemeVal[n];
+            }
+        }
+    }
+
+    method = 1;    // specify default profile method
+
+    function xProfile ( sArrayT, tArrayT )
+    {
+        var i, j, k;
+        var n;
+        var pCoincidence;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_95">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_95">&#182;</a>
+							</div>
+							<p>copies not pointers!
+Type0: copy of raw data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var sArrayType0 = [[0,1,2,3,4,5,6,7,8,9,10,11],[0,0,0,0,0,0,0,0,0,0,0,0]];
+        var tArrayType0 = [[0,1,2,3,4,5,6,7,8,9,10,11],[0,0,0,0,0,0,0,0,0,0,0,0]];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_96">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_96">&#182;</a>
+							</div>
+							<p>Type1: normalised moving-average data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var sArrayType1 = [[0,1,2,3,4,5,6,7,8,9,10,11],[0,0,0,0,0,0,0,0,0,0,0,0]];
+        var tArrayType1 = [[0,1,2,3,4,5,6,7,8,9,10,11],[0,0,0,0,0,0,0,0,0,0,0,0]];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_97">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_97">&#182;</a>
+							</div>
+							<p>theme truth tables</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var sThemes = [0,0,0,0,0,0,0,0,0,0,0,0];
+        var tThemes = [0,0,0,0,0,0,0,0,0,0,0,0];
+        var arraySize = sThemes.length;    // arrays Themes, Type0/1 must be of same dimension
+
+        for ( n = 0; n &lt; arraySize; n++ )
+        {
+            sArrayType0[1][n] = sArrayT[1][n];
+            tArrayType0[1][n] = TidyUpAndFloat(tArrayT[1][n]);
+            sArrayType1[1][n] = sArrayT[1][n];
+            tArrayType1[1][n] = TidyUpAndFloat(tArrayT[1][n]);
+        }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_98">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_98">&#182;</a>
+							</div>
+							<p>theme min and max values for (S)ubject and (T)arget from raw (type 0 ) data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var tMinS;
+        var tMinT;
+        var tMaxS;
+        var tMaxT;
+        var tPP, tTT;    // diff between peaks/troughs
+     /*
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_99">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_99">&#182;</a>
+							</div>
+							<p>subject / target natal statistical data returned by statAnalyse</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var sStatsNatal = { mean: 0, sd: 0, skew: 0 };
+        var tStatsNatal = { mean: 0, sd: 0, skew: 0 };
+        statAnalyse ( sArrayType0, 0, arraySize, sStatsNatal );
+        statAnalyse ( tArrayType0, 0, arraySize, tStatsNatal );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_100">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_100">&#182;</a>
+							</div>
+							<p>debugP("natal skew: s = "+pNum(sStatsNatal.skew, precision)+" t = "+pNum(tStatsNatal.skew, precision));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>debugP(&quot;SNatal &quot;+sStatsNatal);
+debugP(&quot;TNatal &quot;+tStatsNatal);
+*/
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_101">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_101">&#182;</a>
+							</div>
+							<p>find 3-theme moving average 4 times
+quadruplicities * triplicities</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        for ( var m = 0; m &lt; 4; m++ )
+        {
+            movingAverage ( sArrayType1[1] );
+            for ( n = 0 ; n &lt; arraySize; n++ )
+                sArrayType1[1][n] = avgThemeVal[n];
+        
+            movingAverage ( tArrayType1[1] );
+            for ( n = 0 ; n &lt; arraySize; n++ )
+                tArrayType1[1][n] = avgThemeVal[n];
+        }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_102">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_102">&#182;</a>
+							</div>
+							<p>normalise</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var themeMax = 0;
+        for ( n = 0; n &lt; arraySize; n++ )
+            if ( sArrayType1[1][n] &gt; themeMax )
+                themeMax = sArrayType1[1][n];
+
+        for ( n = 0; n &lt; arraySize; n++ )
+            sArrayType1[1][n] /= themeMax;
+
+        themeMax = 0;
+        for ( n = 0; n &lt; arraySize; n++ )
+            if ( tArrayType1[1][n] &gt; themeMax )
+            themeMax = tArrayType1[1][n];
+
+        for ( n = 0; n &lt; arraySize; n++ )
+            tArrayType1[1][n] /= themeMax;
+
+        if ( method &lt; 4 )    // 1 compatibility, 2 natal coincidence 3 averaged chart coincidence (2 and 3 are flags in output.js)
+        {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_103">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_103">&#182;</a>
+							</div>
+							<p>pre-load meaningless values
+inflection point value, location</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var sArrayTp = [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]];
+            var tArrayTp = [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]];
+            var sArray = [];
+            var tArray = [];
+            var data = { fitC: 1, fitS: -1, pCoincidence: 12, sInflections: 0, sArrayTp: sArrayTp, sArray: sArray, Tinflections: 0, tArrayTp: tArrayTp, tArray: tArray };
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_104">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_104">&#182;</a>
+							</div>
+							<p>(C)omplementarity / (S)imilarity of subject / target Type1 data
+stat package here is for broad relationship analysis ignoring minor S/T differences</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var sStats = { mean: 0, sd: 0, skew: 0 };
+            var tStats = { mean: 0, sd: 0, skew: 0 };
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_105">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_105">&#182;</a>
+							</div>
+							<p>standard statistical analysis of transformed data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            statAnalyse ( sArrayType1[1], 0, arraySize, sStats );
+            statAnalyse ( tArrayType1[1], 0, arraySize, tStats );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_106">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_106">&#182;</a>
+							</div>
+							<p>data used by themeFit determining bounds of insignificance
+n.b. this rewrites the struct std. dev., be warned</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            sStats.sd = sStats.sd*sdFactor;
+            tStats.sd = tStats.sd*sdFactor;
+/*
+{
+debugP(&quot;mean: s = &quot;+pNum(sStats.mean, precision)+&quot; t = &quot;+pNum(tStats.mean, precision));
+debugP(&quot;sigma: s = &quot;+pNum(sStats.sd, precision)+&quot; t = &quot;+pNum(tStats.sd, precision));
+debugP(&quot;mean-/+sigma: s = &quot;+pNum((sStats.mean-sStats.sd), precision)+&quot;, &quot;+pNum((sStats.mean+sStats.sd), precision)+&quot; t = &quot;+pNum((tStats.mean-tStats.sd), precision)+&quot;, &quot;+pNum((tStats.mean+tStats.sd), precision));
+debugP(&quot;rolloff rate: s = &quot;+pNum((sStats.sd/sStats.mean), precision)+&quot; t = &quot;+pNum((tStats.sd/tStats.mean), precision));
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_107">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_107">&#182;</a>
+							</div>
+							<p>rate at which sigma declines from mean
+larger rolloff means tighter peak
+larger skew means greater/fatter tail
+skew negative means L tail dominant, else R tail</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>debugP(&quot;skew: s = &quot;+pNum(sStats.skew, precision)+&quot; t = &quot;+pNum(tStats.skew, precision));
+}
+*/
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_108">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_108">&#182;</a>
+							</div>
+							<p>debugP("transformed skew: s = "+pNum(sStats.skew, precision)+" t = "+pNum(tStats.skew, precision));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            if (method == 3)
+            {    // use transformed chart correspondence instead of natal
+                tMinS = locateThemeMin ( sArrayType1[1], 0, arraySize );
+                tMinT = locateThemeMin ( tArrayType1[1],0, arraySize );
+                tMaxS = locateThemeMax ( sArrayType1[1], 0, arraySize );
+                tMaxT = locateThemeMax ( tArrayType1[1], 0, arraySize );
+            }
+            else
+            {    // methods 1,2 use natal data for correspondence
+                tMinS = locateThemeMin ( sArrayType0[1], 0, arraySize );
+                tMinT = locateThemeMin ( tArrayType0[1], 0, arraySize );
+                tMaxS = locateThemeMax ( sArrayType0[1], 0, arraySize );
+                tMaxT = locateThemeMax ( tArrayType0[1], 0, arraySize );
+            }
+
+            pCoincidence = minOf ( Math.abs ( tMinS - tMaxT ), Math.abs ( tMaxS - tMinT ) );
+            tPP = Math.abs ( tMaxS - tMaxT );
+            tTT = Math.abs ( tMinS - tMinT );    // currently unused
+
+            if ( Math.abs ( tPP ) &lt; pCoincidence )    // i.e. p/p coincidence closer than p/t
+                pCoincidence = - ( tPP+1 )    // translate [0, n] -&gt; [-1, -n]
+
+            data.pCoincidence = pCoincidence;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_109">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_109">&#182;</a>
+							</div>
+							<p>we DO NOT deal with trough correspondence since the peak values are by definition primary
+if the two peaks <em>or</em> troughs are in close correspondence this discourages close relationship
+well, this seems so for P-P correspondence
+we find the turning points and their themes for the normalised averaged data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var inflectionData;
+            inflectionData = turningPoints ( sArrayType1 );
+            var numInflectionsS = inflectionData.numInflections;
+            sArrayTp = inflectionData.tpArray;
+            inflectionData = turningPoints ( tArrayType1 );
+            var numInflectionsT = inflectionData.numInflections;
+            tArrayTp = inflectionData.tpArray;
+            var scale;
+
+            for ( i = 0; i &lt; numInflectionsS; i++ )
+            {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_110">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_110">&#182;</a>
+							</div>
+							<p>if turning point +ve find trough limits else find peak limits; ignore slope 0 regions</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                if ( sArrayTp[1][i] == 1 )    // find trough
+                {
+                    troughLimits ( sArrayType1[1], sArrayTp[0][i], sThemes );
+
+                    for ( j = 0; j &lt; numInflectionsT; j++ )
+                    {
+                        scale = scaleFactor ( sArrayTp[0][i], tArrayTp[0][j] );
+
+                        if ( tArrayTp[1][j] == 1 )    // find trough
+                        {
+                            troughLimits ( tArrayType1[1], tArrayTp[0][j], tThemes );
+
+                            for ( k = 0; k &lt; arraySize; k++ )
+                                if ( sThemes[k] &amp; tThemes[k] )
+                                    data.fitS += scale * themeFit ( sArrayType1[1][k], tArrayType1[1][k], sArrayTp[1][i], tArrayTp[1][j], sStats, tStats );
+                        }
+                        else
+                        {
+                            if ( tArrayTp[1][j] == -1 )    // find peak
+                            {
+                                peakLimits ( tArrayType1[1], tArrayTp[0][j], tThemes );
+
+                                for ( k = 0; k &lt; arraySize; k++ )
+                                    if ( sThemes[k] &amp; tThemes[k] )
+                                        data.fitC += scale * themeFit ( sArrayType1[1][k], tArrayType1[1][k], sArrayTp[1][i], tArrayTp[1][j], sStats, tStats );
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if ( sArrayTp[1][i] == -1 )    // find peak
+                    {
+                        peakLimits ( sArrayType1[1], sArrayTp[0][i], sThemes );
+            
+                        for ( j = 0; j &lt; numInflectionsT; j++ )
+                        {
+                            scale = scaleFactor ( sArrayTp[0][i], tArrayTp[0][j] );
+
+                            if ( tArrayTp[1][j] == 1 )    // find trough
+                            {
+                                troughLimits ( tArrayType1[1], tArrayTp[0][j], tThemes );
+
+                                for ( k = 0; k &lt; arraySize; k++ )
+                                    if ( sThemes[k] &amp; tThemes[k] )
+                                        data.fitC += scale * themeFit ( sArrayType1[1][k], tArrayType1[1][k], sArrayTp[1][i], tArrayTp[1][j], sStats, tStats);
+                            }
+                            else
+                            {
+                                if ( tArrayTp[1][j] == -1 )    // find peak
+                                {
+                                    peakLimits ( tArrayType1[1], tArrayTp[0][j], tThemes );
+
+                                    for ( k = 0; k &lt; arraySize; k++ )
+                                        if ( sThemes[k] &amp; tThemes[k] )
+                                            data.fitS += scale * themeFit ( sArrayType1[1][k], tArrayType1[1][k], sArrayTp[1][i], tArrayTp[1][j], sStats, tStats);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_111">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_111">&#182;</a>
+							</div>
+							<p>natal data (Type0)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            inflectionData = turningPoints ( sArrayType0 );
+            data.sInflections = inflectionData.numInflections;
+            data.sArrayTp = inflectionData.tpArray;
+            data.sArray = sArrayType0[1];
+            inflectionData = turningPoints ( tArrayType0 );
+            data.tInflections = inflectionData.numInflections;
+            data.tArrayTp = inflectionData.tpArray;
+            data.tArray = tArrayType0[1];
+/*
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_112">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_112">&#182;</a>
+							</div>
+							<p>averaged data (Type1)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            data.sInflections = numInflectionsS;
+            data.sArrayTp = sArrayTp;
+            data.sArray = sArrayType1[1];
+            data.tInflections = numInflectionsT;
+            data.tArrayTp = tArrayTp;
+            data.tArray = tArrayType1[1];
+*/
+            return data;    // struct {fitC, fitS, pCoincidence, sInflections, sArrayTp, sArray, tInflections, tArrayTp, tArray }
+        }    // end method 1 (2 and 3 use this procedure); method 4 calls fnCoeffs() externally
+    }    // end xProfile
+    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_113">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_113">&#182;</a>
+							</div>
+							<p>xProfile support functions</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    function turningPoints ( dataArray )    // dataTypeArray (either natal or transformed) // (themeList, themeData)
+    {
+        var arraySize = dataArray[0].length;    // arrays must be of same dimension
+        var tpArray = [[],[]];
+        var n;
+
+        for ( n = 0; n &lt; arraySize; n++ )
+        {
+            tpArray[0][n] = 0;
+            tpArray[1][n] = 0;
+        }
+        var data = { numInflections: 0, tpArray: tpArray };
+        var linearData;        // linear,eq expression coefficients
+        var slope = 0;    // subject/target linearData.slope
+        var lastSlope = 0;
+        var numInflections = 0;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_114">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_114">&#182;</a>
+							</div>
+							<p>initialise slopes to ends of graph</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( dataArray[1][arraySize-1] &gt; dataArray[1][0] )
+            lastSlope = -1;
+        else
+            if ( dataArray[1][arraySize-1] &lt; dataArray[1][0] )
+                lastSlope = 1;
+        
+        for ( var i = 0; i &lt; arraySize; i++ )
+        {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_115">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_115">&#182;</a>
+							</div>
+							<p>with only 2 values this is excessive</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            linearData = fitLinearEq ( dataArray[0], dataArray[1], i, 2 );
+            slope = linearData.slope;
+
+            if ( lastSlope != signOf(slope) )
+            {
+                tpArray[0][numInflections]= i;
+                tpArray[1][numInflections] = signOf(slope);
+                numInflections++;
+            }
+    
+            lastSlope = signOf(slope);
+        }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_116">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_116">&#182;</a>
+							</div>
+							<p>findLinear doesn't wrap so check array end against start here</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        if ( dataArray[1][arraySize-1] &gt; dataArray[1][0] )
+            slope = -1;
+        else
+            if ( dataArray[1][arraySize-1] &lt; dataArray[1][0] )
+                slope = 1;
+    
+        if ( ( lastSlope != slope ) &amp;&amp; ( slope != 0 ) )
+        {
+            tpArray[0][numInflections] = arraySize-1;
+            tpArray[1][numInflections] = slope;
+            numInflections++;
+        }
+        data.numInflections = numInflections;
+        data.tpArray = tpArray;
+        return data;    // numInflections, tpArray
+    }
+
+    function fnCoeffs ( inflectionPoints )
+    {
+        var curveDataSet = [];
+        var curveData = { aQ: 0, bQ: 0,  cQ: 0, m0: 0, c0: 0, m1: 0, c1: 0, centre: 0, distL:0, distR: 0 };
+        var i, n, m, numInflections, themeNum, tP;
+        var limits = { distL: 0, distR: 0 };
+        var truthTable;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_117">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_117">&#182;</a>
+							</div>
+							<p>var curveData;  // redefinition to null
+bad. s/b dimensioned to array size</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        var themeList = [0,1,2,3,4,5,6,7,8,9,10,11];    // dummy data for curve analysis call
+        var numItems = inflectionPoints.length;
+        curveDataSet.push(numItems/3);    // number of subjects in current selection
+
+        for ( n = 0; n &lt; numItems; n+=3 )    // number of graphs i.e subjects
+        {
+            m = n;
+            numInflections = inflectionPoints[m];
+            curveDataSet.push ( m/3 );    // subject id
+            curveDataSet.push ( numInflections );    // no. of fns describing this subject&#39;s graph
+            curveDataSet.push ( inflectionPoints[m+2].length );    // save dataset size
+            var themes = inflectionPoints[m+1][0];
+            var tp = inflectionPoints[m+1][1];
+
+            for ( i = 0; i &lt; numInflections; i++ )
+            {
+                themeNum = themes[i];
+                truthTable = [0,0,0,0,0,0,0,0,0,0,0,0];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_118">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_118">&#182;</a>
+							</div>
+							<p>bad again, fix...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                if ( tp[i] == 1 )
+                    limits = troughLimits ( inflectionPoints[m+2], themeNum, truthTable );
+                else
+                    limits = peakLimits ( inflectionPoints[m+2], themeNum, truthTable );
+
+                curveData = curveAnalyse ( themeList, inflectionPoints[m+2], themeNum, limits );
+                curveData.distL = limits.distL;
+                curveData.distR = limits.distR;
+                curveData.centre = themeNum;
+                curveDataSet.push ( curveData );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_119">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_119">&#182;</a>
+							</div>
+							<p>predictValues ( curveData, inflectionPoints[m+2] )    // check</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            }
+        }
+        return curveDataSet;    // returned data is coeff set per subject record
+    }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_120">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_120">&#182;</a>
+							</div>
+							<p>END OF ENGINE</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_121">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_121">&#182;</a>
+							</div>
+							<p>discarded junk from previous versions...
+warning - some fn calls have changed!</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>/*
+    if ( method == 5 )    // this needs to be a separate fn call not a method
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_122">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_122">&#182;</a>
+							</div>
+							<p>unless we calculate and store the coeffs here... slow and unnecessary for profiling</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_123">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_123">&#182;</a>
+							</div>
+							<p>now a fn - findCoeffs
+data is returned coefficient set:
+numInflections + numInflections*[aQ, bQ, cQ, xOff, centre, m0, c0, m1, c1]
+need to push numInflection rows of data
+but then num rows needs to be added for <em>each</em> row! or data struct asymmetric.
+otherwise we can't tell where one set starts and the next begins
+we get nInflections rows of subject data then same for target</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var data = { aQ: 0, bQ: 0, cQ: 0, xOff: 0, centre: 0, m0: 0, c0: 0, m1: 0, c1: 0 };
+    var sDataP, sDataQ;
+            var tDataP, tDataT;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_124">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_124">&#182;</a>
+							</div>
+							<p>dummy data till I get something sensible returned curveData et.al.)
+           var data = { fitC: 0, fitS: 0, pCoincidence: 0 };    // dummy for fn return
+data is now coefficient array and array refs are general
+test run on Type1 data - find primary peaks
+standard statistical analysis of transformed data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var sStats = { mean: 0, sd: 0, skew: 0 };
+            var tStats = { mean: 0, sd: 0, skew: 0 };
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_125">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_125">&#182;</a>
+							</div>
+							<p>var numInflectionsS = inflections.numInflectionsS;
+var numInflectionsT = inflections.numInflectionsT;
+debugP("sTp "+numInflectionsS+" tTp "+numInflectionsT);
+standard statistical analysis of transformed data</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            statAnalyse ( sArrayType1[1], 0, arraySize, sStats );
+            statAnalyse ( tArrayType1[1], 0, arraySize, tStats );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_126">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_126">&#182;</a>
+							</div>
+							<p>data used by themeFit determining bounds of insignificance
+n.b. this rewrites the struct std. dev., be warned</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            sStats.sd = sStats.sd*sdFactor;
+            tStats.sd = tStats.sd*sdFactor;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_127">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_127">&#182;</a>
+							</div>
+							<p>find closest correspondence between min and max</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            tMinS = locateThemeMin ( sArrayType1[1], 0, arraySize );
+            tMinT = locateThemeMin ( tArrayType1[1], 0, arraySize );
+            tMaxS = locateThemeMax ( sArrayType1[1], 0, arraySize );
+            tMaxT = locateThemeMax ( tArrayType1[1], 0, arraySize );
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_128">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_128">&#182;</a>
+							</div>
+							<p>superfluous</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var skewRatio = sStats.skew / tStats.skew;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_129">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_129">&#182;</a>
+							</div>
+							<p>note the derived coefficients only apply over the range of values analysed
+centre values are min/max values (above)</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>if ( DEBUG )
+debugP(&quot;Subject peak&quot;);
+            limits = peakLimits ( sArrayType1[1], tMaxS, sThemes );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_130">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_130">&#182;</a>
+							</div>
+							<p>debugP(sThemes);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            sDataP = curveAnalyse ( sArrayType1[0], sArrayType1[1], tMaxS, limits );
+debugP(&quot;sArrayType1[0]&quot;);
+debugP(sArrayType1[0]);
+predictValues ( limits, sDataP, sArrayType1[1] )
+if ( DEBUG )
+debugP(&quot;Subject trough&quot;);
+            limits = troughLimits ( sArrayType1[1], tMinS, sThemes );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_131">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_131">&#182;</a>
+							</div>
+							<p>debugP(sThemes);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            sDataT = curveAnalyse ( sArrayType1[0], sArrayType1[1], tMinS, limits );
+predictValues ( limits, sDataT, sArrayType1[1] )
+if ( DEBUG )
+debugP(&quot;Target peak&quot;);
+            limits = peakLimits ( tArrayType1[1], tMaxT, tThemes );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_132">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_132">&#182;</a>
+							</div>
+							<p>debugP(tThemes);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            tDataP = curveAnalyse ( tArrayType1[0], tArrayType1[1], tMaxT, limits );
+debugP(&quot;sArrayType1[0]&quot;);
+debugP(sArrayType1[0]);
+predictValues ( limits, tDataP, tArrayType1[1] )
+if ( DEBUG )
+debugP(&quot;Target trough&quot;);
+            limits = troughLimits ( tArrayType1[1], tMinT, tThemes );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_133">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_133">&#182;</a>
+							</div>
+							<p>debugP(tThemes);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            tDataT = curveAnalyse ( tArrayType1[0], tArrayType1[1], tMinT, limits );
+predictValues ( limits, tDataT, tArrayType1[1] )
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_134">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_134">&#182;</a>
+							</div>
+							<p>if (DEBUG)
+debugP("tDataP "+tDataP.aQ+" tDataT "+tDataT.aQ);
+debugP("skew "+pNum(sStats.skew, precision)+" "+pNum(tStats.skew, precision));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+            var rejected = 0;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_135">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_135">&#182;</a>
+							</div>
+							<pre><code>   if (  minOf ( Math.abs ( sDataP.centre - tDataT.centre ), Math.abs ( sDataT.centre - tDataP.centre ) )  &gt; 1 )
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            rejected =  (  minOf ( Math.abs ( sDataP.centre - tDataT.centre ), Math.abs ( sDataT.centre - tDataP.centre ) )  &gt; 1 ? 1 : 0 );
+
+            if ( rejected )
+debugP(&quot;Rejected: lacks close correspondence in P/T&quot; );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_136">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_136">&#182;</a>
+							</div>
+							<p>if ( minOf ( Math.abs ( sDataP.centre - tDataP.centre ),  Math.abs ( sDataT.centre - tDataT.centre ) &lt; 4 ) )</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            if (!rejected)
+            rejected =  ( Math.abs ( sDataP.centre - tDataP.centre ) &lt; 2 ? 1 : 0 );
+
+            if ( rejected )
+            {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_137">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_137">&#182;</a>
+							</div>
+							<p>debugP("Rejected, P/P or T/T correspondence, difficult");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>debugP(&quot;Rejected, P/P correspondence, difficult&quot;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_138">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_138">&#182;</a>
+							</div>
+							<p>debugP("min PP "+Math.abs ( sDataP.centre - tDataP.centre ));
+debugP("min TT "+Math.abs ( sDataT.centre - tDataT.centre ));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_139">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_139">&#182;</a>
+							</div>
+							<p>even given these are satisfied, have to check relative weighting of of non-P/T areas.
+if the difference is large, this mitigates against closenes as implies complementarity</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            if (!rejected )
+            rejected = ( signOf ( sStats.skew ) != signOf ( tStats.skew ) ? 1 : 0 );
+                        
+            if ( rejected )
+                debugP(&quot;Rejected: weighting complementary, friend not partner&quot;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_140">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_140">&#182;</a>
+							</div>
+							<p>fails on rejected - only gets last test result...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+            if ( !rejected ) // use stats approach                
+            {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_141">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_141">&#182;</a>
+							</div>
+							<p>debugP("skewRatio "+pNum(skewRatio, precision));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>debugP(&quot;Possible...&quot;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_142">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_142">&#182;</a>
+							</div>
+							<pre><code>               if ( signOf ( sStats.skew ) != signOf ( tStats.skew ) )
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>                if ( Math.abs ( sStats.skew ) &gt; Math.abs ( tStats.skew ) )
+debugP(&quot;S: tail greater or fatter&quot;);
+                else
+debugP(&quot;T: tail greater or fatter&quot;);
+
+                if ( sStats.skew &lt; 0 )
+debugP(&quot;S: L tail dominant&quot;);
+                else
+debugP(&quot;S: R tail dominant&quot;);
+
+                if ( tStats.skew &lt; 0 )
+debugP(&quot;T: L tail dominant&quot;);
+                else
+debugP(&quot;T: R tail dominant&quot;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_143">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_143">&#182;</a>
+							</div>
+							<pre><code>           }
+</code></pre>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_144">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_144">&#182;</a>
+							</div>
+							<p>minOf here just gives the minimum theme not min distance!
+should we be referring to pCoincidence AND p centres?
+           if ( ( pCoincidence &lt; 3 ) &amp; ( signOf ( sStats.skew ) == signOf ( tStats.skew ) ) &amp; ( Math.abs ( sDataP.centre - tDataP.centre ) > 1 ) )
+note we check skew of averaged data here since we are interested in major features only</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+if ( ( pCoincidence &lt; 3 ) &amp;&amp; ( signOf ( sStats.skew ) == signOf ( tStats.skew ) ) )
+            {
+if ( signOf ( sStats.skew ) != signOf ( sStatsNatal.skew ) )
+    debugP (&quot;Warning: subject natal skew changed from &quot;+pNum(sStatsNatal.skew, precision)+&quot; to &quot;+pNum(sStats.skew, precision) );
+if ( signOf ( tStats.skew ) != signOf ( tStatsNatal.skew ) )
+    debugP (&quot;Warning: target natal skew changed from &quot;+pNum(tStatsNatal.skew, precision)+&quot; to &quot;+pNum(tStats.skew, precision) );
+                debugP(&quot;passes natal data check&quot;);
+                if ( ( pCoincidence &lt; 0 ) &amp;&amp; ( pCoincidence &gt; -4 ) )
+                    debugP(&quot;but natal peaks too close, separation &quot;+(Math.abs(pCoincidence+1))+&quot;, failed&quot;);
+            }            
+            else
+                debugP(&quot;Failed&quot;);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_145">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_145">&#182;</a>
+							</div>
+							<p>test return to global myDataHeap</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>data.fitC = tDataP.aQ;    // leading quad. coeff.
+data.fitS = tDataT.aQ;
+            return data;    // send default rubbish back for record.js or profile popup auto-closes
+        }    // end junk
+*/
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_146">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_146">&#182;</a>
+							</div>
+							<p>Making this support method nuclear</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function TidyUpAndFloat(theValue) {
+    return parseFloat(theValue);
+}
+/*global debugP */
+</code></pre>
+						</td>
+					</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

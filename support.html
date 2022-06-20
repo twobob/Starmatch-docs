@@ -1,0 +1,1927 @@
+<!DOCTYPE html />
+
+<html>
+<head>
+	<title>support.js</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link href="nocco.css" rel="stylesheet" media="all" type="text/css" />
+	<script src="prettify.js" type="text/javascript"></script>
+</head>
+<body onload="prettyPrint()">
+	<div id="container">
+		<div id="background"></div>
+			<div id="jump_to">
+				Jump To &hellip;
+				<div id="jump_wrapper">
+					<div id="jump_page">
+							<a class="source" href="coeffanalyse.html">
+								CoeffAnalyse.js
+							</a>
+							<a class="source" href="engine-11072018-current.html">
+								engine-11072018-current.js
+							</a>
+							<a class="source" href="engine-13072018.html">
+								engine-13072018.js
+							</a>
+							<a class="source" href="engine-30052018.html">
+								engine-30052018.js
+							</a>
+							<a class="source" href="engine-30062018.html">
+								engine-30062018.js
+							</a>
+							<a class="source" href="engine.html">
+								engine.js
+							</a>
+							<a class="source" href="engine18062018.html">
+								engine18062018.js
+							</a>
+							<a class="source" href="engine23052018.html">
+								engine23052018.js
+							</a>
+							<a class="source" href="exporter.html">
+								exporter.js
+							</a>
+							<a class="source" href="global.html">
+								global.js
+							</a>
+							<a class="source" href="importer.html">
+								importer.js
+							</a>
+							<a class="source" href="index.html">
+								index.js
+							</a>
+							<a class="source" href="locationpicker.jquery.html">
+								locationpicker.jquery.js
+							</a>
+							<a class="source" href="output.html">
+								output.js
+							</a>
+							<a class="source" href="privacy-policy.html">
+								privacy-policy.js
+							</a>
+							<a class="source" href="record.html">
+								record.js
+							</a>
+							<a class="source" href="support.html">
+								support.js
+							</a>
+							<a class="source" href="restored/exporterbackup.html">
+								RESTORED\exporterBACKUP.js
+							</a>
+							<a class="source" href="restored/global-backup.html">
+								RESTORED\global-BACKUP.js
+							</a>
+					</div>
+				</div>
+			</div>
+		<table cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th class="docs">
+						<h1>support.js</h1>
+					</th>
+					<th class="code"></th>
+				</tr>
+			</thead>
+			<tbody>
+					<tr id="section_1">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_1">&#182;</a>
+							</div>
+							<h4>BEGIN SUPPORTING STUFF</h4>
+
+<p>Changelog: 04/02/2016 <br/>Updated field sanity checking to key-up based events.<br/>
+Changelog: 08/02/2016 <br/>refactored all methods and events.<br/></p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+var precision = 5;	// this is moved here so I can find it :( Will
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_2">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_2">&#182;</a>
+							</div>
+							<p>this only affects subject saved posns not target
+recalled target data is 4dp regardless. why?
+there is confusion somewhere between data size and displayed data size.
+Example NonRadioOptionsObject.sdFactor</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+function _f__setTextFactor(factorToSet)
+{
+	var refer = eval(&#39;NonRadioOptionsObject.&#39;+factorToSet);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_3">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_3">&#182;</a>
+							</div>
+							<p>N.b. dont actually use prompt as it is shit in almost every respect.  rewrite to dialog box.    </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var chosenInput = prompt(&quot;Please enter smam flag [0/1]&quot;,refer );
+	
+	if (chosenInput != null) {
+		_f__SetTovalue(&#39;NonRadioOptionsObject.&#39; + factorToSet, chosenInput);
+		_f__SetTovalue(factorToSet, chosenInput);
+	}
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_4">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_4">&#182;</a>
+							</div>
+							<p>N.B Do something like this but just for the text ones in a simple loop.
+<em>f</em>_DoCompleteOptionsSaveThenLoadCycle();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_5">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_5">&#182;</a>
+							</div>
+							<p>Latest notes!
+<a href="#jumphere">JUMP TO CHANGES!</a></p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_6">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_6">&#182;</a>
+							</div>
+							<p><em>f</em>_function to create error and alert dialogs</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__errorHighlight(e, type, icon) {
+    if (!icon) {
+        if (type === &#39;highlight&#39;) {
+            icon = &#39;ui-icon-info&#39;;
+        } else {
+            icon = &#39;ui-icon-alert&#39;;
+        }
+    }
+    return e.each(function  () {
+        $(this).addClass(&#39;ui-widget&#39;);
+        var alertHtml = &#39;&lt;div class=&quot;ui-state-&#39; + type + &#39; ui-corner-all&quot; style=&quot;padding:0.7em; background-color: #F2F2D0;&quot;&gt;&#39;;
+        alertHtml += &#39;&lt;span class=&quot;ui-icon &#39; + icon + &#39;&quot; style=&quot;  margin-top:4px;float:left;margin-right:.3em;&quot;&gt;&lt;/span&gt;&#39;;
+        alertHtml += &#39;&lt;span id=&quot;out&quot;&gt;&#39;;
+        alertHtml += $(this).text() + &quot;&lt;br /&gt;&quot;;
+        alertHtml += &#39;&lt;/span&gt;&#39;;
+        alertHtml += &#39;&lt;/div&gt;&#39;;
+        $(this).html(alertHtml);
+    });
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_7">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_7">&#182;</a>
+							</div>
+							<p>error dialog  // currently unused</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>(function  ($) {
+    $.fn.error = function  () {
+        errorHighlight(this, &#39;error&#39;);
+    };
+})(jQuery);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_8">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_8">&#182;</a>
+							</div>
+							<p>highlight (alert) dialog</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>(function  ($) {
+    $.fn.highlight = function  () {
+        errorHighlight(this, &#39;highlight&#39;);
+    };
+})(jQuery);
+
+
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + &#39;-&#39; + s4() + &#39;-&#39; + s4() + &#39;-&#39; +
+    s4() + &#39;-&#39; + s4() + s4() + s4();
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_9">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_9">&#182;</a>
+							</div>
+							<p><em>f</em>_function to print an array</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__flagP(arrayToPrint) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_10">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_10">&#182;</a>
+							</div>
+							<p>var textContent = StringToPrint.toString();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	var realwidth =$(window).width();
+	var modulus = 1;
+	
+	if( realwidth &lt; 1080)
+       modulus = 1;
+
+    if (realwidth &lt; 1500)
+        modulus = 2;
+
+	if( realwidth &lt; 1890)
+        modulus = 3;
+	if ( realwidth &gt; 1890)
+        modulus = 4;
+	
+     var uuid = guid();
+
+	 var textContent = &quot;&quot;;
+	var copyContent = &quot;&quot;;
+	
+	 console.log(realwidth);
+	 
+	 var l = 0;
+
+	$.each(arrayToPrint , function ( key, thing  ){
+	copyContent += thing.toString()+&quot; &quot;;
+	textContent += _f__padLeft(thing, 57, &quot;&#183;&quot;);
+	
+	if (l % modulus ==0 )  // We want an extra break for the title anyway
+		{  	textContent += br;  
+		copyContent += CRLF;
+		}
+	else
+		{	textContent+= &quot; &quot;; 	
+		copyContent += CRLF;
+		}
+	
+	l++;
+} );
+
+
+
+
+var htmlthing =   textContent + &#39;&lt;br /&gt;&lt;button class=&quot;copy-btn&quot; data-clipboard-text=&quot;&#39;+copyContent+&#39;&quot;&gt;copy&lt;/button&gt;&#39;;
+
+
+/* var htmlthing = &quot;&lt;button onclick=&#39;javascript:NonRadioOptionsObject.sdFactor=1 ;	_f__SetWidgetStateFromOptionsObject();_f__DoCompleteOptionsSaveThenLoadCycle();&#39;&gt;Set sdFactor&lt;/buttton&gt;&quot;; */
+
+
+
+toastr.options = {
+  &quot;closeButton&quot;: false,
+  &quot;debug&quot;: false,
+  &quot;newestOnTop&quot;: true,
+  &quot;progressBar&quot;: false,
+  &quot;positionClass&quot;: &quot;toast-bottom-center&quot;,
+  &quot;preventDuplicates&quot;: true,
+  &quot;onclick&quot;: null,
+  &quot;showDuration&quot;: &quot;5000&quot;,
+  &quot;hideDuration&quot;: &quot;1000&quot;,
+  &quot;timeOut&quot;: &quot;0&quot;,
+  &quot;extendedTimeOut&quot;: &quot;1000&quot;,
+  &quot;showEasing&quot;: &quot;swing&quot;,
+  &quot;hideEasing&quot;: &quot;linear&quot;,
+  &quot;showMethod&quot;: &quot;fadeIn&quot;,
+  &quot;hideMethod&quot;: &quot;fadeOut&quot;
+}
+
+/* alert(OptionsObject.precessionFlag); */
+
+toastr[&quot;error&quot;](htmlthing, &quot;Report!&quot;);
+
+}
+
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_11">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_11">&#182;</a>
+							</div>
+							<p><em>f</em>_function to RESET  THE FLAG TO 1</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__warnP(StringToPrint) {
+
+var textContent = StringToPrint.toString();
+
+toastr.options = {
+  &quot;closeButton&quot;: false,
+  &quot;debug&quot;: false,
+  &quot;newestOnTop&quot;: true,
+  &quot;progressBar&quot;: false,
+  &quot;positionClass&quot;: &quot;toast-bottom-center&quot;,
+  &quot;preventDuplicates&quot;: true,
+  &quot;onclick&quot;: null,
+  &quot;showDuration&quot;: &quot;5000&quot;,
+  &quot;hideDuration&quot;: &quot;1000&quot;,
+  &quot;timeOut&quot;: &quot;0&quot;,
+  &quot;extendedTimeOut&quot;: &quot;1000&quot;,
+  &quot;showEasing&quot;: &quot;swing&quot;,
+  &quot;hideEasing&quot;: &quot;linear&quot;,
+  &quot;showMethod&quot;: &quot;fadeIn&quot;,
+  &quot;hideMethod&quot;: &quot;fadeOut&quot;
+}
+
+toastr[&quot;error&quot;](textContent, &quot;Warning!&quot;);
+
+}
+
+
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_12">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_12">&#182;</a>
+							</div>
+							<p><em>f</em>_function to RESET  THE FLAG TO 1</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__updatedP(StringToPrint) {
+
+var textContent = StringToPrint.toString();
+
+toastr.options = {
+  &quot;closeButton&quot;: false,
+  &quot;debug&quot;: false,
+  &quot;newestOnTop&quot;: false,
+  &quot;progressBar&quot;: false,
+  &quot;positionClass&quot;: &quot;toast-bottom-center&quot;,
+  &quot;preventDuplicates&quot;: false,
+  &quot;onclick&quot;: null,
+  &quot;showDuration&quot;: &quot;5000&quot;,
+  &quot;hideDuration&quot;: &quot;2000&quot;,
+  &quot;timeOut&quot;: &quot;0&quot;,
+  &quot;extendedTimeOut&quot;: &quot;1000&quot;,
+  &quot;showEasing&quot;: &quot;swing&quot;,
+  &quot;hideEasing&quot;: &quot;linear&quot;,
+  &quot;showMethod&quot;: &quot;fadeIn&quot;,
+  &quot;hideMethod&quot;: &quot;fadeOut&quot;
+}
+
+toastr[&quot;info&quot;](textContent, &quot;UPDATED!&quot;);
+
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_13">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_13">&#182;</a>
+							</div>
+							<p>function <em>f</em>_to pass info to debug section</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__debugBoxP(StringToPrint) {
+  
+  var textContent = StringToPrint.toString();
+  
+toastr.options = {
+  &quot;closeButton&quot;: false,
+  &quot;debug&quot;: false,
+  &quot;newestOnTop&quot;: true,
+  &quot;progressBar&quot;: false,
+  &quot;positionClass&quot;: &quot;toast-bottom-center&quot;,
+  &quot;preventDuplicates&quot;: true,
+  &quot;onclick&quot;: null,
+  &quot;showDuration&quot;: &quot;5000&quot;,
+  &quot;hideDuration&quot;: &quot;1000&quot;,
+  &quot;timeOut&quot;: &quot;0&quot;,
+  &quot;extendedTimeOut&quot;: &quot;0&quot;,
+  &quot;showEasing&quot;: &quot;swing&quot;,
+  &quot;hideEasing&quot;: &quot;linear&quot;,
+  &quot;showMethod&quot;: &quot;fadeIn&quot;,
+  &quot;hideMethod&quot;: &quot;fadeOut&quot;
+}
+
+toastr[&quot;info&quot;](textContent,&quot;Debug&quot;);
+
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_14">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_14">&#182;</a>
+							</div>
+							<p><em>f</em>_function to pass info to alerternate debug section, to disappear after n seconds</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__infoP(StringToPrint, timeToClear) {
+function _f__isNumeric(n) {
+  return !isNaN(parseFloat(n)) &amp;&amp; isFinite(n);
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_15">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_15">&#182;</a>
+							</div>
+							<p>alert(Object.prototype.toString.call( StringToPrint ));</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>var textContent = &quot;&quot;;
+if(Object.prototype.toString.call( StringToPrint ).includes(&#39;Array&#39;)) {
+$.each(StringToPrint,function  (index, value) {
+		textContent += value+&quot;, &quot;;
+} )
+}
+else
+{
+textContent = StringToPrint.toString();
+}
+if (typeof timeToClear === &quot;undefined&quot; )
+{
+timeToClear=0
+}
+
+toastr.options = {
+  &quot;closeButton&quot;: false,
+  &quot;debug&quot;: false,
+  &quot;newestOnTop&quot;: true,
+  &quot;progressBar&quot;: false,
+  &quot;positionClass&quot;: &quot;toast-bottom-center&quot;,
+  &quot;preventDuplicates&quot;: true,
+  &quot;onclick&quot;: null,
+  &quot;showDuration&quot;: &quot;0&quot;,
+  &quot;hideDuration&quot;: &quot;1000&quot;,
+  &quot;extendedTimeOut&quot;: timeToClear,
+  &quot;showEasing&quot;: &quot;swing&quot;,
+  &quot;hideEasing&quot;: &quot;linear&quot;,
+  &quot;showMethod&quot;: &quot;fadeIn&quot;,
+  &quot;hideMethod&quot;: &quot;fadeOut&quot;
+}
+
+toastr.options.extendedTimeOut = timeToClear; //1000;
+    toastr.options.timeOut = timeToClear;
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_16">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_16">&#182;</a>
+							</div>
+							<p>toastr.options.fadeOut = timeToClear;
+toastr.options.fadeIn = 250;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+toastr[&quot;success&quot;](textContent, &quot;Info:&quot;);
+
+
+}
+
+
+ function _f__getLastToast(){
+            return $toastlast;
+        }
+	
+var repaintRequired = false;
+var myTimeout;
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_17">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_17">&#182;</a>
+							</div>
+							<p>Shiny new Helper    - Let's use some games concepts to speed things along...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function handleDebugRepaint(){
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_18">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_18">&#182;</a>
+							</div>
+							<p>reset bool</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	repaintRequired = false
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_19">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_19">&#182;</a>
+							</div>
+							<p>Make it repaint</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	$(&#39;#debugArea&#39;).show();
+}	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_20">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_20">&#182;</a>
+							</div>
+							<p>"NON <em>f</em>_ namespace" function to pass info to debug section  // NOW USES ABOVE HELPER</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function debugP(StringToPrint) {
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_21">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_21">&#182;</a>
+							</div>
+							<p>make drawing cost a lot less</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	$(&#39;#debugArea&#39;).hide();
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_22">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_22">&#182;</a>
+							</div>
+							<p>merge and mungle somewhat</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'> 	$(&#39;#debugArea&#39;).html($(&#39;#debugArea&#39;).html() +   StringToPrint.toString() + CRLF + &quot;&lt;br /&gt;&quot;);
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_23">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_23">&#182;</a>
+							</div>
+							<p>check if we should schedule a repaint</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	if (!repaintRequired)
+	{
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_24">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_24">&#182;</a>
+							</div>
+							<p>this should be fast enough to cover most needs</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	 myTimeout = setTimeout(handleDebugRepaint, 200);
+	}
+	
+}
+		
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_25">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_25">&#182;</a>
+							</div>
+							<p><em>f</em>_function to clear debug section    SHIFT ALT + c</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__debugClear() {
+    $(&quot;#debugArea&quot;).hide();
+    document.getElementById(&#39;debugArea&#39;).innerHTML = &quot;&quot;;
+	 $(&quot;#debugArea&quot;).show();
+	toastr.clear();
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_26">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_26">&#182;</a>
+							</div>
+							<p>function <em>f</em>_to clear warn section  </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__warnClear() {
+
+    $(&quot;#warningArea&quot;).height(&quot;0px&quot;);
+    document.getElementById(&#39;warningArea&#39;).innerHTML = &quot;&quot;;
+	toastr.clear();
+}
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_27">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_27">&#182;</a>
+							</div>
+							<p>Helper function _f<strong>to remove whitespace from form elements and convert them to numbers. even double zeros et cetera.<br/><br/>
+NON _f</strong> namespaced to preserve engine 
+why call a separate function? TUAF == pF...
+function TidyUpAndFloat(id) {
+return parseFloat(id);
+}</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_28">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_28">&#182;</a>
+							</div>
+							<p>Shim for old browsers for sanity output.  possibly deprecated</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>if (!Date.now) {
+    Date.now = function  () {
+        return new Date().getTime();
+    }
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_29">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_29">&#182;</a>
+							</div>
+							<p>deprecated autofill function</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__autofill() {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_30">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_30">&#182;</a>
+							</div>
+							<p>Create some random data...  We will reuse the global PlanetNeatTitles, why not :)
+PRECISION
+var precision = 7;
+min precision should be 5 probably to not have to deal with the "." seperator</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    arrPositions = PlanetNeatTitles;
+    for (i = 0; i &lt; 12; i++) {
+        document.f1.label[i].value = arrPositions[i];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_31">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_31">&#182;</a>
+							</div>
+							<p>Reworked to ACTUALLY give 5 DP on precision. ALTERED by Will 18<em>01</em>2107</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        document.f1.numvalue1[i].value = parseFloat(Math.random() * 360).toFixed(precision);
+        document.f1.numvalue2[i].value = parseFloat(Math.random() * 360).toFixed(precision);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_32">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_32">&#182;</a>
+							</div>
+							<p>We could add an OnClick function <em>f</em>_that removes the previous value when the field is highlighted for convenience.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    }
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_33">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_33">&#182;</a>
+							</div>
+							<p>little used copy function
+Helper function <em>f</em>_to create true DEEP COPIES of arrays
+REF:  http://stackoverflow.com/questions/7486085/copying-array-by-value-in-javascript</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__copy(o) {
+    var out, v, key;
+    out = Array.isArray(o) ? [] : {};
+    for (key in o) {
+        v = o[key];
+        out[key] = (typeof v === &quot;object&quot;) ? copy(v) : v;
+    }
+    return out;
+}
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_34">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_34">&#182;</a>
+							</div>
+							<p>Encoding helper function</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__encode(c) {
+    var x = &#39;charCodeAt&#39;,
+        b, e = {},
+        f = c.split(&quot;&quot;),
+        d = [],
+        a = f[0],
+        g = 256;
+    for (b = 1; b &lt; f.length; b++) c = f[b], null != e[a + c] ? a += c : (d.push(1 &lt; a.length ? e[a] : a[x](0)), e[a + c] = g, g++, a = c);
+    d.push(1 &lt; a.length ? e[a] : a[x](0));
+    for (b = 0; b &lt; d.length; b++) d[b] = String.fromCharCode(d[b]);
+    return d.join(&quot;&quot;)
+};
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_35">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_35">&#182;</a>
+							</div>
+							<p>Decoding helper function</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__decode(b) {
+    var a, e = {};
+    var d = b.split(&quot;&quot;);
+	var f = d[0];
+        var c = d[0];
+        var g = [c];
+        var h = 256;
+		var o = 256;
+    for (b = 1; b &lt; d.length; b++) a = d[b].charCodeAt(0), a = h &gt; a ? d[b] : e[a] ? e[a] : f + c, g.push(a), c = a.charAt(0), e[o] = f + c, o++, f = a;
+    return g.join(&quot;&quot;)
+};
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_36">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_36">&#182;</a>
+							</div>
+							<p>Helper to clean up mangled records in the inspector
+function <em>f</em>_CleaupNaN(valueRecord) {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__CleanupNaN(valueRecord) {
+    if (valueRecord.val() == &#39;NaN&#39;) {
+        valueRecord.val(&#39;0&#39;);
+    }
+} 
+    
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_37">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_37">&#182;</a>
+							</div>
+							<p>when we press the "xProfile/compare charts" togggle button this happens</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__TogglexProfile() {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_38">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_38">&#182;</a>
+							</div>
+							<p>We are in xProfile Mode</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_39">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_39">&#182;</a>
+							</div>
+							<p>WARNING _ IF YOU CHANGE THE DEFAULT START MODE YOU MIGHT NEED TO ADJUST THIS</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_40">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_40">&#182;</a>
+							</div>
+							<p>We are entering XPROFILE mode</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>if( ! $(&#39;.xprofile-image&#39;).first().is(&quot;:visible&quot;)   )
+	{
+		
+		$(&#39;.recordTitle&#39;).html(&#39;Activate chart mode&#39;);
+		
+		$(&#39;.hideInOneToOne&#39;).attr(&#39;style&#39;,&#39;display:block !important&#39;);
+		$(&#39;.hideInxProfile&#39;).attr(&#39;style&#39;,&#39;display:none !important&#39;);
+			
+	
+		
+	}
+	else
+	{
+			$(&#39;.recordTitle&#39;).html(&#39;Activate xProfile mode&#39;);
+		
+			$(&#39;.hideInxProfile&#39;).attr(&#39;style&#39;,&#39;display:block !important&#39;);
+				$(&#39;.hideInOneToOne&#39;).attr(&#39;style&#39;,&#39;display:none !important&#39;);
+				
+				
+				
+		
+	}
+
+
+	$(this).blur();
+    $(&#39;.hideableRecords&#39;).toggleClass(&quot;hiddenThing&quot;);
+
+
+    $(&#39;.main-logo&#39;).toggleClass(&quot;smallerLogo&quot;);
+    $(&#39;.mainForm&#39;).toggleClass(&quot;shrinkForm&quot;);
+    $(&#39;#resizableOptions&#39;).toggleClass(&quot;resizableOptions&quot;);
+	
+	
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_41">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_41">&#182;</a>
+							</div>
+							<p>$('.details_form, .hiddenWhenMeta').hide();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	$(&#39;.TargetStuffRow&#39;).show();
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_42">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_42">&#182;</a>
+							</div>
+							<p>toggleLinkText();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+}
+
+	
+function _f__toggleLookups(){
+	
+	debugP(&quot;_f__toggleLookups is deprecated&quot;);
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_43">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_43">&#182;</a>
+							</div>
+							<p>xProfile Mode;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	/* if(!  $(&#39;.xprofile-image&#39;).first().is(&quot;:visible&quot;)   )
+	{
+	$(&#39;.TargetStuffRow&#39;).toggle();
+
+	}
+	
+	$(&#39;.details_form, .hiddenWhenMeta&#39;).toggle();
+	
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_44">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_44">&#182;</a>
+							</div>
+							<p>.hiddenWhenMeta'.toggle();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+toggleLinkText(); */
+
+}
+
+
+function toggleLinkText(){
+	
+   	$(&#39;.targetArea&#39;).prop(&#39;disabled&#39;, !$(&#39;.targetArea&#39;).prop(&#39;disabled&#39;)    );
+	
+		
+	if(  $(&#39;.xprofile-image&#39;).first().is(&quot;:visible&quot;)   )
+	{
+		$(&#39;.toggleMessageLink&#39;).html(&#39;&#39;);
+		
+	}
+	else
+	{
+		
+		$(&#39;.toggleMessageLink&#39;).html(&#39;Close this area to perform analyisis.&#39;);
+		
+	}
+}	
+	
+function _f__ConvertHMSToDecimal(idOfThing) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_45">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_45">&#182;</a>
+							</div>
+							<p>warnP("CALLED!");
+debugP("<em>f</em>_ConvertHMSToDecimal(idOfThing)");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var getthevalue = $(idOfThing).attr(&#39;id&#39;);
+
+    var thehmsValueBox = $(&quot;#&quot; + getthevalue);
+
+    var i = thehmsValueBox.val().trim().split(&quot; &quot;),
+        h = i[0],
+        n = i[1],
+        s = i[2];
+
+    if (typeof (h) === &quot;undefined&quot;) {
+
+        h = n = s = 0;
+ 
+        thehmsValueBox.val(&#39;0 0 0&#39;);
+		thehmsValueBox.blur();
+		thehmsValueBox.focus();
+		thehmsValueBox.next().next().addClass(&quot;unset-sign&quot;);
+    /*     showInfo(); */
+	/* 	warnP(&#39; &amp;deg; must be in the range of 0 to &lt;360. [undefined] &#39;); */
+        return;
+    }
+
+    if (h.length == 0) {
+        thehmsValueBox.val(&#39;0 0 0&#39;);
+		thehmsValueBox.blur();
+		thehmsValueBox.focus();
+		thehmsValueBox.next().next().addClass(&quot;unset-sign&quot;);
+       /*  showInfo(); */
+
+	/* 	warnP(&#39; &amp;deg; must be in the range of 0 to &lt;360.  &#39;); */
+        return;
+
+    }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_46">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_46">&#182;</a>
+							</div>
+							<p>by now h is numeric and a float of greater than zero length...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+    if (!$.isNumeric(h)) {
+
+        warnClear();
+       /*  warnP(&#39; &amp;deg; must be in the range of 0 to &lt;360. [numeric] &#39;); */
+        thehmsValueBox.val(&#39;0 0 0&#39;);
+		thehmsValueBox.next().next().addClass(&quot;unset-sign&quot;);
+		thehmsValueBox.blur();
+		thehmsValueBox.focus();
+        return;
+    }
+
+	
+	  absdlat = Math.abs(h);
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_47">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_47">&#182;</a>
+							</div>
+							<p>We strip the -ve sign in the field. Good luck making this less than 0 via the front end, so we don't bother testing for it here. NB for other injection methods...</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (absdlat &gt;= 360) {
+        warnClear();
+      /*     warnP(&#39; &amp;deg; must be in the range of 0 to &lt;360. &#39;); */
+        thehmsValueBox.val(&#39;0 0 0&#39;);
+		thehmsValueBox.next().next().addClass(&quot;unset-sign&quot;);
+		thehmsValueBox.blur();
+		thehmsValueBox.focus();
+        return;
+    }
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_48">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_48">&#182;</a>
+							</div>
+							<p>we got this far it must be a number at the very least between 0 and 360.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    var selectedSignValue = 0;
+
+    if (parseFloat(h) &gt;= 30) //  WE WANT TO SET THE SIGN!
+
+    {
+
+        selectedSignValue = parseFloat(h);
+
+    } else if (thehmsValueBox.prev().prev().val() &gt; 0) {
+
+	
+	
+        selectedSignValue = parseFloat(thehmsValueBox.prev().prev().val()) + (parseFloat(h) % 30);
+
+    }
+	else 
+	{
+		 selectedSignValue = parseFloat(h);
+		
+	}
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_49">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_49">&#182;</a>
+							</div>
+							<p>okay so  we added some extra catch all logic above ensuring the 
+selectedSignValue is added back into the total to make decimal value correct.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	
+    var temp = selectedSignValue;
+
+    thehmsValueBox.prop(&#39;title&#39;, SignNeatTitles[Math.floor(selectedSignValue / 30)]);
+
+	
+	var TLA = SignNeatTitles[Math.floor(selectedSignValue / 30)];
+		
+
+	thehmsValueBox.next().next().prop(&#39;title&#39;, TLA);
+	thehmsValueBox.next().next().html(TLA.slice(0,3));
+
+	thehmsValueBox.next().next().removeClass(&quot;unset-sign&quot;);
+
+	
+    if (absdlat &gt;= 30) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_50">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_50">&#182;</a>
+							</div>
+							<p>we need to walk by 30 
+remove the fat</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        absdlat = absdlat % 30;
+    }
+
+    absdlat = Math.abs(absdlat * 1000000.); //integer
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_51">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_51">&#182;</a>
+							</div>
+							<p>We now have our valid hour value.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_52">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_52">&#182;</a>
+							</div>
+							<p>With the new workflow let's presume that we may NOT have typed the last boxes yet and 
+just passively encourage the correct input.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+    if (typeof (n) === &quot;undefined&quot; || !$.isNumeric(n)) {
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_53">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_53">&#182;</a>
+							</div>
+							<p>Okay so we didnt type these yet, let's return to the box and see what happens next.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	/* warnClear();
+	warnP(&quot;Enter &amp;deg;Minutes&quot;); */
+		
+	$(this).focus();
+	return;
+    /*     n = &quot;0&quot;;
+        s = &quot;0&quot;; */
+
+    } else if (typeof (s) === &quot;undefined&quot; || !$.isNumeric(s)) {
+
+      /*   s = &quot;0&quot;; */
+    
+		/* 
+		warnClear();
+	warnP(&quot;Enter &amp;deg;Seconds&quot;); */
+$(this).focus();
+	return;
+    }
+    
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_54">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_54">&#182;</a>
+							</div>
+							<p>HARD LIMIT s precision.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+    s = Math.floor(parseFloat(s) + 0.5);
+    thehmsValueBox.val(h + &#39; &#39; + n + &#39; &#39; + s);
+	
+	
+    absmlat = Math.abs(n * 1000000.); //integer
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_55">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_55">&#182;</a>
+							</div>
+							<p>why don't we return here when we do in the absslat below?</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (absmlat &gt;= (60 * 1000000.) || !$.isNumeric(n)) {
+    /*     warnClear();
+        warnP(&#39; &amp;deg;mins must be in the range of 0 to &lt;60. &#39;); */
+        thehmsValueBox.val(h + &#39; 0 0&#39;);
+		
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_56">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_56">&#182;</a>
+							</div>
+							<p>return;</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    }
+
+
+    absslat = Math.abs(s * 1000000.); // Note: kept as big integer for now, even if submitted as decimal
+
+    if (absslat &gt;= (60 * 1000000.) || !$.isNumeric(s)) {
+     /*    warnClear();
+        warnP(&#39; &amp;deg;seconds must be in the range of 0 to &lt;60. &#39;); */
+        thehmsValueBox.val(h + &#39; &#39; + n + &#39; 0&#39;);
+        return;
+    }
+
+    absdlat = Math.abs(temp * 1000000.); //integer
+
+    var FinalConvertedValue = Math.round(absdlat + (absmlat / 60.) + (absslat / 3600.)) * latsign / 1000000;
+
+
+    if (absdlat &gt;= 30 * 1000000.) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_57">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_57">&#182;</a>
+							</div>
+							<p>we need to walk by 30 </p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+
+        var signIndexer = Math.floor(selectedSignValue / 30);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_58">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_58">&#182;</a>
+							</div>
+							<p>One extra prev to skip the span</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        
+		
+		var TLA = SignNeatTitles[signIndexer];
+		
+		
+		
+		
+		thehmsValueBox.next().next().prop(&#39;title&#39;, TLA);
+	thehmsValueBox.next().next().html(TLA.slice(0,3));
+
+	thehmsValueBox.next().next().removeClass(&quot;unset-sign&quot;);
+	
+		
+		
+		thehmsValueBox.prev().prev().prop(&#39;selectedIndex&#39;, signIndexer);
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_59">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_59">&#182;</a>
+							</div>
+							<p>debugP("Set the sign to index "+signIndexer+ ", which is "+SignNeatTitles[signIndexer] +" on id"+getthevalue     );</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+        thehmsValueBox.val(h % 30 + &#39; &#39; + n + &#39; &#39; + s);
+
+    }
+
+
+    thehmsValueBox.next().val(FinalConvertedValue);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_60">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_60">&#182;</a>
+							</div>
+							<p>warnClear();
+infoP("H n S converted to " + FinalConvertedValue, 10000);</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+}
+
+
+function _f__ConvertDecimalToHMSSingle(idOfThing) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_61">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_61">&#182;</a>
+							</div>
+							<p>debugP("<em>f</em>_ConvertDecimalToHMSSingle(idOfThing)");</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var stretch = 10000;
+
+    var getthevalue = $(idOfThing).attr(&#39;id&#39;);
+    var theDecimalValueBox = $(&quot;#&quot; + getthevalue);
+
+
+    if (!$.isNumeric(theDecimalValueBox.val())) {
+        theDecimalValueBox.val(0);
+
+        return;
+    }
+
+   var latAbs = Math.abs(Math.round(theDecimalValueBox.val() * stretch));
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_62">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_62">&#182;</a>
+							</div>
+							<p>Hard coded positive Lat</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var hours = (Math.floor(latAbs / stretch) * 1);
+
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_63">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_63">&#182;</a>
+							</div>
+							<p>One extra prev to skip the span</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    theDecimalValueBox.prev().prev().prev().prop(&#39;selectedIndex&#39;, Math.floor(hours / 30));
+
+    var mins = Math.floor(((latAbs / stretch) - Math.floor(latAbs / stretch)) * 60);
+    var secs = (Math.floor(((((latAbs / stretch) - Math.floor(latAbs / stretch)) * 60) - Math.floor(((latAbs / stretch) - Math.floor(latAbs / stretch)) * 60)) * stretch) * 60 / stretch);
+ 
+
+	if (hours + mins + secs &gt; 0)
+	{
+	var TLA = SignNeatTitles[Math.floor(hours / 30)];	
+		
+	theDecimalValueBox.next().prop(&#39;title&#39;, TLA);
+	theDecimalValueBox.next().html(TLA.slice(0,3));
+		
+	theDecimalValueBox.next().removeClass(&quot;unset-sign&quot;);
+	}
+	
+	theDecimalValueBox.prev().val(hours % 30 + &quot; &quot; + mins + &quot; &quot; + Math.floor(secs + 0.5));
+
+    theDecimalValueBox.prev().prop(&#39;title&#39;, SignNeatTitles[Math.floor(hours / 30)]);
+}
+
+
+function _f__showInfo() {
+
+    warnClear();
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_64">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_64">&#182;</a>
+							</div>
+							<p>warnP(' Enter values in the H n S box. ');
+ warnP(' &deg; must be in the range of 0 to &lt;30. ');
+  warnP(' &deg;mins must be in the range of 0 to &lt;60. ');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_65">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_65">&#182;</a>
+							</div>
+							<p>warnP(' &deg;seconds must be in the range of 0 to &lt;60. ');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+}
+	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_66">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_66">&#182;</a>
+							</div>
+							<p>Setup the tabbing</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>function _f__AutoSetupTheTabbingOrder() {
+    var tabindex = 1;
+    $(&#39;.hmsbox,option&#39;).each(function  () {
+        if (this.type != &quot;hidden&quot;) {
+            var $input = $(this);
+            $input.attr(&quot;tabindex&quot;, tabindex);
+            tabindex++;
+        }
+    });
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_67">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_67">&#182;</a>
+							</div>
+							<p>This will remove full stops on all inputs of class noPeriod when the input event fires. Allegedly.<br />
+I use this on the HOURS and MINUTES boxes.</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    $(&#39;.noPeriod&#39;).on(&#39;input&#39;, function  () {
+        var chars = $(this).val();
+        if (chars.indexOf(&#39;.&#39;) !== -1) {
+            chars = chars.replace(&#39;.&#39;, &#39;&#39;);
+            $(this).val(chars);
+        }
+    });
+
+
+}
+
+
+var emptySearchFilter = function(){ 
+_f__handleKeyPress($(&#39;#filterTxt&#39;).val(), &#39;&#39;);
+$(&#39;#filterTxt&#39;).val(&#39;&#39;);
+}
+
+
+function _f__InitSearching() {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_68">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_68">&#182;</a>
+							</div>
+							<p>Look for input box and insert key handler</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var prevTxt = null;
+    var txt = document.getElementsByName(&#39;filterTxt&#39;);
+    if (txt != null) {
+        txt[0].onkeyup = function  (event) {
+            var e = event || window.event;
+            var curTxt = txt[0].value;
+            _f__handleKeyPress(prevTxt, curTxt);
+            prevTxt = curTxt;
+            return true;
+        }
+    }
+}
+
+
+function _f__handleKeyPress(oldVal, newVal) {
+    var components = document.getElementsByName(&#39;person&#39;);
+    var select = components[0];
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_69">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_69">&#182;</a>
+							</div>
+							<p>Store the original list of entries to restore when backspacing</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (originalentries === null) {
+        originalentries = new Array();
+        for (c = 0; c &lt; select.children.length; c++) {
+            originalentries.push(select.children[c]);
+        }
+    }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_70">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_70">&#182;</a>
+							</div>
+							<p>If the number of characters in the text box is less than last time
+it must be because the user pressed delete</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    if (oldVal !== null &amp;&amp; (newVal.length &lt; oldVal.length)) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_71">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_71">&#182;</a>
+							</div>
+							<p>Restore the lists original set of entriesÊ
+and start from the beginning</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>        for (c = 0; c &lt; originalentries.length; c++) {
+            select.add(originalentries[c]);
+        }
+    }
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_72">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_72">&#182;</a>
+							</div>
+							<p>Break out all of the parts of the search textÊ
+by splitting on white space</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var parts = newVal.split(&#39; &#39;);
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_73">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_73">&#182;</a>
+							</div>
+							<p>Filter out the entries that don't contain the entered text</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>    var toremove = new Array();
+    for (i = 0; i &lt; select.children.length; i++) {
+        var entry = select.children[i];
+        var match = true;
+        var entryTxt = entry.text;
+        for (p = 0; p &lt; parts.length; p++) {
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_74">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_74">&#182;</a>
+							</div>
+							<p>The entry needs to contain all portions of the
+search string <em>but</em> in any order</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>            var part = parts[p].toUpperCase();
+            if (entryTxt.toUpperCase().lastIndexOf(part) &lt; 0) {
+                match = false;
+                break;
+            }
+        }
+        if (match == false) {
+            toremove.push(entry);
+        }
+    }
+    if (toremove != null) {
+        for (t = 0; t &lt; toremove.length; t++) {
+            var entryTxt = toremove[t].text;
+            select.removeChild(toremove[t]);
+        }
+    }
+	
+	var TotalContentCount = $(&#39;#person option&#39;).length;
+	
+	debugP(TotalContentCount +&quot; of &quot; +  originalentries.length + &quot; records&quot;);
+	
+	
+}
+ 
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_75">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_75">&#182;</a>
+							</div>
+							<p>function <em>f</em>_ShowAdminAreas() {</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_76">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_76">&#182;</a>
+							</div>
+							<p>// $('#resizableOptions').toggleClass('hiddenThing');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_77">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_77">&#182;</a>
+							</div>
+							<p>$( "#optionsHolder" ).dialog( "open" );
+//.dialog('widget').position({my: "top",at: "top+50",of: window});</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_78">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_78">&#182;</a>
+							</div>
+							<p>//  $( ".dialog-confirm").setStyle({top: '100px'}).delay( 1000 ).css({ top: '115px !important' });</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_79">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_79">&#182;</a>
+							</div>
+							<p>//<em>f</em>_ToggleOptionsVisiblity();
+}</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>
+ 
+function _f__ShowAdminAreas() {
+
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_80">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_80">&#182;</a>
+							</div>
+							<p>$('#resizableOptions').toggleClass('hiddenThing');</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+	$( &quot;#optionsHolder&quot; ).dialog( &quot;open&quot; );
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_81">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_81">&#182;</a>
+							</div>
+							<p>.dialog('widget').position({my: "top",at: "top+50",of: window});</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_82">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_82">&#182;</a>
+							</div>
+							<p>$( ".dialog-confirm").setStyle({top: '100px'}).delay( 1000 ).css({ top: '115px !important' });</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>	
+</code></pre>
+						</td>
+					</tr>
+					<tr id="section_83">
+						<td class="docs">
+							<div class="pilwrap">
+								<a class="pilcrow" href="#section_83">&#182;</a>
+							</div>
+							<p><em>f</em>_ToggleOptionsVisiblity();</p>
+
+						</td>
+						<td class="code">
+							<pre><code class='prettyprint'>}
+
+function _f_ShowExporter(){
+	$( &quot;#exporterHolder&quot; ).dialog(&#39;open&#39;);
+	
+}
+
+
+
+
+function _f__BindKeys() {
+
+    Mousetrap.bind([&#39;alt+shift+o&#39;], function  (e) {
+        _f__ShowAdminAreas();
+        return false;
+    });
+
+    Mousetrap.bind([&#39;shift+esc&#39;], function  (e) {
+		
+        _f__debugClear();
+_f__infoP(&quot;cleared&quot;, 1000); //		toastr.clear();
+        return false;
+    });
+	
+  Mousetrap.bind([&#39;alt+shift+x&#39;], function  (e) {
+	
+	$( &quot;#exporterHolder&quot; ).dialog(&#39;open&#39;);
+	
+ });
+}
+</code></pre>
+						</td>
+					</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

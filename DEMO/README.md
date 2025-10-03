@@ -10,13 +10,14 @@ the positions stored in `data/de200_demo_positions.json`. The integration is
 intended for qualitative exploration and should not be used for navigation or
 precision astronomy.
 
-Because the project infrastructure rejects binary uploads, the canonical
-`de200.eph` file is not committed to the repository. Run:
+The repository already includes the canonical `de200.eph` and `header.200`
+artifacts inside the top-level `data/` directory. You can therefore open
+`index.html` directly in a browser without running any helper scripts.
+
+If you need to refresh the artifacts for verification purposes, run:
 
 ```bash
 python DEMO/fetch_ephemeris.py
 ```
 
-to download verified copies of `de200.eph` and `header.200` directly into the
-`data/` directory. Once fetched you can open `index.html` directly in a browser
-and explore the solar system snapshot in an entirely client-side experience.
+This downloads verified copies of the ephemeris files into `data/`.

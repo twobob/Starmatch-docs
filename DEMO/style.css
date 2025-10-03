@@ -37,10 +37,15 @@ header p {
 
 .controls {
   margin-top: 1.5rem;
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .controls label {
@@ -55,12 +60,56 @@ header p {
   width: 100%;
 }
 
-.epoch-info {
+.playback-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.control-btn {
+  flex: 1;
+  padding: 0.75rem;
+  background: rgba(94, 197, 255, 0.12);
+  border: 1px solid rgba(94, 197, 255, 0.3);
+  border-radius: 8px;
+  color: #5ec5ff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 50px;
+}
+
+.control-btn:hover {
+  background: rgba(94, 197, 255, 0.22);
+  border-color: rgba(94, 197, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(94, 197, 255, 0.2);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+  background: rgba(94, 197, 255, 0.3);
+}
+
+.control-btn.active {
+  background: rgba(94, 197, 255, 0.35);
+  border-color: #5ec5ff;
+}
+
+.epoch-info,
+.speed-info {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   font-family: "Fira Code", "Roboto Mono", monospace;
   font-size: 0.85rem;
+  color: #b8d0f0;
+}
+
+.speed-info {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: #8fa8ce;
 }
 
 .canvas-container {

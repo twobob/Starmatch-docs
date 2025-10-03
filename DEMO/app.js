@@ -28,17 +28,37 @@ const formatDate = (jd) => {
 
 let data;
 
-function getDatasetUrl() {
+const DATASET_SOURCES = {
+  file: [
+    {
+      type: 'json',
+      url: new URL('./de200_demo_positions.json', import.meta.url)
+    }
+  ],
+  http: [
+    {
+      type: 'json',
+      url: new URL('../data/de200_demo_positions.json', import.meta.url)
+    },
+    {
+      type: 'script',
+      url: new URL('../data/de200_demo_positions.js', import.meta.url),
+      globals: ['de200_demo_positions', 'DE200_DEMO_POSITIONS', 'demoPositions']
+    }
+  ]
+};
+
+function getDatasetSources() {
   if (window.location.protocol === 'file:') {
-    return new URL('./de200_demo_positions.json', import.meta.url);
+    return DATASET_SOURCES.file;
   }
-  return new URL('../data/de200_demo_positions.json', import.meta.url);
+  return DATASET_SOURCES.http;
 }
 
-async function fetchDataset(url) {
+async function fetchJsonDataset(url) {
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`Request for ${url} failed with ${response.status}`);
+    throw new Error(`Request for ${url} failed with status ${response.status}`);
   }
 
   const text = await response.text();
@@ -49,13 +69,59 @@ async function fetchDataset(url) {
   }
 }
 
+function loadScriptDataset({ url, globals }) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = url.href;
+    script.async = true;
+
+    script.onload = () => {
+      script.remove();
+      for (const name of globals) {
+        const value = window[name];
+        if (value) {
+          resolve(value);
+          return;
+        }
+      }
+      reject(new Error(`Loaded ${url} but none of the expected globals (${globals.join(', ')}) were defined`));
+    };
+
+    script.onerror = () => {
+      script.remove();
+      reject(new Error(`Failed to load ephemeris dataset script ${url}`));
+    };
+
+    document.head.appendChild(script);
+  });
+}
+
+async function loadDatasetFromSource(source) {
+  if (source.type === 'json') {
+    return fetchJsonDataset(source.url);
+  }
+  if (source.type === 'script') {
+    return loadScriptDataset(source);
+  }
+  throw new Error(`Unsupported dataset source type: ${source.type}`);
+}
+
 async function loadData() {
-  const datasetUrl = getDatasetUrl();
-  try {
-    data = await fetchDataset(datasetUrl);
-  } catch (error) {
-    console.error(`Failed to load ephemeris data from ${datasetUrl}`, error);
-    throw error;
+  const sources = getDatasetSources();
+  let lastError;
+
+  for (const source of sources) {
+    try {
+      data = await loadDatasetFromSource(source);
+      break;
+    } catch (error) {
+      console.error(`Failed to load ephemeris data from ${source.url}`, error);
+      lastError = error;
+    }
+  }
+
+  if (!data) {
+    throw lastError || new Error('No dataset source succeeded');
   }
 
   slider.max = data.samples.length - 1;

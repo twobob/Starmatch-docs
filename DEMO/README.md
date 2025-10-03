@@ -8,7 +8,9 @@ samples generated from the official JPL DE200 ephemeris constants
 A lightweight Newtonian integrator seeded with the DE200 state vectors produces
 the positions stored in `data/de200_demo_positions.json` (mirrored to
 `DEMO/de200_demo_positions.json` so the demo can be hosted as a standalone
-folder). The integration is
+folder). When the demo runs over HTTP/S it will fetch the canonical JSON data
+and fall back to the legacy `data/de200_demo_positions.js` bundle if present.
+The integration is
 intended for qualitative exploration and should not be used for navigation or
 precision astronomy.
 

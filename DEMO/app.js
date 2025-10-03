@@ -28,9 +28,36 @@ const formatDate = (jd) => {
 
 let data;
 
+function getDatasetUrl() {
+  if (window.location.protocol === 'file:') {
+    return new URL('./de200_demo_positions.json', import.meta.url);
+  }
+  return new URL('../data/de200_demo_positions.json', import.meta.url);
+}
+
+async function fetchDataset(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Request for ${url} failed with ${response.status}`);
+  }
+
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error(`Response from ${url} was not valid JSON: ${error.message}`);
+  }
+}
+
 async function loadData() {
-  const response = await fetch('../data/de200_demo_positions.json');
-  data = await response.json();
+  const datasetUrl = getDatasetUrl();
+  try {
+    data = await fetchDataset(datasetUrl);
+  } catch (error) {
+    console.error(`Failed to load ephemeris data from ${datasetUrl}`, error);
+    throw error;
+  }
+
   slider.max = data.samples.length - 1;
   buildLegend();
   updateScene();
@@ -134,4 +161,5 @@ scaleSlider.addEventListener('input', updateScene);
 loadData().catch((error) => {
   console.error('Failed to load ephemeris demo data', error);
   dateLabel.textContent = 'Failed to load data';
+  distanceLabel.textContent = error.message;
 });

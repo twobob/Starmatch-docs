@@ -1,0 +1,115 @@
+:root {
+  color-scheme: dark;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  --accent: #5ec5ff;
+  --bg: #0e1016;
+  --panel: rgba(20, 25, 36, 0.92);
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #1a2233, #0b0d13 70%);
+  color: #e2eeff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+main {
+  width: min(1100px, 95vw);
+  background: var(--panel);
+  padding: 1.5rem 2rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+header h1 {
+  margin: 0 0 0.75rem;
+  font-size: 1.75rem;
+}
+
+header p {
+  margin: 0;
+  color: #9eb3d8;
+  line-height: 1.6;
+}
+
+.controls {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: center;
+}
+
+.controls label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: #8fa8ce;
+}
+
+.controls input[type="range"] {
+  width: 100%;
+}
+
+.epoch-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-family: "Fira Code", "Roboto Mono", monospace;
+  font-size: 0.85rem;
+}
+
+.canvas-container {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr min(200px, 25%);
+}
+
+canvas {
+  width: 100%;
+  border-radius: 18px;
+  background: radial-gradient(circle at center, rgba(94, 197, 255, 0.08), rgba(6, 9, 15, 0.9));
+  border: 1px solid rgba(94, 197, 255, 0.18);
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(10, 13, 19, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(94, 197, 255, 0.16);
+  font-size: 0.85rem;
+}
+
+.legend div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend span.badge {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+@media (max-width: 900px) {
+  main {
+    padding: 1.25rem;
+  }
+  .canvas-container {
+    grid-template-columns: 1fr;
+  }
+  .legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

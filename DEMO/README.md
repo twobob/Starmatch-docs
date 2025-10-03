@@ -10,7 +10,10 @@ the positions stored in `data/de200_demo_positions.json` (mirrored to
 `DEMO/de200_demo_positions.json` so the demo can be hosted as a standalone
 folder). When the demo runs over HTTP/S it will fetch the canonical JSON data
 and fall back to the legacy `data/de200_demo_positions.js` bundle if present.
-The integration is
+When the demo is hosted over HTTP/S it synthesizes the same integration in the
+browser by reading the ephemeris header (`data/header.200`). If fetching the
+header fails it will fall back to the canonical JSON dataset and finally the
+legacy `data/de200_demo_positions.js` bundle if present. The integration is
 intended for qualitative exploration and should not be used for navigation or
 precision astronomy.
 

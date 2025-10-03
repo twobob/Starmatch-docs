@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DE200 Barycentric Viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>DE200 Barycentric Demo</h1>
+      <p>
+        Interactive visualization of barycentric positions derived from the
+        JPL DE200 ephemeris constants. The integration is Newtonian and
+        intended for qualitative exploration only.
+      </p>
+    </header>
+    <section class="controls">
+      <label for="time-slider">Epoch</label>
+      <input type="range" id="time-slider" min="0" step="1" value="0">
+      <div class="epoch-info">
+        <span id="date-label">Loading…</span>
+        <span id="distance-label"></span>
+      </div>
+      <label for="scale">Scale (AU)</label>
+      <input type="range" id="scale" min="1" max="30" value="10">
+    </section>
+    <section class="canvas-container">
+      <canvas id="space-canvas" width="900" height="900"></canvas>
+      <aside class="legend" id="legend"></aside>
+    </section>
+  </main>
+  <script src="app.js" type="module"></script>
+</body>
+</html>

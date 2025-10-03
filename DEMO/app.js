@@ -101,8 +101,8 @@ async function loadDatasetFromEphemeris({ headerUrl, ephUrl }) {
     ephResponse.arrayBuffer()
   ]);
 
-  const { constants } = parseEphemerisHeader(headerText);
-  const dataset = integrateDemoSamples(constants);
+  const { constants, startJD, endJD } = parseEphemerisHeader(headerText);
+  const dataset = integrateDemoSamples(constants, { startJD, endJD });
   const usage = await computeEphemerisUsage(ephBuffer);
   dataset.metadata.ephemeris_asset = {
     header_url: headerUrl.href,
@@ -241,7 +241,7 @@ function buildBodyStates(constants) {
   }));
 }
 
-function integrateDemoSamples(constants) {
+function integrateDemoSamples(constants, options = {}) {
   const bodies = buildBodyStates(constants);
   const n = bodies.length;
 
@@ -250,15 +250,42 @@ function integrateDemoSamples(constants) {
   const masses = bodies.map((body) => body.gm);
 
   const stepDays = 1.0;
-  const totalSteps = 720;
   const outputStride = 15;
   const samples = [];
 
   const auKm = constants.AU;
   const jd0 = constants.JDEPOC;
 
-  function computeAccelerationsAt(posList) {
-    const result = posList.map(() => new Float64Array(3));
+  const defaultTotalSteps = 720;
+  const hasHeaderRange = Number.isFinite(options.startJD) && Number.isFinite(options.endJD);
+  let rangeStartJD = hasHeaderRange ? options.startJD : jd0;
+  let rangeEndJD = hasHeaderRange ? options.endJD : jd0 + defaultTotalSteps * stepDays;
+
+  if (!Number.isFinite(rangeStartJD)) {
+    rangeStartJD = jd0;
+  }
+  if (!Number.isFinite(rangeEndJD)) {
+    rangeEndJD = rangeStartJD;
+  }
+  if (rangeEndJD < rangeStartJD) {
+    const tmp = rangeStartJD;
+    rangeStartJD = rangeEndJD;
+    rangeEndJD = tmp;
+  }
+
+  function computeAccelerationsAt(posList, target) {
+    let result;
+    if (target) {
+      result = target;
+      for (let i = 0; i < result.length; i += 1) {
+        const acc = result[i];
+        acc[0] = 0;
+        acc[1] = 0;
+        acc[2] = 0;
+      }
+    } else {
+      result = posList.map(() => new Float64Array(3));
+    }
     for (let i = 0; i < n; i += 1) {
       const pi = posList[i];
       const acc = result[i];
@@ -283,62 +310,130 @@ function integrateDemoSamples(constants) {
     return result;
   }
 
-  let currentAccelerations = computeAccelerationsAt(positions);
+  const currentAccelerations = computeAccelerationsAt(positions);
+  const nextAccelerations = positions.map(() => new Float64Array(3));
+  const nextPositions = positions.map(() => new Float64Array(3));
 
-  for (let stepIndex = 0; stepIndex <= totalSteps; stepIndex += 1) {
-    if (stepIndex % outputStride === 0) {
-      const jd = jd0 + stepIndex * stepDays;
-      const frame = {
-        julian_date: jd,
-        positions_km: {},
-      };
-      for (let i = 0; i < n; i += 1) {
-        const coords = positions[i];
-        frame.positions_km[bodies[i].name] = [
-          coords[0] * auKm,
-          coords[1] * auKm,
-          coords[2] * auKm,
-        ];
-      }
-      samples.push(frame);
-    }
+  let currentJD = jd0;
 
-    const nextPositions = positions.map((pos, i) => {
+  function advanceState(dt) {
+    const dt2 = dt * dt;
+    for (let i = 0; i < n; i += 1) {
+      const pos = positions[i];
       const vel = velocities[i];
       const acc = currentAccelerations[i];
-      return Float64Array.of(
-        pos[0] + vel[0] * stepDays + 0.5 * acc[0] * stepDays * stepDays,
-        pos[1] + vel[1] * stepDays + 0.5 * acc[1] * stepDays * stepDays,
-        pos[2] + vel[2] * stepDays + 0.5 * acc[2] * stepDays * stepDays,
-      );
-    });
+      const next = nextPositions[i];
+      next[0] = pos[0] + vel[0] * dt + 0.5 * acc[0] * dt2;
+      next[1] = pos[1] + vel[1] * dt + 0.5 * acc[1] * dt2;
+      next[2] = pos[2] + vel[2] * dt + 0.5 * acc[2] * dt2;
+    }
 
-    const nextAccelerations = computeAccelerationsAt(nextPositions);
+    computeAccelerationsAt(nextPositions, nextAccelerations);
 
     for (let i = 0; i < n; i += 1) {
       const vel = velocities[i];
       const acc = currentAccelerations[i];
       const nextAcc = nextAccelerations[i];
-      vel[0] += 0.5 * (acc[0] + nextAcc[0]) * stepDays;
-      vel[1] += 0.5 * (acc[1] + nextAcc[1]) * stepDays;
-      vel[2] += 0.5 * (acc[2] + nextAcc[2]) * stepDays;
-    }
+      vel[0] += 0.5 * (acc[0] + nextAcc[0]) * dt;
+      vel[1] += 0.5 * (acc[1] + nextAcc[1]) * dt;
+      vel[2] += 0.5 * (acc[2] + nextAcc[2]) * dt;
 
-    for (let i = 0; i < n; i += 1) {
       const pos = positions[i];
       const next = nextPositions[i];
       pos[0] = next[0];
       pos[1] = next[1];
       pos[2] = next[2];
+
+      const accTarget = currentAccelerations[i];
+      const srcAcc = nextAccelerations[i];
+      accTarget[0] = srcAcc[0];
+      accTarget[1] = srcAcc[1];
+      accTarget[2] = srcAcc[2];
     }
 
-    currentAccelerations = nextAccelerations;
+    currentJD += dt;
+  }
+
+  function moveToJulianDate(targetJD) {
+    if (!Number.isFinite(targetJD) || targetJD === currentJD) {
+      return;
+    }
+    let remaining = targetJD - currentJD;
+    const direction = Math.sign(remaining) || 1;
+    const step = stepDays * direction;
+    const steps = Math.floor(Math.abs(remaining) / stepDays);
+    for (let i = 0; i < steps; i += 1) {
+      advanceState(step);
+    }
+    remaining = targetJD - currentJD;
+    if (Math.abs(remaining) > 1e-9) {
+      advanceState(remaining);
+    }
+  }
+
+  function addSample(jd) {
+    const frame = {
+      julian_date: jd,
+      positions_km: {},
+    };
+    for (let i = 0; i < n; i += 1) {
+      const coords = positions[i];
+      frame.positions_km[bodies[i].name] = [
+        coords[0] * auKm,
+        coords[1] * auKm,
+        coords[2] * auKm,
+      ];
+    }
+    samples.push(frame);
+  }
+
+  moveToJulianDate(rangeStartJD);
+  addSample(currentJD);
+
+  const totalSpan = rangeEndJD - rangeStartJD;
+  if (totalSpan <= 0) {
+    return {
+      metadata: {
+        description: 'Newtonian integration seeded by DE200 constants (browser)',
+        start_julian_date: samples[0].julian_date,
+        end_julian_date: samples[0].julian_date,
+        step_days: stepDays,
+        output_stride_days: outputStride,
+        au_km: auKm,
+      },
+      bodies: bodies.map((body) => body.name),
+      samples,
+    };
+  }
+
+  const totalSteps = Math.floor(totalSpan / stepDays);
+  const remainderDays = totalSpan - totalSteps * stepDays;
+
+  let stepsSinceSample = 0;
+  for (let stepIndex = 0; stepIndex < totalSteps; stepIndex += 1) {
+    advanceState(stepDays);
+    stepsSinceSample += 1;
+    if (stepsSinceSample >= outputStride) {
+      addSample(currentJD);
+      stepsSinceSample = 0;
+    }
+  }
+
+  if (remainderDays > 1e-9) {
+    advanceState(remainderDays);
+    stepsSinceSample += remainderDays / stepDays;
+  }
+
+  const lastSample = samples[samples.length - 1];
+  if (!lastSample || Math.abs(lastSample.julian_date - currentJD) > 1e-9) {
+    addSample(currentJD);
   }
 
   return {
     metadata: {
       description: 'Newtonian integration seeded by DE200 constants (browser)',
-      start_julian_date: jd0,
+      start_julian_date: samples[0].julian_date,
+      end_julian_date: samples[samples.length - 1].julian_date,
       step_days: stepDays,
       output_stride_days: outputStride,
       au_km: auKm,

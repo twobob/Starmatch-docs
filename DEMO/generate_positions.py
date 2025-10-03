@@ -12,6 +12,7 @@ a full ephemeris evaluation pipeline.
 from __future__ import annotations
 
 import json
+import shutil
 from dataclasses import dataclass
 from math import sqrt
 from pathlib import Path
@@ -23,6 +24,7 @@ from jplephem.ascii import parse_header
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 HEADER_PATH = DATA_DIR / "header.200"
 OUTPUT_PATH = DATA_DIR / "de200_demo_positions.json"
+DEMO_OUTPUT_PATH = Path(__file__).resolve().with_name("de200_demo_positions.json")
 
 @dataclass
 class BodyState:
@@ -151,8 +153,11 @@ def main() -> None:
     constants = load_constants()
     states = build_bodies(constants)
     dataset = integrate(states, constants)
-    OUTPUT_PATH.write_text(json.dumps(dataset, indent=2))
+    payload = json.dumps(dataset, indent=2)
+    OUTPUT_PATH.write_text(payload)
+    shutil.copyfile(OUTPUT_PATH, DEMO_OUTPUT_PATH)
     print(f"Wrote {OUTPUT_PATH} with {len(dataset['samples'])} frames")
+    print(f"Mirrored dataset to {DEMO_OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

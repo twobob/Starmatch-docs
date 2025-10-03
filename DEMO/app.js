@@ -6,6 +6,10 @@ const dateLabel = document.getElementById('date-label');
 const distanceLabel = document.getElementById('distance-label');
 const legendEl = document.getElementById('legend');
 
+const currentScript = document.currentScript;
+const scriptBaseUrl = currentScript ? currentScript.src : window.location.href;
+const resolveRelativeUrl = (path) => new URL(path, scriptBaseUrl);
+
 const COLORS = [
   '#9ed5ff',
   '#ffc89e',
@@ -32,21 +36,21 @@ const DATASET_SOURCES = {
   file: [
     {
       type: 'json',
-      url: new URL('./de200_demo_positions.json', import.meta.url)
+      url: resolveRelativeUrl('./de200_demo_positions.json')
     }
   ],
   http: [
     {
       type: 'integrated',
-      headerUrl: new URL('../data/header.200', import.meta.url)
+      headerUrl: resolveRelativeUrl('../data/header.200')
     },
     {
       type: 'json',
-      url: new URL('../data/de200_demo_positions.json', import.meta.url)
+      url: resolveRelativeUrl('../data/de200_demo_positions.json')
     },
     {
       type: 'script',
-      url: new URL('../data/de200_demo_positions.js', import.meta.url),
+      url: resolveRelativeUrl('../data/de200_demo_positions.js'),
       globals: ['de200_demo_positions', 'DE200_DEMO_POSITIONS', 'demoPositions']
     }
   ]

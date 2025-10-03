@@ -41,8 +41,9 @@ const DATASET_SOURCES = {
   ],
   http: [
     {
-      type: 'integrated',
-      headerUrl: resolveRelativeUrl('../data/header.200')
+      type: 'ephemeris',
+      headerUrl: resolveRelativeUrl('../data/header.200'),
+      ephUrl: resolveRelativeUrl('../data/de200.eph')
     },
     {
       type: 'json',
@@ -56,14 +57,59 @@ const DATASET_SOURCES = {
   ]
 };
 
-async function loadDatasetFromEphemeris(headerUrl) {
-  const response = await fetch(headerUrl);
-  if (!response.ok) {
-    throw new Error(`Request for ${headerUrl} failed with status ${response.status}`);
+async function computeEphemerisUsage(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let checksum32 = 0;
+  for (let i = 0; i < bytes.length; i += 1) {
+    checksum32 = (checksum32 + bytes[i]) >>> 0;
   }
-  const text = await response.text();
-  const { constants } = parseEphemerisHeader(text);
-  return integrateDemoSamples(constants);
+
+  let sha256 = null;
+  if (globalThis.crypto && globalThis.crypto.subtle) {
+    try {
+      const digest = await globalThis.crypto.subtle.digest('SHA-256', buffer);
+      sha256 = Array.from(new Uint8Array(digest))
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('');
+    } catch (error) {
+      console.warn('Failed to compute SHA-256 for ephemeris payload', error);
+    }
+  }
+
+  return {
+    byteLength: bytes.length,
+    checksum32: `0x${checksum32.toString(16).padStart(8, '0')}`,
+    sha256
+  };
+}
+
+async function loadDatasetFromEphemeris({ headerUrl, ephUrl }) {
+  const [headerResponse, ephResponse] = await Promise.all([
+    fetch(headerUrl),
+    fetch(ephUrl)
+  ]);
+
+  if (!headerResponse.ok) {
+    throw new Error(`Request for ${headerUrl} failed with status ${headerResponse.status}`);
+  }
+  if (!ephResponse.ok) {
+    throw new Error(`Request for ${ephUrl} failed with status ${ephResponse.status}`);
+  }
+
+  const [headerText, ephBuffer] = await Promise.all([
+    headerResponse.text(),
+    ephResponse.arrayBuffer()
+  ]);
+
+  const { constants } = parseEphemerisHeader(headerText);
+  const dataset = integrateDemoSamples(constants);
+  const usage = await computeEphemerisUsage(ephBuffer);
+  dataset.metadata.ephemeris_asset = {
+    header_url: headerUrl.href,
+    eph_url: ephUrl.href,
+    ...usage
+  };
+  return dataset;
 }
 
 function getDatasetSources() {
@@ -350,8 +396,8 @@ async function loadDatasetFromSource(source) {
   if (source.type === 'script') {
     return loadScriptDataset(source);
   }
-  if (source.type === 'integrated') {
-    return loadDatasetFromEphemeris(source.headerUrl);
+  if (source.type === 'ephemeris') {
+    return loadDatasetFromEphemeris(source);
   }
   throw new Error(`Unsupported dataset source type: ${source.type}`);
 }
@@ -364,11 +410,38 @@ async function loadData() {
     return;
   }
 
-  const response = await fetch('../data/de200_demo_positions.json');
-  data = await response.json();
-  slider.max = data.samples.length - 1;
-  buildLegend();
-  updateScene();
+  const sources = getDatasetSources();
+  let lastError = null;
+  for (const source of sources) {
+    try {
+      data = await loadDatasetFromSource(source);
+      slider.max = data.samples.length - 1;
+      buildLegend();
+      updateScene();
+      return;
+    } catch (error) {
+      lastError = error;
+      console.warn(`Failed to load dataset from ${describeSource(source)}`, error);
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+  throw new Error('No dataset sources available');
+}
+
+function describeSource(source) {
+  if (source.type === 'json') {
+    return `JSON ${source.url}`;
+  }
+  if (source.type === 'script') {
+    return `script ${source.url}`;
+  }
+  if (source.type === 'ephemeris') {
+    return `ephemeris ${source.ephUrl}`;
+  }
+  return source.type;
 }
 
 function buildLegend() {

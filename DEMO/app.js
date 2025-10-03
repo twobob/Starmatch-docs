@@ -26,7 +26,7 @@ const formatDate = (jd) => {
   return date.toISOString().split('T')[0];
 };
 
-let data;
+let data = window.DE200_DEMO_POSITIONS || null;
 
 const DATASET_SOURCES = {
   file: [
@@ -353,24 +353,15 @@ async function loadDatasetFromSource(source) {
 }
 
 async function loadData() {
-  const sources = getDatasetSources();
-  let lastError;
-
-  for (const source of sources) {
-    try {
-      data = await loadDatasetFromSource(source);
-      break;
-    } catch (error) {
-      const label = source.url?.href || source.headerUrl?.href || source.type;
-      console.error(`Failed to load ephemeris data from ${label}`, error);
-      lastError = error;
-    }
+  if (data) {
+    slider.max = data.samples.length - 1;
+    buildLegend();
+    updateScene();
+    return;
   }
 
-  if (!data) {
-    throw lastError || new Error('No dataset source succeeded');
-  }
-
+  const response = await fetch('../data/de200_demo_positions.json');
+  data = await response.json();
   slider.max = data.samples.length - 1;
   buildLegend();
   updateScene();

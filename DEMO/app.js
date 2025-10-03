@@ -26,9 +26,16 @@ const formatDate = (jd) => {
   return date.toISOString().split('T')[0];
 };
 
-let data;
+let data = window.DE200_DEMO_POSITIONS || null;
 
 async function loadData() {
+  if (data) {
+    slider.max = data.samples.length - 1;
+    buildLegend();
+    updateScene();
+    return;
+  }
+
   const response = await fetch('../data/de200_demo_positions.json');
   data = await response.json();
   slider.max = data.samples.length - 1;

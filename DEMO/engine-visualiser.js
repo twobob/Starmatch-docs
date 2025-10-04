@@ -2053,8 +2053,15 @@ function performComparison() {
     
     const targetThemes = [...theme]; // Copy theme values
     
-    // Display comparison results
-    displayComparisonResults(subjectThemes, targetThemes, subjectPlanetaryPositions, targetPlanetaryPositions);
+    // Display comparison results with planetary positions
+    displayComparisonResults(
+      subjectThemes, 
+      targetThemes, 
+      subjectPlanetaryPositions, 
+      targetPlanetaryPositions,
+      subjectAsc,
+      targetAsc
+    );
     
     comparisonResults.classList.remove('hidden');
     //showToast('Comparison complete!', 'success', 3000);
@@ -2084,8 +2091,9 @@ function extractPlanetaryPositions(positions) {
   
   for (const [ourName, ephemName] of Object.entries(bodyMapping)) {
     if (positions[ephemName]) {
-      const pos = positions[ephemName];
-      planetaryPositions[ourName] = cartesianToLongitude(pos.x, pos.y, pos.z);
+      const [x, y, z] = positions[ephemName];
+      const longitude = cartesianToLongitude(x, y, z);
+      planetaryPositions[ourName] = longitude;
     } else {
       planetaryPositions[ourName] = 0;
     }
@@ -2178,7 +2186,7 @@ function getRelationshipTypeInterpretation(xProfileValue) {
 }
 
 // Display comparison results
-function displayComparisonResults(subjectThemes, targetThemes, subjectPos, targetPos) {
+function displayComparisonResults(subjectThemes, targetThemes, subjectPos, targetPos, subjectAsc, targetAsc) {
   const SIGN_NAMES = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 
                       'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
   
@@ -2272,20 +2280,228 @@ function displayComparisonResults(subjectThemes, targetThemes, subjectPos, targe
   
   html += '</div>';
   
-  // Additional context
-  html += `<div style="margin-top: 2rem; padding: 1rem; background: rgba(10,13,19,0.6); border-radius: 8px; border: 1px solid rgba(94,197,255,0.15);">
-    <div style="font-size: 0.75rem; color: #8fa8ce; line-height: 1.6;">
-      <strong style="color: #b8d0f0;">Understanding xProfile Values:</strong><br>
-      <span style="color: #74c0fc;">+1.0</span> = Charts have same shape (similarity)<br>
-      <span style="color: #ffd43b;">0.0</span> = Perfect balance (ideal for lasting relationships)<br>
-      <span style="color: #b85eff;">-1.0</span> = Charts are inverted (complementarity)
+  // Bottom section with chart visualization
+  html += `<div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;" class="comparison-bottom-grid">
+    <div style="padding: 1rem; background: rgba(10,13,19,0.6); border-radius: 8px; border: 1px solid rgba(94,197,255,0.15);">
+      <div style="font-size: 0.75rem; color: #8fa8ce; line-height: 1.6;">
+        <strong style="color: #b8d0f0;">Understanding xProfile Values:</strong><br>
+        <span style="color: #74c0fc;">+1.0</span> = Charts have same shape (similarity)<br>
+        <span style="color: #ffd43b;">0.0</span> = Perfect balance (ideal for lasting relationships)<br>
+        <span style="color: #b85eff;">-1.0</span> = Charts are inverted (complementarity)
+      </div>
+      <div style="margin-top: 1rem; font-size: 0.7rem; color: #6a7fa0; font-style: italic;">
+        Subject: ${currentSubject.name} • Target: ${currentTarget.name}
+      </div>
     </div>
-    <div style="margin-top: 1rem; font-size: 0.7rem; color: #6a7fa0; font-style: italic;">
-      Subject: ${currentSubject.name} • Target: ${currentTarget.name}
+    <div style="padding: 1rem; background: rgba(10,13,19,0.6); border-radius: 8px; border: 1px solid rgba(94,197,255,0.15);">
+      <h4 style="color: var(--accent); margin-top: 0; margin-bottom: 0.75rem; font-size: 0.9rem;">Chart Overlay</h4>
+      <canvas id="comparison-chart-canvas" width="400" height="400" style="width: 100%; max-width: 400px; height: auto; display: block; margin: 0 auto;"></canvas>
+      <div style="margin-top: 0.75rem; font-size: 0.7rem; color: #8fa8ce; display: flex; justify-content: center; gap: 1.5rem;">
+        <div><span style="color: #74c0fc;">●</span> Subject (${currentSubject.name})</div>
+        <div><span style="color: #b85eff;">●</span> Target (${currentTarget.name})</div>
+      </div>
     </div>
   </div>`;
   
   comparisonOutput.innerHTML = html;
+  
+  // Draw the comparison chart after the HTML is rendered
+  setTimeout(() => {
+    drawComparisonChart(subjectPos, targetPos, subjectAsc, targetAsc);
+  }, 50);
+}
+
+// Draw overlaid comparison chart
+function drawComparisonChart(subjectPos, targetPos, subjectAsc, targetAsc) {
+  const canvas = document.getElementById('comparison-chart-canvas');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const outerRadius = 180;
+  const innerRadius = 140;
+  const subjectPlanetRadius = 120;
+  const targetPlanetRadius = 95;
+  
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#05070f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  const SIGN_NAMES = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 
+                      'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+  
+  // Draw zodiac wheel for subject (using subject's ascendant)
+  const signColors = [
+    '#ff6b6b', '#51cf66', '#ffd43b', '#74c0fc',
+    '#ff8787', '#69db7c', '#ffd43b', '#ff6b6b',
+    '#cc5de8', '#51cf66', '#74c0fc', '#a78bfa'
+  ];
+  
+  for (let i = 0; i < 12; i++) {
+    const startAngle = ((i * 30 - subjectAsc - 90) * Math.PI) / 180;
+    const endAngle = (((i + 1) * 30 - subjectAsc - 90) * Math.PI) / 180;
+    
+    // Draw sign segment
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = signColors[i] + '20';
+    ctx.fill();
+    ctx.strokeStyle = signColors[i] + '60';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    // Draw sign name
+    const midAngle = startAngle + (endAngle - startAngle) / 2;
+    const textRadius = (outerRadius + innerRadius) / 2 + 10;
+    const textX = centerX + Math.cos(midAngle) * textRadius;
+    const textY = centerY + Math.sin(midAngle) * textRadius;
+    
+    ctx.save();
+    ctx.translate(textX, textY);
+    ctx.rotate(midAngle + Math.PI / 2);
+    ctx.fillStyle = signColors[i];
+    ctx.font = 'bold 10px "Segoe UI"';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(SIGN_NAMES[i], 0, 0);
+    ctx.restore();
+  }
+  
+  // Draw inner circle
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(5, 7, 15, 0.9)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(94, 197, 255, 0.4)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // Draw subject planets (blue) on outer ring
+  const PLANET_SYMBOLS = ['☉', '☽', '☿', '♀', '♂', '♃', '♄', '⛢', '♆', '♇'];
+  const PLANET_NAMES = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                        'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+  
+  Object.entries(subjectPos).forEach(([name, longitude]) => {
+    if (longitude === undefined || longitude === null || isNaN(longitude)) return;
+    
+    const angle = ((-longitude - 90) * Math.PI) / 180;
+    const x = centerX + Math.cos(angle) * subjectPlanetRadius;
+    const y = centerY + Math.sin(angle) * subjectPlanetRadius;
+    
+    const planetIndex = PLANET_NAMES.indexOf(name);
+    if (planetIndex === -1) return;
+    
+    // Draw planet circle
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.fillStyle = '#74c0fc';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Draw planet symbol
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(PLANET_SYMBOLS[planetIndex], x, y);
+  });
+  
+  // Draw target planets (purple) on inner ring
+  Object.entries(targetPos).forEach(([name, longitude]) => {
+    if (longitude === undefined || longitude === null || isNaN(longitude)) return;
+    
+    const angle = ((-longitude - 90) * Math.PI) / 180;
+    const x = centerX + Math.cos(angle) * targetPlanetRadius;
+    const y = centerY + Math.sin(angle) * targetPlanetRadius;
+    
+    const planetIndex = PLANET_NAMES.indexOf(name);
+    if (planetIndex === -1) return;
+    
+    // Draw planet circle
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.fillStyle = '#b85eff';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Draw planet symbol
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(PLANET_SYMBOLS[planetIndex], x, y);
+  });
+  
+  // Draw ascendant lines
+  // Subject ascendant (blue) - solid line
+  const subjectAscAngle = ((-subjectAsc - 90) * Math.PI) / 180;
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY);
+  ctx.lineTo(
+    centerX + Math.cos(subjectAscAngle) * innerRadius,
+    centerY + Math.sin(subjectAscAngle) * innerRadius
+  );
+  ctx.strokeStyle = '#74c0fc';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  
+  // Label for subject ASC
+  ctx.fillStyle = '#74c0fc';
+  ctx.font = 'bold 10px "Segoe UI"';
+  ctx.textAlign = 'center';
+  const subjectLabelX = centerX + Math.cos(subjectAscAngle) * (innerRadius - 15);
+  const subjectLabelY = centerY + Math.sin(subjectAscAngle) * (innerRadius - 15);
+  ctx.fillText('ASC', subjectLabelX, subjectLabelY);
+  
+  // Target ascendant (purple) - dashed line
+  const targetAscAngle = ((-targetAsc - 90) * Math.PI) / 180;
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY);
+  ctx.lineTo(
+    centerX + Math.cos(targetAscAngle) * innerRadius,
+    centerY + Math.sin(targetAscAngle) * innerRadius
+  );
+  ctx.strokeStyle = '#b85eff';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([5, 5]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // Label for target ASC
+  ctx.fillStyle = '#b85eff';
+  ctx.font = 'bold 10px "Segoe UI"';
+  ctx.textAlign = 'center';
+  const targetLabelX = centerX + Math.cos(targetAscAngle) * (innerRadius - 30);
+  const targetLabelY = centerY + Math.sin(targetAscAngle) * (innerRadius - 30);
+  ctx.fillText('ASC', targetLabelX, targetLabelY);
+}
+
+// Helper function to draw planets for comparison (no longer needed but keeping for compatibility)
+function drawComparisonPlanets(ctx, centerX, centerY, radius, positions, color, size) {
+  Object.entries(positions).forEach(([name, longitude]) => {
+    if (longitude === undefined || longitude === null || isNaN(longitude)) return;
+    
+    const angle = ((-longitude - 90) * Math.PI) / 180;
+    const x = centerX + Math.cos(angle) * radius;
+    const y = centerY + Math.sin(angle) * radius;
+    
+    // Draw planet circle
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
 }
 
 // Event listeners

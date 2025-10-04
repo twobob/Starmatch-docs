@@ -453,6 +453,19 @@ header p {
   border: 1px solid rgba(94, 197, 255, 0.15);
 }
 
+.comparison-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .comparison-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 640px) {
   .xprofile-spectrum-container,
   .theme-comparison-container {
@@ -462,6 +475,10 @@ header p {
   .xprofile-spectrum-container h4,
   .theme-comparison-container h4 {
     font-size: 0.95rem !important;
+  }
+  
+  .comparison-bottom-grid {
+    gap: 1rem;
   }
 }
 

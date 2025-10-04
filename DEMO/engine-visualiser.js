@@ -18,6 +18,282 @@ const rulershipSetSelect = document.getElementById('rulership-set');
 const precessionCheckbox = document.getElementById('precession-flag');
 const locationLookupBtn = document.getElementById('location-lookup');
 const selectedLocationName = document.getElementById('selected-location-name');
+// CRUD UI elements
+const btnSaveRecord = document.getElementById('btn-save-record');
+const btnLoadRecords = document.getElementById('btn-load-records');
+const recordsPanel = document.getElementById('records-panel');
+const recordsList = document.getElementById('records-list');
+const btnCloseRecords = document.getElementById('btn-close-records');
+const btnClearAll = document.getElementById('btn-clear-all');
+// Modal elements
+const saveModal = document.getElementById('save-modal');
+const modalClose = document.getElementById('modal-close');
+const modalCancel = document.getElementById('modal-cancel');
+const modalSave = document.getElementById('modal-save');
+const recordNameInput = document.getElementById('record-name-input');
+const applySavedSettingsCheckbox = document.getElementById('apply-saved-settings');
+// Danger modal elements
+const dangerModal = document.getElementById('danger-modal');
+const dangerModalClose = document.getElementById('danger-modal-close');
+const dangerCancel = document.getElementById('danger-cancel');
+const dangerConfirm = document.getElementById('danger-confirm');
+const dangerModalTitle = document.getElementById('danger-modal-title');
+const dangerModalText = document.getElementById('danger-modal-text');
+const dangerStageIndicator = document.getElementById('danger-stage-indicator');
+let dangerStage = 0; // 0 -> first prompt, 1 -> second prompt
+
+function openDangerModal() {
+  dangerStage = 0;
+  updateDangerModal();
+  dangerModal.classList.remove('hidden');
+  setTimeout(()=> { dangerConfirm.focus(); }, 30);
+}
+function closeDangerModal() {
+  dangerModal.classList.add('hidden');
+  dangerStage = 0;
+}
+function updateDangerModal() {
+  if (dangerStage === 0) {
+    dangerModalTitle.textContent = 'Delete ALL Records?';
+    dangerModalText.textContent = 'This will permanently remove EVERY saved record. This cannot be undone.';
+    dangerConfirm.textContent = 'Yes, Continue';
+    dangerStageIndicator.textContent = 'Stage 1 / 2';
+  } else {
+    dangerModalTitle.textContent = 'Are You REALLY Sure?';
+    dangerModalText.textContent = 'Final confirmation. All records including names, coordinates, and settings will be lost.';
+    dangerConfirm.textContent = 'Delete Everything';
+    dangerStageIndicator.textContent = 'Stage 2 / 2';
+  }
+}
+
+// Storage key
+const STORAGE_KEY = 'astro_records_v1';
+
+function loadRecords() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed;
+  } catch (e) {
+    console.warn('Failed to parse records from storage', e);
+    return [];
+  }
+}
+
+function saveRecords(records) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+function addRecord(data) {
+  const records = loadRecords();
+  records.push(data);
+  saveRecords(records);
+  return records;
+}
+
+function updateRecord(id, patch) {
+  const records = loadRecords();
+  const idx = records.findIndex(r => r.id === id);
+  if (idx !== -1) {
+    records[idx] = { ...records[idx], ...patch, updatedAt: new Date().toISOString() };
+    saveRecords(records);
+  }
+  return records;
+}
+
+function deleteRecord(id) {
+  const records = loadRecords().filter(r => r.id !== id);
+  saveRecords(records);
+  return records;
+}
+
+function clearAllRecords() {
+  saveRecords([]);
+}
+
+function buildRecordPayload(name) {
+  return {
+    id: crypto.randomUUID(),
+    name: name && name.trim() ? name.trim() : 'Untitled',
+    date: birthDate.value || '',
+    time: birthTime.value || '',
+    lat: latitudeInput.value || '',
+    lon: longitudeInput.value || '',
+    orbType: orbTypeSelect.value,
+    aspectOrbSet: aspectOrbSetSelect.value,
+    rulershipSet: rulershipSetSelect.value,
+    precession: precessionCheckbox.checked ? 1 : 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function renderRecords() {
+  const records = loadRecords();
+  recordsList.innerHTML = '';
+  if (!records.length) {
+    recordsList.classList.add('empty');
+    recordsList.innerHTML = '<div class="empty-msg">No saved records yet.</div>';
+    return;
+  }
+  recordsList.classList.remove('empty');
+  records.sort((a,b)=> a.name.localeCompare(b.name));
+  records.forEach(rec => {
+    const el = document.createElement('div');
+    el.className = 'record-item';
+    el.innerHTML = `
+      <div class="record-name" data-id="${rec.id}" title="Click to rename">${rec.name}</div>
+      <div class="record-actions load-col">
+        <button class="pill-btn" data-action="load" data-id="${rec.id}" title="Load & Calculate">Load</button>
+      </div>
+      <div class="record-meta">${rec.date || '—'} ${rec.time || ''}</div>
+      <div class="record-meta">${rec.lat || '—'}, ${rec.lon || '—'}</div>
+      <div class="record-actions main-actions">
+        <button class="pill-btn" data-action="overwrite" data-id="${rec.id}" title="Overwrite this saved record with current inputs/settings">Overwrite</button>
+        <button class="pill-btn danger" data-action="del" data-id="${rec.id}">Del</button>
+      </div>`;
+    recordsList.appendChild(el);
+  });
+}
+
+function openRecordsPanel() {
+  recordsPanel.classList.remove('hidden');
+  renderRecords();
+}
+function closeRecordsPanel() { recordsPanel.classList.add('hidden'); }
+
+function openSaveModal() {
+  recordNameInput.value = '';
+  saveModal.classList.remove('hidden');
+  recordNameInput.focus();
+}
+function closeSaveModal() { saveModal.classList.add('hidden'); }
+
+function applyRecord(rec, doCalculate=false, includeSettings=true) {
+  if (rec.date) birthDate.value = rec.date;
+  if (rec.time) birthTime.value = rec.time;
+  if (rec.lat) latitudeInput.value = rec.lat;
+  if (rec.lon) longitudeInput.value = rec.lon;
+  if (includeSettings) {
+    if (rec.orbType !== undefined) orbTypeSelect.value = rec.orbType;
+    if (rec.aspectOrbSet !== undefined) aspectOrbSetSelect.value = rec.aspectOrbSet;
+    if (rec.rulershipSet !== undefined) rulershipSetSelect.value = rec.rulershipSet;
+    if (rec.precession !== undefined) precessionCheckbox.checked = rec.precession === 1;
+  }
+  if (doCalculate) {
+    calculateChart();
+  }
+}
+
+// Inline rename
+recordsList?.addEventListener('click', (e) => {
+  const target = e.target;
+  if (target.classList.contains('record-name')) {
+    const id = target.getAttribute('data-id');
+    const original = target.textContent;
+    target.contentEditable = 'true';
+    target.classList.add('editing');
+    target.focus();
+    const range = document.createRange();
+    range.selectNodeContents(target);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    function finish(save) {
+      target.contentEditable = 'false';
+      target.classList.remove('editing');
+      if (save) {
+        const newName = target.textContent.trim() || original;
+        updateRecord(id, { name: newName });
+        renderRecords();
+      } else {
+        target.textContent = original;
+      }
+      target.removeEventListener('blur', onBlur);
+      target.removeEventListener('keydown', onKey);
+    }
+    function onBlur(){ finish(true); }
+    function onKey(ev){
+      if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+      else if (ev.key === 'Escape') { finish(false); }
+    }
+    target.addEventListener('blur', onBlur);
+    target.addEventListener('keydown', onKey);
+  }
+  if (target.dataset.action) {
+    const id = target.getAttribute('data-id');
+    const action = target.dataset.action;
+    const rec = loadRecords().find(r=>r.id===id);
+    if (!rec) return;
+    const includeSettings = applySavedSettingsCheckbox ? applySavedSettingsCheckbox.checked : true;
+    if (action === 'load') {
+      // Auto calculate always on load
+      applyRecord(rec,true,includeSettings);
+    } else if (action === 'overwrite') {
+      // Build new payload but keep same id & createdAt
+      const updated = buildRecordPayload(rec.name);
+      updated.id = rec.id;
+      updated.createdAt = rec.createdAt;
+      updated.updatedAt = new Date().toISOString();
+      // Replace record
+      const all = loadRecords().map(r => r.id === rec.id ? updated : r);
+      saveRecords(all);
+      renderRecords();
+    } else if (action === 'del') {
+      deleteRecord(id);
+      renderRecords();
+    }
+  }
+});
+
+// Button events
+btnLoadRecords?.addEventListener('click', () => {
+  if (recordsPanel.classList.contains('hidden')) openRecordsPanel(); else closeRecordsPanel();
+});
+btnCloseRecords?.addEventListener('click', closeRecordsPanel);
+btnSaveRecord?.addEventListener('click', openSaveModal);
+btnClearAll?.addEventListener('click', () => {
+  const existing = loadRecords();
+  if (!existing.length) return; // nothing to clear
+  openDangerModal();
+});
+// Danger modal events
+dangerModalClose?.addEventListener('click', closeDangerModal);
+dangerCancel?.addEventListener('click', closeDangerModal);
+dangerConfirm?.addEventListener('click', () => {
+  if (dangerStage === 0) {
+    dangerStage = 1;
+    updateDangerModal();
+  } else {
+    clearAllRecords();
+    renderRecords();
+    closeDangerModal();
+  }
+});
+// Escape key handling for modals
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (!saveModal.classList.contains('hidden')) closeSaveModal();
+    if (!dangerModal.classList.contains('hidden')) closeDangerModal();
+  }
+});
+modalClose?.addEventListener('click', closeSaveModal);
+modalCancel?.addEventListener('click', closeSaveModal);
+modalSave?.addEventListener('click', () => {
+  const payload = buildRecordPayload(recordNameInput.value);
+  addRecord(payload);
+  closeSaveModal();
+  renderRecords();
+  openRecordsPanel();
+});
+recordNameInput?.addEventListener('keydown', (e)=>{ if (e.key==='Enter'){ e.preventDefault(); modalSave.click(); } });
+
+// Init render
+document.addEventListener('DOMContentLoaded', () => {
+  renderRecords();
+});
 
 // Display containers
 const positionsDisplay = document.getElementById('positions-display');
@@ -1343,4 +1619,4 @@ loadEphemerisData();
 
 // Set default date to a date within ephemeris range
 birthDate.value = '1974-09-11';
-selectedLocationName.textContent = '📍 Edinburgh, Scotland (default)';
+selectedLocationName.textContent = '';

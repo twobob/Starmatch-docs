@@ -47,7 +47,27 @@
         </div>
         <div id="selected-location-name" style="font-size: 0.85rem; color: #8fa8ce; margin-top: 0.5rem; min-height: 1.2em;"></div>
         
-        <button id="btn-calculate" class="primary-btn">Calculate Chart</button>
+        <div class="action-row">
+          <button id="btn-load-records" class="mini-btn" title="Load Saved Records">Load</button>
+          <button id="btn-calculate" class="primary-btn">Calculate Chart</button>
+          <button id="btn-save-record" class="mini-btn" title="Save Current Inputs">Save</button>
+        </div>
+        <div id="records-panel" class="records-panel hidden">
+          <div class="records-header">
+            <span>Saved Records</span>
+            <button id="btn-close-records" class="icon-btn" title="Close">✕</button>
+          </div>
+          <div id="records-list" class="records-list empty">
+            <div class="empty-msg">No saved records yet.</div>
+          </div>
+          <div class="records-footer">
+            <label class="apply-settings-toggle" title="If checked, loading a record will overwrite current engine settings">
+              <input type="checkbox" id="apply-saved-settings" checked>
+              <span>Apply saved settings</span>
+            </label>
+            <button id="btn-clear-all" class="danger-btn" title="Delete All Records">Clear All</button>
+          </div>
+        </div>
       </div>
 
       <div class="control-group">
@@ -136,6 +156,44 @@
     </section>
   </main>
 
+  <div id="save-modal" class="modal hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h4>Save Record</h4>
+        <button id="modal-close" class="icon-btn" title="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <label for="record-name-input">Name</label>
+        <input id="record-name-input" type="text" placeholder="e.g. Ada Lovelace" />
+        <div class="hint">Will store date, time, latitude, longitude, settings.</div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-save" class="primary-btn small">Save</button>
+        <button id="modal-cancel" class="mini-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div id="danger-modal" class="modal hidden">
+    <div class="modal-dialog danger">
+      <div class="modal-header">
+        <h4 id="danger-modal-title">Delete ALL Records?</h4>
+        <button id="danger-modal-close" class="icon-btn" title="Close">✕</button>
+      </div>
+      <div class="modal-body" id="danger-modal-body">
+        <p class="danger-text" id="danger-modal-text">This will permanently remove every saved record.</p>
+        <ul class="danger-list" id="danger-modal-points">
+          <li>No undo</li>
+          <li>All names and settings lost</li>
+          <li>Export first if unsure</li>
+        </ul>
+        <div class="stage-indicator" id="danger-stage-indicator">Stage 1 / 2</div>
+      </div>
+      <div class="modal-footer">
+        <button id="danger-cancel" class="mini-btn">Cancel</button>
+        <button id="danger-confirm" class="danger-btn large">Yes, Continue</button>
+      </div>
+    </div>
+  </div>
   <!-- Include dependencies -->
   <script src="../engine.js"></script>
   <script src="location-picker.js"></script>

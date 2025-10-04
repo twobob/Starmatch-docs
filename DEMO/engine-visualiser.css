@@ -17,6 +17,204 @@ body {
   padding: 2rem 0;
 }
 
+/* Action Row & Small Buttons */
+.action-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+  margin-top: 0.25rem;
+}
+
+.mini-btn, .icon-btn, .danger-btn {
+  padding: 0.55rem 0.9rem;
+  background: rgba(94, 197, 255, 0.15);
+  border: 1px solid rgba(94, 197, 255, 0.35);
+  border-radius: 6px;
+  color: #e2eeff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.mini-btn:hover, .icon-btn:hover {
+  background: rgba(94, 197, 255, 0.28);
+}
+
+.mini-btn:active, .icon-btn:active {
+  transform: translateY(1px);
+}
+
+.danger-btn {
+  background: rgba(255, 100, 100, 0.15);
+  border-color: rgba(255, 120, 120, 0.4);
+  color: #ffb0b0;
+}
+
+.danger-btn:hover { background: rgba(255, 100, 100, 0.28); }
+
+.icon-btn {
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.55rem 0.75rem;
+}
+
+.primary-btn.small { padding: 0.6rem 1rem; font-size: 0.85rem; }
+
+/* Records Panel */
+.records-panel {
+  position: relative;
+  margin-top: 0.75rem;
+  background: rgba(10, 13, 19, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 0.75rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 260px;
+}
+
+.records-panel.hidden { display: none; }
+
+.records-header, .records-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #8fa8ce;
+  font-weight: 600;
+}
+.apply-settings-toggle { display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-weight: 500; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: #9bb5d6; }
+.apply-settings-toggle input { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+
+.records-list {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid rgba(94, 197, 255, 0.18);
+  border-radius: 6px;
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: rgba(94, 197, 255, 0.05);
+}
+
+.records-list.empty { justify-content: center; }
+
+.empty-msg { font-size: 0.75rem; opacity: 0.6; text-align: center; }
+
+.record-item {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto auto auto auto;
+  gap: 0.4rem;
+  align-items: center;
+  background: rgba(94, 197, 255, 0.08);
+  border: 1px solid rgba(94, 197, 255, 0.25);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+}
+
+.record-actions.load-col { justify-content: flex-start; }
+.record-actions.main-actions { justify-content: flex-end; }
+
+@media (max-width: 900px) {
+  .record-item { grid-template-columns: minmax(120px,1fr) auto auto auto; grid-auto-rows: auto; }
+  .record-actions.main-actions { grid-column: 1 / -1; justify-content: flex-start; }
+}
+@media (max-width: 640px) {
+  .record-item { grid-template-columns: 1fr auto; }
+  .record-item .record-meta:nth-of-type(3),
+  .record-item .record-meta:nth-of-type(4) { grid-column: 1 / -1; }
+  .record-actions.main-actions { grid-column: 1 / -1; }
+}
+
+.record-item:hover { background: rgba(94, 197, 255, 0.15); }
+
+.record-name { font-weight: 600; color: var(--accent-warm); cursor: pointer; }
+.record-meta { font-family: 'Fira Code', monospace; opacity: 0.75; }
+
+.record-actions { display: flex; gap: 0.25rem; }
+
+.pill-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #d0e6ff;
+  padding: 0.25rem 0.55rem;
+  border-radius: 20px;
+  font-size: 0.6rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.pill-btn:hover { background: rgba(255,255,255,0.15); }
+.pill-btn.danger { border-color: rgba(255,120,120,0.4); color: #ffb0b0; }
+.pill-btn.danger:hover { background: rgba(255,120,120,0.25); }
+
+/* Modal */
+.modal.hidden { display: none; }
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-dialog {
+  width: 360px;
+  background: rgba(14,16,22,0.95);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+}
+
+.modal-dialog.danger {
+  border: 1px solid rgba(255,90,90,0.55);
+  background: radial-gradient(circle at top, rgba(45,10,14,0.92), rgba(20,8,10,0.92));
+  box-shadow: 0 0 0 2px rgba(255,80,80,0.15), 0 18px 48px -6px rgba(255,60,60,0.25);
+}
+.modal-dialog.danger h4 { color: #ff8f8f; }
+.danger-text { color: #ffb0b0; font-weight: 600; letter-spacing: 0.04em; }
+.danger-list { margin: 0.25rem 0 0.5rem 1rem; padding: 0; font-size: 0.7rem; color: #f7d5d5; }
+.danger-list li { margin-bottom: 0.25rem; }
+.stage-indicator { font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.55; }
+.danger-btn.large { padding: 0.65rem 1.1rem; font-size: 0.7rem; letter-spacing: 0.12em; }
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; }
+.modal-header h4 { margin: 0; font-size: 1rem; color: var(--accent); }
+
+.modal-body { display: flex; flex-direction: column; gap: 0.5rem; }
+.modal-body label { font-size: 0.7rem; letter-spacing: 0.07em; text-transform: uppercase; color: #8fa8ce; font-weight: 600; }
+.modal-body input { padding: 0.6rem 0.7rem; background: rgba(94,197,255,0.1); border: 1px solid rgba(94,197,255,0.3); border-radius: 6px; color: #e2eeff; font-size: 0.9rem; }
+.modal-body input:focus { outline: none; border-color: var(--accent); background: rgba(94,197,255,0.18); }
+.modal-body .hint { font-size: 0.6rem; opacity: 0.6; }
+
+.modal-footer { display: flex; justify-content: flex-end; gap: 0.5rem; }
+
+/* Editable name */
+.record-name.editing { outline: 1px dashed var(--accent); padding: 2px 4px; border-radius: 4px; background: rgba(94,197,255,0.12); }
+
+/* Scrollbar styling */
+.records-list::-webkit-scrollbar { width: 8px; }
+.records-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+.records-list::-webkit-scrollbar-thumb { background: rgba(94,197,255,0.35); border-radius: 10px; }
+.records-list::-webkit-scrollbar-thumb:hover { background: rgba(94,197,255,0.55); }
+
 main {
   max-width: 1400px;
   margin: 0 auto;

@@ -71,29 +71,68 @@ function dateToJulianDate(date, time) {
   return unixEpochJD + (ms / 86400000);
 }
 
-// Get planetary positions for a given Julian Date
+// Get planetary positions for a given Julian Date with linear interpolation
 function getPositionsForJD(jd) {
   if (!ephemerisData || !ephemerisData.samples) {
     console.error('No ephemeris data available');
     return null;
   }
 
-  // Find closest sample
-  let closestIndex = 0;
-  let closestDiff = Math.abs(ephemerisData.samples[0].julian_date - jd);
+  // Find the two samples that bracket the requested JD
+  let beforeIndex = -1;
+  let afterIndex = -1;
 
-  for (let i = 1; i < ephemerisData.samples.length; i++) {
-    const diff = Math.abs(ephemerisData.samples[i].julian_date - jd);
-    if (diff < closestDiff) {
-      closestDiff = diff;
-      closestIndex = i;
+  for (let i = 0; i < ephemerisData.samples.length - 1; i++) {
+    if (ephemerisData.samples[i].julian_date <= jd && ephemerisData.samples[i + 1].julian_date >= jd) {
+      beforeIndex = i;
+      afterIndex = i + 1;
+      break;
     }
   }
 
-  const sample = ephemerisData.samples[closestIndex];
-  console.log(`Found ephemeris sample at JD ${sample.julian_date.toFixed(2)} (requested: ${jd.toFixed(2)}, diff: ${closestDiff.toFixed(2)} days)`);
+  // If JD is outside range, use nearest sample
+  if (beforeIndex === -1) {
+    let closestIndex = 0;
+    let closestDiff = Math.abs(ephemerisData.samples[0].julian_date - jd);
+
+    for (let i = 1; i < ephemerisData.samples.length; i++) {
+      const diff = Math.abs(ephemerisData.samples[i].julian_date - jd);
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closestIndex = i;
+      }
+    }
+
+    const sample = ephemerisData.samples[closestIndex];
+    console.log(`⚠️ JD ${jd.toFixed(2)} outside range - using nearest sample at JD ${sample.julian_date.toFixed(2)} (diff: ${closestDiff.toFixed(2)} days)`);
+    return sample.positions_km;
+  }
+
+  // Perform linear interpolation between the two samples
+  const sample1 = ephemerisData.samples[beforeIndex];
+  const sample2 = ephemerisData.samples[afterIndex];
   
-  return sample.positions_km;
+  const jd1 = sample1.julian_date;
+  const jd2 = sample2.julian_date;
+  const fraction = (jd - jd1) / (jd2 - jd1);
+
+  const interpolatedPositions = {};
+  
+  for (const bodyName in sample1.positions_km) {
+    const pos1 = sample1.positions_km[bodyName];
+    const pos2 = sample2.positions_km[bodyName];
+    
+    // Linear interpolation for each coordinate
+    interpolatedPositions[bodyName] = [
+      pos1[0] + (pos2[0] - pos1[0]) * fraction,
+      pos1[1] + (pos2[1] - pos1[1]) * fraction,
+      pos1[2] + (pos2[2] - pos1[2]) * fraction
+    ];
+  }
+
+  console.log(`✓ Interpolated positions for JD ${jd.toFixed(2)} between JD ${jd1.toFixed(2)} and ${jd2.toFixed(2)} (fraction: ${fraction.toFixed(4)})`);
+  
+  return interpolatedPositions;
 }
 
 // Convert ecliptic coordinates to zodiacal longitude (simplified)

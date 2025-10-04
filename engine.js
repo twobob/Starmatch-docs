@@ -34,12 +34,19 @@ var orbType = 0;
 var po = [[15,12,7,7,7,9,9,5,5,5],[17,12.5,7,8,8,12,10,5,5,5]];
 /* poIndex = 0, 1 (Lilly, al-Biruni) */
 var poIndex = 0;
-var ao = [[9,9,7,7,5,3,3],[9,9,9,9,6,2,3],[10.8,10.0,8.3,7.5,5.7,2.5,1.5],[10,8,6,6,4.5,1,1],[2.6,2.5,2.3,2.3,1.3,1]];
+var ao = [[9,9,7,7,5,3,3],[9,9,9,9,6,2,3],[10.8,10.0,8.3,7.5,5.7,2.5,1.5],[10,8,6,6,4.5,1,1],[2.6,2.5,2.3,2.3,1.3,1,1]];
 var aoIndex = 0;
 /* Traditional factors (ancient/modern): [signNum[ruler],[exaltation],[detriment],[fall]] */
-/* tfIndex = 0 for ancient, 4 for modern (offset into array): USER-EXTENSIBLE */
-var tf = [[4,3,2,1,0,2,3,4,5,6,6,5],[0,1,-1,5,-1,2,6,-1,-1,4,-1,3],[3,4,5,6,6,5,4,3,2,1,0,2],[6,-1,-1,4,-1,3,0,1,-1,5,-1,2],
-[4,3,2,1,0,2,3,4,5,6,7,8],[0,1,-1,5,1,8,2,6,,7,-1,4,-1,3],[3,9,5,7,8,4,-1,2,1,0,-1],[6,7,-1,4,-1,3,0,1,-1,5,8,2]];	// USER-DEFINABLE but need to be defaulted for 'Reset/OtherRules'
+/* tfIndex = 0 for ancient, 4 for modern, 8 for alternative modern (offset into array): USER-EXTENSIBLE */
+/* Planet indices: Sun=0, Moon=1, Mercury=2, Venus=3, Mars=4, Jupiter=5, Saturn=6, Uranus=7, Neptune=8, Pluto=9 */
+var tf = [
+	// Ancient allocations (tfIndex 0-3)
+	[4,3,2,1,0,2,3,4,5,6,6,5],[0,1,-1,5,-1,2,6,-1,-1,4,-1,3],[3,4,5,6,6,5,4,3,2,1,0,2],[6,-1,-1,4,-1,3,0,1,-1,5,-1,2],
+	// Modern allocations (tfIndex 4-7) - corrected per ResearchOptions.txt
+	[4,3,2,1,0,2,3,9,5,6,7,8],[0,9,-1,5,8,2,6,7,-1,4,-1,3],[3,9,5,6,7,8,4,3,2,1,0,2],[6,7,-1,4,-1,3,0,1,-1,5,8,2],
+	// Alternative modern allocations (tfIndex 8-11) - added per ResearchOptions.txt
+	[4,3,2,1,0,2,3,9,5,6,7,8],[0,1,-1,8,5,2,6,7,-1,4,9,3],[3,9,5,6,7,8,4,3,2,1,0,2],[6,7,-1,4,-1,3,0,1,-1,8,-1,2]
+];	// USER-DEFINABLE but need to be defaulted for 'Reset/OtherRules'
 var tfIndex = 0;
 /* Traditional factors:  [signNum[polarity],[triplicity],[quadruplicity]] */
 var ptq = [[1,0,1,0,1,0,1,0,1,0,1,0],[0,1,2,3,0,1,2,3,0,1,2,3],[0,1,2,0,1,2,0,1,2,0,1,2]];	// FIXED
@@ -56,6 +63,7 @@ var psRT = [1,1,1,1,1,1,1,1,1,1,1,1];	// INTERNAL
 var precessionFlag = 0;	// true, precess position data before theme calculation
 var precessedTheme = [0,0,0,0,0,0,0,0,0,0,0,0];
 var nativityYear=0;	// KLUDGE - needs to supply birth year!
+var nativity=0;	// Alias for nativityYear, used in precession calculations
 var orbValue = 0;
 
 	// Utility functions
@@ -85,10 +93,14 @@ var orbValue = 0;
 	
 	function signNum ( pos )
 	{
-		value = pos/30-0.5
+		// Normalize position to 0-360 range
+		var normalizedPos = pos % 360;
+		if (normalizedPos < 0) normalizedPos += 360;
+		
+		value = normalizedPos/30-0.5
 		value = ( value<0 ? 0 : value)
 		value = Math.round( value )
-		value = (value>=12 ? -1 : value)
+		value = (value>=12 ? 11 : value)	// Should be 11 (Pisces), not -1
 		return value
 	}
 
@@ -365,33 +377,29 @@ var orbValue = 0;
 				numTradFactors[8]++;	// mutable
 		}
 		
-		if ( numTradFactors[0] > numTradFactors[1] )	// polarity
-			tfDominant[0] = 1;		// +ve dominant
-		else
-			tfDominant[0] = 0;		// -ve dominant
-	
-		tfDominant[1] = 0;		// default fire
-	
-		for ( n = 3; n < 6; n++ )
-			if ( numTradFactors[n] > tfDominant[1] )
-				tfDominant[1] = numTradFactors[n];
-	
-		for ( n = 3; n < 6; n++ )
-			if ( n != tfDominant[1] )
-				if ( numTradFactors[n] == tfDominant[1] )	// no dominant trip.
-					tfDominant[1] = -1;
-	
-		tfDominant[2] = 0;		// default cardinal
-		for ( n = 6; n < 9; n++ )
-			if ( numTradFactors[n] > tfDominant[2] )
-				tfDominant[2] = numTradFactors[n];
-	
-		for ( n = 6; n < 9; n++ )
-			if ( n != tfDominant[2] )
-				if ( numTradFactors[n] == tfDominant[2] )	// no dominant trip.
-					tfDominant[2] = -1;
+	if ( numTradFactors[0] > numTradFactors[1] )	// polarity
+		tfDominant[0] = 1;		// +ve dominant
+	else
+		tfDominant[0] = 0;		// -ve dominant
 
-		// find number of each aspect
+	tfDominant[1] = 2;		// default fire (index 2 in numTradFactors)
+
+	for ( n = 3; n < 6; n++ )
+		if ( numTradFactors[n] > numTradFactors[tfDominant[1]] )
+			tfDominant[1] = n;
+
+	for ( n = 3; n < 6; n++ )
+		if ( n != tfDominant[1] )
+			if ( numTradFactors[n] == numTradFactors[tfDominant[1]] )	// no dominant trip.
+				tfDominant[1] = -1;	tfDominant[2] = 6;		// default cardinal (index 6 in numTradFactors)
+	for ( n = 6; n < 9; n++ )
+		if ( numTradFactors[n] > numTradFactors[tfDominant[2]] )
+			tfDominant[2] = n;
+
+	for ( n = 6; n < 9; n++ )
+		if ( n != tfDominant[2] )
+			if ( numTradFactors[n] == numTradFactors[tfDominant[2]] )	// no dominant quad.
+				tfDominant[2] = -1;		// find number of each aspect
 		// for each planet, then for each aspect, if aspect, add 1
 		if ( orbType == 0)
 		{
@@ -405,32 +413,32 @@ var orbValue = 0;
 					}
 	
 		}
-		else
-		{
-			for ( n = 0; n < 10; n++ )	// aspects between planets
-				for ( m = n+1; m < 10; m++ )
-					if ( n != m )
-					{
-						orbValue = 0.5*(po[poIndex][n]+po[poIndex][m]);
-						for ( o = 0; o < 10; o++ )
-							if ( isAspect ( planet[n], planet[m], a[o], orbValue ) )
-								numAspects[o]++;
-					}
-			for ( n = 0; n < 10; n++ )	// aspects from planets to Asc. and M.C.
-				for ( m = 10; m < 12; m++ )
-					orbValue = po[poIndex][n];
-					for ( o = 0; o < 10; o++ )
+	else
+	{
+		for ( n = 0; n < 10; n++ )	// aspects between planets
+			for ( m = n+1; m < 10; m++ )
+				if ( n != m )
+				{
+					orbValue = 0.5*(po[poIndex][n]+po[poIndex][m]);
+					for ( o = 0; o < 7; o++ )
 						if ( isAspect ( planet[n], planet[m], a[o], orbValue ) )
 							numAspects[o]++;
-		}
+				}
+		for ( n = 0; n < 10; n++ )	// aspects from planets to Asc. and M.C.
+			for ( m = 10; m < 12; m++ )
+			{
+				orbValue = po[poIndex][n];
+				for ( o = 0; o < 7; o++ )
+					if ( isAspect ( planet[n], planet[m], a[o], orbValue ) )
+						numAspects[o]++;
+			}
+	}
 
-		// find dominant aspect (if any)
-		tmp = 0;
-		for ( n = 0; n < 7; n++ )
-			if ( numAspects[n] > tmp )
-				tmp = n;
-	
-		for ( m = 0; m < 7; m++ )
+	// find dominant aspect (if any)
+	tmp = 0;
+	for ( n = 0; n < 7; n++ )
+		if ( numAspects[n] > numAspects[tmp] )
+			tmp = n;		for ( m = 0; m < 7; m++ )
 			if ( m != tmp )
 			{
 				if ( numAspects[m] == tmp )	// no dominant aspect type

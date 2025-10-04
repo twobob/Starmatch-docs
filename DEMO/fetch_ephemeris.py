@@ -3,7 +3,7 @@
 This repository cannot ship the binary ``de200.eph`` directly because the
 code-hosting platform rejects non-text uploads. Running this helper will place
 text-mode copies of the binary ephemeris and its header alongside the rest of
-our demo data so the visualizer can remain entirely client-side.
+our demo data so the visualiser can remain entirely client-side.
 """
 
 from __future__ import annotations

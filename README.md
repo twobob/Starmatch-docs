@@ -39,7 +39,5 @@ The demo is at <https://twobob.github.io/Starmatch-docs/DEMO/engine.html>
 
 <img alt="starmatch mode" src="https://github.com/user-attachments/assets/628321eb-66e5-466a-b058-cb2f40736ba7" />
 
-<img width="918"  alt="Comparison Results" src="https://github.com/user-attachments/assets/211a59c3-9b3a-43f5-b652-d4738d28b514" />
-
-
+<img width="918" height="683" alt="Comparison Results" src="https://github.com/user-attachments/assets/2530f4f9-0e34-441e-9ae5-c4ae0eda38c3" />
 

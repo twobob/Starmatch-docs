@@ -22,3 +22,4 @@ python -m http.server 8000
 ```
 
 Then navigate to <http://localhost:8000/DEMO/> in your browser.
+The demo is at <https://twobob.github.io/Starmatch-docs/DEMO/engine.html>

@@ -18,6 +18,7 @@ const rulershipSetSelect = document.getElementById('rulership-set');
 const precessionCheckbox = document.getElementById('precession-flag');
 const locationLookupBtn = document.getElementById('location-lookup');
 const selectedLocationName = document.getElementById('selected-location-name');
+const dateRangeHint = document.getElementById('date-range-hint');
 // CRUD UI elements
 const btnSaveRecord = document.getElementById('btn-save-record');
 const btnLoadRecords = document.getElementById('btn-load-records');
@@ -143,17 +144,34 @@ function renderRecords() {
   records.forEach(rec => {
     const el = document.createElement('div');
     el.className = 'record-item';
-    el.innerHTML = `
-      <div class="record-name" data-id="${rec.id}" title="Click to rename">${rec.name}</div>
-      <div class="record-actions load-col">
-        <button class="pill-btn" data-action="load" data-id="${rec.id}" title="Load & Calculate">Load</button>
-      </div>
-      <div class="record-meta">${rec.date || '—'} ${rec.time || ''}</div>
-      <div class="record-meta">${rec.lat || '—'}, ${rec.lon || '—'}</div>
-      <div class="record-actions main-actions">
-        <button class="pill-btn" data-action="overwrite" data-id="${rec.id}" title="Overwrite this saved record with current inputs/settings">Overwrite</button>
-        <button class="pill-btn danger" data-action="del" data-id="${rec.id}">Del</button>
-      </div>`;
+    
+    // Create name element
+    const nameEl = document.createElement('div');
+    nameEl.className = 'record-name';
+    nameEl.setAttribute('data-id', rec.id);
+    nameEl.setAttribute('title', 'Click to rename');
+    nameEl.textContent = rec.name;
+    
+    // Create actions row (all buttons together)
+    const actionsRow = document.createElement('div');
+    actionsRow.className = 'record-actions-row';
+    actionsRow.innerHTML = `
+      <button class="pill-btn" data-action="load" data-id="${rec.id}" title="Load & Calculate">Load</button>
+      <button class="pill-btn" data-action="overwrite" data-id="${rec.id}" title="Overwrite this saved record with current inputs/settings">Overwrite</button>
+      <button class="pill-btn danger" data-action="del" data-id="${rec.id}">Del</button>`;
+    
+    // Create metadata row
+    const metaRow = document.createElement('div');
+    metaRow.className = 'record-meta-row';
+    metaRow.innerHTML = `
+      <span class="record-meta">${rec.date || '—'} ${rec.time || ''}</span>
+      <span class="record-meta">${rec.lat || '—'}, ${rec.lon || '—'}</span>`;
+    
+    // Append all elements in correct order
+    el.appendChild(nameEl);
+    el.appendChild(actionsRow);
+    el.appendChild(metaRow);
+    
     recordsList.appendChild(el);
   });
 }
@@ -1331,30 +1349,148 @@ function integrateDemoSamples(constants, options = {}) {
 }
 
 async function loadEphemerisData() {
-  try {
-    console.log('Loading ephemeris from .eph file...');
-    const headerUrl = new URL('../data/header.200', window.location.href);
-    const ephUrl = new URL('../data/de200.eph', window.location.href);
-    
-    ephemerisData = await loadDatasetFromEphemeris({ headerUrl, ephUrl });
-    
-    console.log('✓ Ephemeris computed from DE200:', ephemerisData.samples.length, 'samples');
-    console.log('✓ Date range:', 
-      new Date((ephemerisData.metadata.start_julian_date - 2440587.5) * 86400000).toISOString().split('T')[0],
-      'to',
-      new Date((ephemerisData.metadata.end_julian_date - 2440587.5) * 86400000).toISOString().split('T')[0]
-    );
-    console.log('✓ Available bodies:', ephemerisData.bodies.join(', '));
-    
-    if (ephemerisData.samples.length > 0) {
-      const firstSample = ephemerisData.samples[0];
-      console.log('✓ Bodies in first sample:', Object.keys(firstSample.positions_km).join(', '));
+  const protocol = window.location.protocol;
+  
+  // Determine which data source to use based on protocol
+  if (protocol === 'file:') {
+    // When running from file://, load the pre-computed data from a script
+    // (fetch doesn't work with file:// due to CORS restrictions)
+    try {
+      console.log('Running from file:// protocol - loading pre-computed data via script...');
+      
+      const scriptUrl = new URL('../data/de200_demo_positions.js', window.location.href);
+      
+      ephemerisData = await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = scriptUrl.href;
+        script.async = true;
+
+        script.onload = () => {
+          script.remove();
+          // Check for the global variable that the script should define
+          const globals = ['de200_demo_positions', 'DE200_DEMO_POSITIONS', 'demoPositions'];
+          for (const name of globals) {
+            const value = window[name];
+            if (value) {
+              console.log(`✓ Loaded ephemeris data from global variable: ${name}`);
+              resolve(value);
+              return;
+            }
+          }
+          reject(new Error(`Script loaded but none of the expected globals (${globals.join(', ')}) were defined`));
+        };
+
+        script.onerror = () => {
+          script.remove();
+          reject(new Error(`Failed to load ephemeris dataset script from ${scriptUrl}`));
+        };
+
+        document.head.appendChild(script);
+      });
+      
+      console.log('✓ Loaded ephemeris data:', ephemerisData.samples.length, 'samples');
+      
+      // Get date range from metadata or samples
+      let startJD, endJD;
+      if (ephemerisData.metadata && ephemerisData.metadata.start_julian_date && ephemerisData.metadata.end_julian_date) {
+        startJD = ephemerisData.metadata.start_julian_date;
+        endJD = ephemerisData.metadata.end_julian_date;
+      } else if (ephemerisData.samples && ephemerisData.samples.length > 0) {
+        // Fallback: get range from actual samples
+        startJD = ephemerisData.samples[0].julian_date;
+        endJD = ephemerisData.samples[ephemerisData.samples.length - 1].julian_date;
+        console.log('ℹ️ Using date range from samples (metadata not available)');
+      } else {
+        throw new Error('Cannot determine date range from ephemeris data');
+      }
+      
+      const startDate = new Date((startJD - 2440587.5) * 86400000);
+      const endDate = new Date((endJD - 2440587.5) * 86400000);
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = endDate.toISOString().split('T')[0];
+      
+      console.log('✓ Date range:', startDateStr, 'to', endDateStr);
+      console.log('✓ Available bodies:', ephemerisData.bodies.join(', '));
+      
+      if (ephemerisData.samples.length > 0) {
+        const firstSample = ephemerisData.samples[0];
+        console.log('✓ Bodies in first sample:', Object.keys(firstSample.positions_km).join(', '));
+      }
+      
+      // Set default date to middle of available range
+      const midJD = (startJD + endJD) / 2;
+      const midDate = new Date((midJD - 2440587.5) * 86400000);
+      birthDate.value = midDate.toISOString().split('T')[0];
+      
+      // Set date input constraints
+      birthDate.min = startDateStr;
+      birthDate.max = endDateStr;
+      birthDate.title = `Available range: ${startDateStr} to ${endDateStr}`;
+      
+      // Show date range hint
+      if (dateRangeHint) {
+        dateRangeHint.textContent = `📅 Available: ${startDateStr} to ${endDateStr}`;
+        dateRangeHint.style.display = 'block';
+      }
+      
+      btnCalculate.disabled = false;
+    } catch (error) {
+      console.error('✗ Error loading ephemeris data:', error);
+      alert('Failed to load ephemeris data from script file. Error: ' + error.message);
     }
-    
-    btnCalculate.disabled = false;
-  } catch (error) {
-    console.error('✗ Error loading ephemeris:', error);
-    alert('Failed to load and compute ephemeris data from .eph file. Error: ' + error.message);
+  } else {
+    // When running from http://, compute from .eph file
+    try {
+      console.log('Running from http:// protocol - computing ephemeris from .eph file...');
+      const headerUrl = new URL('../data/header.200', window.location.href);
+      const ephUrl = new URL('../data/de200.eph', window.location.href);
+      
+      ephemerisData = await loadDatasetFromEphemeris({ headerUrl, ephUrl });
+      
+      console.log('✓ Ephemeris computed from DE200:', ephemerisData.samples.length, 'samples');
+      
+      const startDate = new Date((ephemerisData.metadata.start_julian_date - 2440587.5) * 86400000);
+      const endDate = new Date((ephemerisData.metadata.end_julian_date - 2440587.5) * 86400000);
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = endDate.toISOString().split('T')[0];
+      
+      console.log('✓ Date range:', startDateStr, 'to', endDateStr);
+      console.log('✓ Available bodies:', ephemerisData.bodies.join(', '));
+      
+      if (ephemerisData.samples.length > 0) {
+        const firstSample = ephemerisData.samples[0];
+        console.log('✓ Bodies in first sample:', Object.keys(firstSample.positions_km).join(', '));
+      }
+      
+      // Set default date to middle of available range
+      const midJD = (ephemerisData.metadata.start_julian_date + ephemerisData.metadata.end_julian_date) / 2;
+      const midDate = new Date((midJD - 2440587.5) * 86400000);
+      birthDate.value = midDate.toISOString().split('T')[0];
+      
+      // Set date input constraints
+      birthDate.min = startDateStr;
+      birthDate.max = endDateStr;
+      birthDate.title = `Available range: ${startDateStr} to ${endDateStr}`;
+      
+      // Show date range hint
+      if (dateRangeHint) {
+        dateRangeHint.textContent = `📅 Available: ${startDateStr} to ${endDateStr}`;
+        dateRangeHint.style.display = 'block';
+      }
+      
+      btnCalculate.disabled = false;
+      
+      // Show date range hint
+      if (dateRangeHint) {
+        dateRangeHint.textContent = `📅 Available: ${startDateStr} to ${endDateStr}`;
+        dateRangeHint.style.display = 'block';
+      }
+      
+      btnCalculate.disabled = false;
+    } catch (error) {
+      console.error('✗ Error loading ephemeris:', error);
+      alert('Failed to load and compute ephemeris data from .eph file. Error: ' + error.message);
+    }
   }
 }
 
@@ -1617,8 +1753,7 @@ canvas.addEventListener('mouseleave', () => {
 // Initialize
 loadEphemerisData();
 
-// Set default date to a date within ephemeris range
-birthDate.value = '1974-09-11';
+// Note: Default date is set in loadEphemerisData() based on available data range
 selectedLocationName.textContent = '';
 
 // ============================================================================
@@ -1639,5 +1774,536 @@ analysisToggle?.addEventListener('click', () => {
     // Collapse
     analysisContent.classList.add('collapsed');
     analysisToggle.classList.add('collapsed');
+  }
+});
+
+// ============================================================================
+// Toast Notification System
+// ============================================================================
+
+function showToast(message, type = 'info', duration = 4000) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const icons = {
+    success: '✓',
+    error: '✕',
+    warning: '⚠',
+    info: 'ℹ'
+  };
+  
+  toast.innerHTML = `
+    <div class="toast-icon">${icons[type] || icons.info}</div>
+    <div class="toast-content">
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-close" aria-label="Close">×</button>
+  `;
+  
+  container.appendChild(toast);
+  
+  const closeBtn = toast.querySelector('.toast-close');
+  closeBtn.addEventListener('click', () => {
+    toast.remove();
+  });
+  
+  if (duration > 0) {
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  }
+}
+
+// ============================================================================
+// Starmatch Mode (Comparison)
+// ============================================================================
+
+const btnChartMode = document.getElementById('btn-chart-mode');
+const btnStarmatchMode = document.getElementById('btn-starmatch-mode');
+const starmatchSection = document.getElementById('starmatch-section');
+const chartInputControls = document.querySelector('.input-controls');
+const chartVisualisation = document.querySelector('.chart-visualisation');
+const resultsContainer = document.querySelector('.results-container');
+const analysisDetails = document.querySelector('.analysis-details');
+
+const subjectSelect = document.getElementById('subject-select');
+const targetSelect = document.getElementById('target-select');
+const btnLoadSubject = document.getElementById('btn-load-subject');
+const btnLoadTarget = document.getElementById('btn-load-target');
+const btnCompare = document.getElementById('btn-compare');
+const subjectInfo = document.getElementById('subject-info');
+const targetInfo = document.getElementById('target-info');
+const comparisonResults = document.getElementById('comparison-results');
+const comparisonOutput = document.getElementById('comparison-output');
+
+let currentSubject = null;
+let currentTarget = null;
+
+// Mode switching
+function switchToChartMode() {
+  btnChartMode.classList.add('active');
+  btnStarmatchMode.classList.remove('active');
+  
+  starmatchSection.classList.add('hidden');
+  chartInputControls.style.display = 'grid';
+  chartVisualisation.style.display = 'block';
+  resultsContainer.style.display = 'grid';
+  analysisDetails.style.display = 'block';
+}
+
+function switchToStarmatchMode() {
+  const records = loadRecords();
+  
+  if (records.length < 2) {
+    showToast('Please create at least 2 records before using Starmatch mode.', 'warning', 5000);
+    return;
+  }
+  
+  btnStarmatchMode.classList.add('active');
+  btnChartMode.classList.remove('active');
+  
+  starmatchSection.classList.remove('hidden');
+  chartInputControls.style.display = 'none';
+  chartVisualisation.style.display = 'none';
+  resultsContainer.style.display = 'none';
+  analysisDetails.style.display = 'none';
+  
+  populateComparisonSelects();
+}
+
+btnChartMode?.addEventListener('click', switchToChartMode);
+btnStarmatchMode?.addEventListener('click', switchToStarmatchMode);
+
+// Populate dropdowns with saved records
+function populateComparisonSelects() {
+  const records = loadRecords();
+  
+  subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+  targetSelect.innerHTML = '<option value="">-- Select Target --</option>';
+  
+  records.forEach(rec => {
+    const optionSubject = document.createElement('option');
+    optionSubject.value = rec.id;
+    optionSubject.textContent = rec.name;
+    subjectSelect.appendChild(optionSubject);
+    
+    const optionTarget = document.createElement('option');
+    optionTarget.value = rec.id;
+    optionTarget.textContent = rec.name;
+    targetSelect.appendChild(optionTarget);
+  });
+}
+
+// Load subject
+function loadSubjectForComparison() {
+  const selectedId = subjectSelect.value;
+  if (!selectedId) {
+    showToast('Please select a subject from the dropdown.', 'warning');
+    return;
+  }
+  
+  const records = loadRecords();
+  const record = records.find(r => r.id === selectedId);
+  
+  if (!record) {
+    showToast('Subject record not found.', 'error');
+    return;
+  }
+  
+  // Check if same as target
+  if (currentTarget && currentTarget.id === record.id) {
+    showToast('Subject and Target cannot be the same person.', 'error');
+    return;
+  }
+  
+  currentSubject = record;
+  displayPersonInfo(record, subjectInfo);
+  updateCompareButton();
+  showToast(`Loaded subject: ${record.name}`, 'success', 2000);
+}
+
+// Load target
+function loadTargetForComparison() {
+  const selectedId = targetSelect.value;
+  if (!selectedId) {
+    showToast('Please select a target from the dropdown.', 'warning');
+    return;
+  }
+  
+  const records = loadRecords();
+  const record = records.find(r => r.id === selectedId);
+  
+  if (!record) {
+    showToast('Target record not found.', 'error');
+    return;
+  }
+  
+  // Check if same as subject
+  if (currentSubject && currentSubject.id === record.id) {
+    showToast('Subject and Target cannot be the same person.', 'error');
+    return;
+  }
+  
+  currentTarget = record;
+  displayPersonInfo(record, targetInfo);
+  updateCompareButton();
+  showToast(`Loaded target: ${record.name}`, 'success', 2000);
+}
+
+// Display person info
+function displayPersonInfo(record, container) {
+  container.innerHTML = `
+    <strong>${record.name}</strong><br>
+    Date: ${record.date || 'N/A'}<br>
+    Time: ${record.time || 'N/A'}<br>
+    Lat: ${record.lat || 'N/A'}, Lon: ${record.lon || 'N/A'}<br>
+    <em style="opacity: 0.7; font-size: 0.8rem;">Settings: Orb ${record.orbType || 0}, Asp ${record.aspectOrbSet || 0}, Rule ${record.rulershipSet || 0}</em>
+  `;
+}
+
+// Update compare button state
+function updateCompareButton() {
+  if (currentSubject && currentTarget) {
+    btnCompare.disabled = false;
+  } else {
+    btnCompare.disabled = true;
+  }
+}
+
+// Perform comparison
+function performComparison() {
+  if (!currentSubject || !currentTarget) {
+    showToast('Please load both Subject and Target.', 'warning');
+    return;
+  }
+  
+  //showToast('Calculating comparison...', 'info', 2000);
+  
+  // Calculate charts for both
+  try {
+    // Subject chart
+    const subjectJD = dateToJulianDate(currentSubject.date, currentSubject.time);
+    const subjectPositions = getPositionsForJD(subjectJD);
+    const subjectPlanetaryPositions = extractPlanetaryPositions(subjectPositions);
+    const subjectAsc = calculateAscendant(subjectJD, parseFloat(currentSubject.lat), parseFloat(currentSubject.lon));
+    const subjectMC = calculateMidheaven(subjectJD, parseFloat(currentSubject.lon));
+    
+    // Target chart
+    const targetJD = dateToJulianDate(currentTarget.date, currentTarget.time);
+    const targetPositions = getPositionsForJD(targetJD);
+    const targetPlanetaryPositions = extractPlanetaryPositions(targetPositions);
+    const targetAsc = calculateAscendant(targetJD, parseFloat(currentTarget.lat), parseFloat(currentTarget.lon));
+    const targetMC = calculateMidheaven(targetJD, parseFloat(currentTarget.lon));
+    
+    // Apply settings for subject
+    orbType = parseInt(currentSubject.orbType || 0);
+    aoIndex = parseInt(currentSubject.aspectOrbSet || 0);
+    tfIndex = parseInt(currentSubject.rulershipSet || 0);
+    precessionFlag = currentSubject.precession || 0;
+    const subjectYear = new Date(currentSubject.date).getFullYear();
+    nativityYear = subjectYear;
+    nativity = subjectYear;
+    
+    // Calculate subject themes
+    getThemeValues(
+      subjectPlanetaryPositions.Sun,
+      subjectPlanetaryPositions.Moon,
+      subjectPlanetaryPositions.Mercury,
+      subjectPlanetaryPositions.Venus,
+      subjectPlanetaryPositions.Mars,
+      subjectPlanetaryPositions.Jupiter,
+      subjectPlanetaryPositions.Saturn,
+      subjectPlanetaryPositions.Uranus,
+      subjectPlanetaryPositions.Neptune,
+      subjectPlanetaryPositions.Pluto,
+      subjectAsc,
+      subjectMC
+    );
+    
+    const subjectThemes = [...theme]; // Copy theme values
+    
+    // Apply settings for target
+    orbType = parseInt(currentTarget.orbType || 0);
+    aoIndex = parseInt(currentTarget.aspectOrbSet || 0);
+    tfIndex = parseInt(currentTarget.rulershipSet || 0);
+    precessionFlag = currentTarget.precession || 0;
+    const targetYear = new Date(currentTarget.date).getFullYear();
+    nativityYear = targetYear;
+    nativity = targetYear;
+    
+    // Calculate target themes
+    getThemeValues(
+      targetPlanetaryPositions.Sun,
+      targetPlanetaryPositions.Moon,
+      targetPlanetaryPositions.Mercury,
+      targetPlanetaryPositions.Venus,
+      targetPlanetaryPositions.Mars,
+      targetPlanetaryPositions.Jupiter,
+      targetPlanetaryPositions.Saturn,
+      targetPlanetaryPositions.Uranus,
+      targetPlanetaryPositions.Neptune,
+      targetPlanetaryPositions.Pluto,
+      targetAsc,
+      targetMC
+    );
+    
+    const targetThemes = [...theme]; // Copy theme values
+    
+    // Display comparison results
+    displayComparisonResults(subjectThemes, targetThemes, subjectPlanetaryPositions, targetPlanetaryPositions);
+    
+    comparisonResults.classList.remove('hidden');
+    //showToast('Comparison complete!', 'success', 3000);
+    
+  } catch (error) {
+    console.error('Comparison error:', error);
+    showToast('Error calculating comparison: ' + error.message, 'error', 5000);
+  }
+}
+
+// Extract planetary positions helper
+function extractPlanetaryPositions(positions) {
+  const bodyMapping = {
+    'Sun': 'Sun',
+    'Moon': 'Earth-Moon Barycenter',
+    'Mercury': 'Mercury',
+    'Venus': 'Venus',
+    'Mars': 'Mars',
+    'Jupiter': 'Jupiter',
+    'Saturn': 'Saturn',
+    'Uranus': 'Uranus',
+    'Neptune': 'Neptune',
+    'Pluto': 'Pluto'
+  };
+  
+  const planetaryPositions = {};
+  
+  for (const [ourName, ephemName] of Object.entries(bodyMapping)) {
+    if (positions[ephemName]) {
+      const pos = positions[ephemName];
+      planetaryPositions[ourName] = cartesianToLongitude(pos.x, pos.y, pos.z);
+    } else {
+      planetaryPositions[ourName] = 0;
+    }
+  }
+  
+  return planetaryPositions;
+}
+
+// Calculate xProfile value (similarity-complementarity spectrum)
+// Returns value from -1 (complementarity/inverted) to +1 (similarity/same shape)
+// Values near 0 indicate balanced relationships (most significant/lasting)
+function calculateXProfileValue(subjectThemes, targetThemes) {
+  // Calculate correlation coefficient between the two theme arrays
+  const n = subjectThemes.length;
+  
+  // Calculate means
+  const meanSubject = subjectThemes.reduce((a, b) => a + b, 0) / n;
+  const meanTarget = targetThemes.reduce((a, b) => a + b, 0) / n;
+  
+  // Calculate correlation
+  let numerator = 0;
+  let denomSubject = 0;
+  let denomTarget = 0;
+  
+  for (let i = 0; i < n; i++) {
+    const diffSubject = subjectThemes[i] - meanSubject;
+    const diffTarget = targetThemes[i] - meanTarget;
+    numerator += diffSubject * diffTarget;
+    denomSubject += diffSubject * diffSubject;
+    denomTarget += diffTarget * diffTarget;
+  }
+  
+  const correlation = numerator / Math.sqrt(denomSubject * denomTarget);
+  
+  // Correlation ranges from -1 to +1
+  // +1 = perfect positive correlation (same shape) = similarity
+  // -1 = perfect negative correlation (inverted shape) = complementarity
+  // 0 = no correlation = equality/balance
+  
+  return correlation;
+}
+
+// Get relationship type interpretation based on xProfile value
+function getRelationshipTypeInterpretation(xProfileValue) {
+  const absValue = Math.abs(xProfileValue);
+  
+  if (absValue < 0.2) {
+    return {
+      type: 'Equality/Balance',
+      color: '#51cf66',
+      description: 'Optimal for long-lasting, significant relationships. A balanced blend of similarity and complementarity.',
+      significance: 'High'
+    };
+  } else if (xProfileValue > 0.7) {
+    return {
+      type: 'Strong Similarity',
+      color: '#74c0fc',
+      description: 'Charts have the same shape. Good relationship potential, though may lack the balance for deepest partnerships.',
+      significance: 'Moderate'
+    };
+  } else if (xProfileValue > 0.4) {
+    return {
+      type: 'Moderate Similarity',
+      color: '#69db7c',
+      description: 'Similar energies with some variation. Good compatibility with room for growth.',
+      significance: 'Good'
+    };
+  } else if (xProfileValue < -0.7) {
+    return {
+      type: 'Strong Complementarity',
+      color: '#b85eff',
+      description: 'Charts are inverted relative to each other. Complementary energies, though may lack balance for lasting partnerships.',
+      significance: 'Moderate'
+    };
+  } else if (xProfileValue < -0.4) {
+    return {
+      type: 'Moderate Complementarity',
+      color: '#a78bfa',
+      description: 'Complementary energies provide contrast and growth opportunities.',
+      significance: 'Good'
+    };
+  } else {
+    return {
+      type: 'Mixed Balance',
+      color: '#ffd43b',
+      description: 'A mixture of similar and complementary energies. Approaching ideal balance.',
+      significance: 'Good'
+    };
+  }
+}
+
+// Display comparison results
+function displayComparisonResults(subjectThemes, targetThemes, subjectPos, targetPos) {
+  const SIGN_NAMES = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 
+                      'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+  
+  // Calculate xProfile value
+  const xProfileValue = calculateXProfileValue(subjectThemes, targetThemes);
+  const relType = getRelationshipTypeInterpretation(xProfileValue);
+  
+  let html = '<div class="comparison-grid">';
+  
+  // xProfile Spectrum Display - wrapped in its own container
+  html += `<div class="xprofile-spectrum-container">
+    <h4 style="color: var(--accent); margin-top: 0;">xProfile Relationship Spectrum</h4>
+    <div style="background: rgba(94,197,255,0.1); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(94,197,255,0.3);">
+      
+      <!-- Spectrum Bar -->
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #8fa8ce; margin-bottom: 0.5rem;">
+          <span>Complementarity</span>
+          <span>Equality</span>
+          <span>Similarity</span>
+        </div>
+        <div style="position: relative; height: 30px; background: linear-gradient(90deg, #b85eff 0%, #ffd43b 50%, #74c0fc 100%); border-radius: 6px; border: 1px solid rgba(94,197,255,0.3);">
+          <!-- Marker -->
+          <div style="position: absolute; left: ${((xProfileValue + 1) / 2) * 100}%; top: -5px; transform: translateX(-50%);">
+            <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid white;"></div>
+          </div>
+          <!-- Value marker line -->
+          <div style="position: absolute; left: ${((xProfileValue + 1) / 2) * 100}%; top: 0; bottom: 0; width: 2px; background: white; transform: translateX(-50%);"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: #6a7fa0; margin-top: 0.25rem;">
+          <span>-1.0</span>
+          <span>0.0</span>
+          <span>+1.0</span>
+        </div>
+      </div>
+      
+      <!-- xProfile Value -->
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <div style="font-size: 0.85rem; color: #8fa8ce; margin-bottom: 0.5rem;">xProfile Value</div>
+        <div style="font-size: 3rem; font-weight: 700; color: ${relType.color};">${xProfileValue.toFixed(3)}</div>
+      </div>
+      
+      <!-- Relationship Type -->
+      <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; border-left: 4px solid ${relType.color};">
+        <div style="font-size: 1.1rem; font-weight: 600; color: ${relType.color}; margin-bottom: 0.5rem;">${relType.type}</div>
+        <div style="font-size: 0.85rem; line-height: 1.6; color: #b8d0f0; margin-bottom: 0.75rem;">${relType.description}</div>
+        <div style="font-size: 0.75rem; color: #8fa8ce;">
+          <strong>Relationship Significance:</strong> ${relType.significance}
+        </div>
+      </div>
+      
+      ${Math.abs(xProfileValue) < 0.2 ? 
+        '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(81,207,102,0.15); border-radius: 6px; border: 1px solid rgba(81,207,102,0.3); font-size: 0.8rem; color: #51cf66;">★ Optimal balance for long-lasting partnerships</div>' : 
+        Math.abs(xProfileValue) > 0.7 ?
+        '<div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,212,59,0.15); border-radius: 6px; border: 1px solid rgba(255,212,59,0.3); font-size: 0.8rem; color: #ffd43b;">⚠ Extreme values suggest good relationships but less likely for deep partnerships</div>' :
+        ''}
+    </div>
+  </div>`;
+  
+  // Theme comparison - wrapped in its own container
+  html += '<div class="theme-comparison-container">';
+  html += '<h4 style="color: var(--accent); margin-top: 0;">Theme-by-Theme Analysis</h4>';
+  html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+  
+  for (let i = 0; i < 12; i++) {
+    const subjectVal = subjectThemes[i];
+    const targetVal = targetThemes[i];
+    const diff = Math.abs(subjectVal - targetVal);
+    const similarity = Math.max(0, 100 - (diff * 10));
+    
+    html += `
+      <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem;">
+        <div style="min-width: 80px; color: #b8d0f0;">${SIGN_NAMES[i]}</div>
+        <div style="flex: 1; display: flex; align-items: center; gap: 0.25rem;">
+          <div style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #74c0fc; min-width: 35px; text-align: right;">${subjectVal.toFixed(1)}</div>
+          <div style="flex: 1; height: 16px; background: rgba(10,13,19,0.8); border-radius: 3px; overflow: hidden; border: 1px solid rgba(94,197,255,0.2);">
+            <div style="height: 100%; width: ${similarity}%; background: linear-gradient(90deg, #51cf66, #69db7c); transition: width 0.6s;"></div>
+          </div>
+          <div style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #b85eff; min-width: 35px;">${targetVal.toFixed(1)}</div>
+        </div>
+      </div>
+    `;
+  }
+  
+  html += '</div>';
+  html += '<div style="margin-top: 1rem; font-size: 0.75rem; color: #8fa8ce; display: flex; justify-content: center; gap: 1.5rem;">';
+  html += '<div><span style="color: #74c0fc;">●</span> Subject</div>';
+  html += '<div><span style="color: #b85eff;">●</span> Target</div>';
+  html += '</div>';
+  html += '</div>';
+  
+  html += '</div>';
+  
+  // Additional context
+  html += `<div style="margin-top: 2rem; padding: 1rem; background: rgba(10,13,19,0.6); border-radius: 8px; border: 1px solid rgba(94,197,255,0.15);">
+    <div style="font-size: 0.75rem; color: #8fa8ce; line-height: 1.6;">
+      <strong style="color: #b8d0f0;">Understanding xProfile Values:</strong><br>
+      <span style="color: #74c0fc;">+1.0</span> = Charts have same shape (similarity)<br>
+      <span style="color: #ffd43b;">0.0</span> = Perfect balance (ideal for lasting relationships)<br>
+      <span style="color: #b85eff;">-1.0</span> = Charts are inverted (complementarity)
+    </div>
+    <div style="margin-top: 1rem; font-size: 0.7rem; color: #6a7fa0; font-style: italic;">
+      Subject: ${currentSubject.name} • Target: ${currentTarget.name}
+    </div>
+  </div>`;
+  
+  comparisonOutput.innerHTML = html;
+}
+
+// Event listeners
+btnLoadSubject?.addEventListener('click', loadSubjectForComparison);
+btnLoadTarget?.addEventListener('click', loadTargetForComparison);
+btnCompare?.addEventListener('click', performComparison);
+
+// Prevent same person selection
+subjectSelect?.addEventListener('change', () => {
+  if (currentTarget && subjectSelect.value === currentTarget.id) {
+    showToast('Subject and Target cannot be the same person.', 'warning');
+    subjectSelect.value = '';
+  }
+});
+
+targetSelect?.addEventListener('change', () => {
+  if (currentSubject && targetSelect.value === currentSubject.id) {
+    showToast('Subject and Target cannot be the same person.', 'warning');
+    targetSelect.value = '';
   }
 });

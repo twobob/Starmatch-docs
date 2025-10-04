@@ -16,6 +16,12 @@
         Uses DE200 ephemeris data to calculate planetary positions and compute
         thematic strengths based on traditional astrological principles.
       </p>
+      
+      <!-- Mode Toggle -->
+      <div class="mode-toggle">
+        <button id="btn-chart-mode" class="mode-btn active">Chart Mode</button>
+        <button id="btn-starmatch-mode" class="mode-btn">Starmatch Mode</button>
+      </div>
     </header>
 
     <section class="input-controls">
@@ -25,6 +31,7 @@
           <div class="input-field">
             <label for="birth-date">Date</label>
             <input type="date" id="birth-date" value="1974-09-11">
+            <small id="date-range-hint" style="font-size: 0.7rem; color: #8fa8ce; margin-top: 0.25rem; display: none;"></small>
           </div>
           <div class="input-field">
             <label for="birth-time">Time (UTC)</label>
@@ -111,7 +118,7 @@
     <section class="chart-visualisation">
       <h3>Chart Wheel visualisation</h3>
       <div class="canvas-container">
-        <canvas id="chart-canvas" width="900" height="600"></canvas>
+        <canvas id="chart-canvas" width="600" height="600"></canvas>
         <div id="chart-tooltip" class="chart-tooltip"></div>
       </div>
     </section>
@@ -162,7 +169,53 @@
         </div>
       </div>
     </section>
+
+    <!-- Starmatch Comparison Section (Hidden by default) -->
+    <section id="starmatch-section" class="starmatch-section hidden">
+      <div class="starmatch-container">
+        <h3>Starmatch Comparison</h3>
+        <p class="starmatch-description">
+          Compare two charts to analyze compatibility and thematic interactions.
+        </p>
+        
+        <div class="comparison-controls">
+          <div class="subject-target-row">
+            <div class="comparison-panel">
+              <h4>Subject</h4>
+              <select id="subject-select" class="record-select">
+                <option value="">-- Select Subject --</option>
+              </select>
+              <button id="btn-load-subject" class="mini-btn">Load Subject</button>
+              <div id="subject-info" class="person-info"></div>
+            </div>
+            
+            <div class="vs-divider">VS</div>
+            
+            <div class="comparison-panel">
+              <h4>Target</h4>
+              <select id="target-select" class="record-select">
+                <option value="">-- Select Target --</option>
+              </select>
+              <button id="btn-load-target" class="mini-btn">Load Target</button>
+              <div id="target-info" class="person-info"></div>
+            </div>
+          </div>
+          
+          <button id="btn-compare" class="primary-btn" disabled>Compare Charts</button>
+        </div>
+        
+        <div id="comparison-results" class="comparison-results hidden">
+          <h3>Comparison Results</h3>
+          <div id="comparison-output" class="comparison-output">
+            <!-- Results will be displayed here -->
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
 
   <div id="save-modal" class="modal hidden">
     <div class="modal-dialog">

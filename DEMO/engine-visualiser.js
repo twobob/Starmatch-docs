@@ -1620,3 +1620,24 @@ loadEphemerisData();
 // Set default date to a date within ephemeris range
 birthDate.value = '1974-09-11';
 selectedLocationName.textContent = '';
+
+// ============================================================================
+// Collapsible Analysis Section
+// ============================================================================
+
+const analysisToggle = document.getElementById('analysis-toggle');
+const analysisContent = document.getElementById('analysis-content');
+
+analysisToggle?.addEventListener('click', () => {
+  const isCollapsed = analysisContent.classList.contains('collapsed');
+  
+  if (isCollapsed) {
+    // Expand
+    analysisContent.classList.remove('collapsed');
+    analysisToggle.classList.remove('collapsed');
+  } else {
+    // Collapse
+    analysisContent.classList.add('collapsed');
+    analysisToggle.classList.add('collapsed');
+  }
+});

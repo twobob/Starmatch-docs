@@ -108,6 +108,14 @@
       </div>
     </section>
 
+    <section class="chart-visualisation">
+      <h3>Chart Wheel visualisation</h3>
+      <div class="canvas-container">
+        <canvas id="chart-canvas" width="900" height="600"></canvas>
+        <div id="chart-tooltip" class="chart-tooltip"></div>
+      </div>
+    </section>
+
     <section class="results-container">
       <div class="planetary-positions">
         <h3>Planetary Positions</h3>
@@ -125,33 +133,33 @@
     </section>
 
     <section class="analysis-details">
-      <div class="detail-panel">
-        <h3>Aspect Analysis</h3>
-        <div id="aspect-counts" class="info-grid">
-          <div class="loading-message">Calculate a chart to view aspects...</div>
-        </div>
+      <div class="analysis-header">
+        <h3>Dominant Themes / Traditional Factors / Aspect Analysis</h3>
+        <button class="collapse-toggle" id="analysis-toggle" aria-label="Toggle analysis details">
+          <span class="collapse-icon">▼</span>
+        </button>
       </div>
-
-      <div class="detail-panel">
-        <h3>Traditional Factors</h3>
-        <div id="trad-factors" class="info-grid">
-          <div class="loading-message">Calculate a chart to view factors...</div>
+      <div class="analysis-content" id="analysis-content">
+        <div class="detail-panel">
+          <h3>Aspect Analysis</h3>
+          <div id="aspect-counts" class="info-grid">
+            <div class="loading-message">Calculate a chart to view aspects...</div>
+          </div>
         </div>
-      </div>
 
-      <div class="detail-panel">
-        <h3>Dominant Themes</h3>
-        <div id="dominant-info" class="info-grid">
-          <div class="loading-message">Calculate a chart to view dominants...</div>
+        <div class="detail-panel">
+          <h3>Traditional Factors</h3>
+          <div id="trad-factors" class="info-grid">
+            <div class="loading-message">Calculate a chart to view factors...</div>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <section class="chart-visualisation">
-      <h3>Chart Wheel visualisation</h3>
-      <div class="canvas-container">
-        <canvas id="chart-canvas" width="600" height="600"></canvas>
-        <div id="chart-tooltip" class="chart-tooltip"></div>
+        <div class="detail-panel">
+          <h3>Dominant Themes</h3>
+          <div id="dominant-info" class="info-grid">
+            <div class="loading-message">Calculate a chart to view dominants...</div>
+          </div>
+        </div>
       </div>
     </section>
   </main>

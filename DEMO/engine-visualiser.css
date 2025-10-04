@@ -473,9 +473,68 @@ h3 {
 /* Analysis Details */
 .analysis-details {
   margin-top: 2rem;
+  background: rgba(10, 13, 19, 0.5);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.analysis-header h3 {
+  margin: 0;
+}
+
+.collapse-toggle {
+  background: rgba(94, 197, 255, 0.15);
+  border: 1px solid rgba(94, 197, 255, 0.3);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #e2eeff;
+}
+
+.collapse-toggle:hover {
+  background: rgba(94, 197, 255, 0.25);
+  border-color: var(--accent);
+}
+
+.collapse-toggle:active {
+  transform: scale(0.95);
+}
+
+.collapse-icon {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.collapse-toggle.collapsed .collapse-icon {
+  transform: rotate(-90deg);
+}
+
+.analysis-content {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  overflow: visible;
+  transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
+  max-height: 5000px;
+  opacity: 1;
+  margin-top: 0;
+}
+
+.analysis-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+  overflow: hidden;
 }
 
 .detail-panel {
@@ -583,7 +642,7 @@ canvas {
     grid-template-columns: 1fr;
   }
   
-  .analysis-details {
+  .analysis-content {
     grid-template-columns: 1fr;
   }
 }
@@ -599,6 +658,106 @@ canvas {
   
   .positions-grid {
     grid-template-columns: 1fr;
+  }
+  
+  /* Mobile-optimized analysis section */
+  .analysis-details {
+    padding: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .analysis-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .analysis-header h3 {
+    font-size: 0.95rem;
+    line-height: 1.3;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  
+  .collapse-toggle {
+    flex-shrink: 0;
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .analysis-content {
+    gap: 1rem;
+  }
+  
+  .detail-panel {
+    padding: 1rem;
+  }
+  
+  .detail-panel h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .info-item {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  .info-label {
+    font-size: 0.8rem;
+  }
+  
+  .info-value {
+    font-size: 0.9rem;
+  }
+  
+  .info-value.dominant {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 1rem;
+  }
+  
+  .analysis-details {
+    padding: 0.75rem;
+    border-radius: 8px;
+  }
+  
+  .analysis-header h3 {
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+  }
+  
+  .collapse-toggle {
+    padding: 0.35rem 0.5rem;
+  }
+  
+  .collapse-icon {
+    font-size: 0.8rem;
+  }
+  
+  .detail-panel {
+    padding: 0.75rem;
+    border-radius: 8px;
+  }
+  
+  .detail-panel h3 {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .info-item {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .info-label {
+    font-size: 0.75rem;
+  }
+  
+  .info-value {
+    font-size: 0.85rem;
   }
 }
 

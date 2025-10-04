@@ -457,6 +457,7 @@ header p {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
+  margin-top: 2rem;
 }
 
 @media (max-width: 900px) {
@@ -479,6 +480,7 @@ header p {
   
   .comparison-bottom-grid {
     gap: 1rem;
+    margin-top: 1.5rem;
   }
 }
 

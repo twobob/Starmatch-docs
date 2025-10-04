@@ -2302,7 +2302,7 @@ function displayComparisonResults(subjectThemes, targetThemes, subjectPos, targe
   html += '</div>';
   
   // Bottom section with chart visualization
-  html += `<div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;" class="comparison-bottom-grid">
+  html += `<div class="comparison-bottom-grid">
     <div style="padding: 1rem; background: rgba(10,13,19,0.6); border-radius: 8px; border: 1px solid rgba(94,197,255,0.15);">
       <div style="font-size: 0.75rem; color: #8fa8ce; line-height: 1.6;">
         <strong style="color: #b8d0f0;">Understanding xProfile Values:</strong><br>

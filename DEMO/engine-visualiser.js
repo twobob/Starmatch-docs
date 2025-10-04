@@ -2249,32 +2249,53 @@ function displayComparisonResults(subjectThemes, targetThemes, subjectPos, targe
   // Theme comparison - wrapped in its own container
   html += '<div class="theme-comparison-container">';
   html += '<h4 style="color: var(--accent); margin-top: 0;">Theme-by-Theme Analysis</h4>';
-  html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+  html += '<div style="display: flex; flex-direction: column; gap: 0.6rem;">';
+  
+  // Find max value for scaling
+  const maxTheme = Math.max(...subjectThemes, ...targetThemes);
   
   for (let i = 0; i < 12; i++) {
     const subjectVal = subjectThemes[i];
     const targetVal = targetThemes[i];
+    const subjectPercent = (subjectVal / maxTheme) * 100;
+    const targetPercent = (targetVal / maxTheme) * 100;
     const diff = Math.abs(subjectVal - targetVal);
-    const similarity = Math.max(0, 100 - (diff * 10));
     
     html += `
       <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem;">
-        <div style="min-width: 80px; color: #b8d0f0;">${SIGN_NAMES[i]}</div>
-        <div style="flex: 1; display: flex; align-items: center; gap: 0.25rem;">
+        <div style="min-width: 70px; color: #b8d0f0; text-align: right; font-weight: 500;">${SIGN_NAMES[i]}</div>
+        
+        <!-- Subject bar (left side, blue) -->
+        <div style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 0.3rem;">
           <div style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #74c0fc; min-width: 35px; text-align: right;">${subjectVal.toFixed(1)}</div>
-          <div style="flex: 1; height: 16px; background: rgba(10,13,19,0.8); border-radius: 3px; overflow: hidden; border: 1px solid rgba(94,197,255,0.2);">
-            <div style="height: 100%; width: ${similarity}%; background: linear-gradient(90deg, #51cf66, #69db7c); transition: width 0.6s;"></div>
+          <div style="width: 100%; height: 20px; background: rgba(10,13,19,0.8); border-radius: 3px; overflow: hidden; border: 1px solid rgba(116,197,252,0.3); position: relative;">
+            <div style="position: absolute; right: 0; height: 100%; width: ${subjectPercent}%; background: linear-gradient(90deg, rgba(116,197,252,0.3), #74c0fc); transition: width 0.6s;"></div>
+          </div>
+        </div>
+        
+        <!-- Target bar (right side, purple) -->
+        <div style="flex: 1; display: flex; align-items: center; gap: 0.3rem;">
+          <div style="width: 100%; height: 20px; background: rgba(10,13,19,0.8); border-radius: 3px; overflow: hidden; border: 1px solid rgba(184,94,255,0.3); position: relative;">
+            <div style="position: absolute; left: 0; height: 100%; width: ${targetPercent}%; background: linear-gradient(90deg, #b85eff, rgba(184,94,255,0.3)); transition: width 0.6s;"></div>
           </div>
           <div style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #b85eff; min-width: 35px;">${targetVal.toFixed(1)}</div>
+        </div>
+        
+        <!-- Difference indicator -->
+        <div style="min-width: 40px; text-align: center; font-size: 0.65rem; color: ${diff < 2 ? '#51cf66' : diff < 5 ? '#ffd43b' : '#ff6b6b'}; font-family: 'Fira Code', monospace;">
+          Δ${diff.toFixed(1)}
         </div>
       </div>
     `;
   }
   
   html += '</div>';
-  html += '<div style="margin-top: 1rem; font-size: 0.75rem; color: #8fa8ce; display: flex; justify-content: center; gap: 1.5rem;">';
-  html += '<div><span style="color: #74c0fc;">●</span> Subject</div>';
-  html += '<div><span style="color: #b85eff;">●</span> Target</div>';
+  html += '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(94,197,255,0.15); font-size: 0.7rem; color: #8fa8ce; display: flex; justify-content: space-between; align-items: center;">';
+  html += '<div style="display: flex; gap: 1.5rem;">';
+  html += '<div><span style="color: #74c0fc;">━━━</span> Subject</div>';
+  html += '<div><span style="color: #b85eff;">━━━</span> Target</div>';
+  html += '</div>';
+  html += '<div style="font-style: italic;">Δ = Difference</div>';
   html += '</div>';
   html += '</div>';
   

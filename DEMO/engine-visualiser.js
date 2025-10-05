@@ -1558,9 +1558,11 @@ function distanceToLineSegment(px, py, x1, y1, x2, y2) {
 // Get mouse position relative to canvas
 function getMousePos(canvas, evt) {
   const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
   return {
-    x: evt.clientX - rect.left,
-    y: evt.clientY - rect.top
+    x: (evt.clientX - rect.left) * scaleX,
+    y: (evt.clientY - rect.top) * scaleY
   };
 }
 
@@ -2316,7 +2318,8 @@ function displayComparisonResults(subjectThemes, targetThemes, subjectPos, targe
     </div>
     <div style="padding: 1rem; background: rgba(10,13,19,0.6); border-radius: 8px; border: 1px solid rgba(94,197,255,0.15);">
       <h4 style="color: var(--accent); margin-top: 0; margin-bottom: 0.75rem; font-size: 0.9rem;">Chart Overlay</h4>
-      <canvas id="comparison-chart-canvas" width="400" height="400" style="width: 100%; max-width: 400px; height: auto; display: block; margin: 0 auto;"></canvas>
+      <canvas id="comparison-chart-canvas" width="400" height="400" style="width: 100%; max-width: 400px; aspect-ratio: 1/1; display: block; margin: 0 auto;"></canvas>
+      <div id="comparison-tooltip" class="chart-tooltip"></div>
       <div style="margin-top: 0.75rem; font-size: 0.7rem; color: #8fa8ce; display: flex; justify-content: center; gap: 1.5rem;">
         <div><span style="color: #74c0fc;">●</span> Subject (${currentSubject.name})</div>
         <div><span style="color: #b85eff;">●</span> Target (${currentTarget.name})</div>
@@ -2328,7 +2331,14 @@ function displayComparisonResults(subjectThemes, targetThemes, subjectPos, targe
   
   // Draw the comparison chart after the HTML is rendered
   setTimeout(() => {
+    const canvas = document.getElementById('comparison-chart-canvas');
+    if (canvas) {
+      // Force square aspect ratio
+      const rect = canvas.getBoundingClientRect();
+      canvas.style.height = rect.width + 'px';
+    }
     drawComparisonChart(subjectPos, targetPos, subjectAsc, targetAsc);
+    setupComparisonChartTooltips(subjectPos, targetPos, subjectAsc, targetAsc);
   }, 50);
 }
 
@@ -2503,6 +2513,286 @@ function drawComparisonChart(subjectPos, targetPos, subjectAsc, targetAsc) {
   const targetLabelX = centerX + Math.cos(targetAscAngle) * (innerRadius - 30);
   const targetLabelY = centerY + Math.sin(targetAscAngle) * (innerRadius - 30);
   ctx.fillText('ASC', targetLabelX, targetLabelY);
+}
+
+// Store event listeners for cleanup
+let comparisonTooltipListeners = null;
+
+// Setup tooltips for comparison chart
+function setupComparisonChartTooltips(subjectPos, targetPos, subjectAsc, targetAsc) {
+  const canvas = document.getElementById('comparison-chart-canvas');
+  if (!canvas) {
+    console.error('Comparison canvas not found');
+    return;
+  }
+  
+  const tooltip = document.getElementById('comparison-tooltip');
+  if (!tooltip) {
+    console.error('Comparison tooltip element not found');
+    return;
+  }
+  
+  // Remove old event listeners if they exist
+  if (comparisonTooltipListeners) {
+    canvas.removeEventListener('mousemove', comparisonTooltipListeners.mousemove);
+    canvas.removeEventListener('mouseleave', comparisonTooltipListeners.mouseleave);
+  }
+  
+  const SIGN_NAMES = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 
+                      'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+  const PLANET_NAMES = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 
+                        'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+  
+  // Store chart data for tooltip calculations
+  const chartData = {
+    centerX: canvas.width / 2,
+    centerY: canvas.height / 2,
+    outerRadius: 180,
+    innerRadius: 140,
+    subjectPlanetRadius: 120,
+    targetPlanetRadius: 95,
+    subjectPos,
+    targetPos,
+    subjectAsc,
+    targetAsc
+  };
+  
+  function getMousePos(canvas, evt) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (evt.clientX - rect.left) * scaleX,
+      y: (evt.clientY - rect.top) * scaleY
+    };
+  }
+  
+  function checkPlanetHover(mouseX, mouseY) {
+    const planetRadius = 15; // Increased hit detection radius for easier hovering
+    
+    // Check subject planets
+    for (const [name, longitude] of Object.entries(chartData.subjectPos)) {
+      if (isNaN(longitude) || !isFinite(longitude)) continue;
+      
+      const angle = ((-longitude - 90) * Math.PI) / 180;
+      const x = chartData.centerX + Math.cos(angle) * chartData.subjectPlanetRadius;
+      const y = chartData.centerY + Math.sin(angle) * chartData.subjectPlanetRadius;
+      
+      const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+      
+      if (distance <= planetRadius) {
+        let normalizedLon = longitude % 360;
+        if (normalizedLon < 0) normalizedLon += 360;
+        const sign = Math.floor(normalizedLon / 30);
+        const degree = normalizedLon % 30;
+        const signName = SIGN_NAMES[sign];
+        
+        return {
+          type: 'subject-planet',
+          name: name,
+          longitude: longitude,
+          position: `${degree.toFixed(2)}° ${signName}`,
+          sign: signName,
+          person: currentSubject.name
+        };
+      }
+    }
+    
+    // Check target planets
+    for (const [name, longitude] of Object.entries(chartData.targetPos)) {
+      if (isNaN(longitude) || !isFinite(longitude)) continue;
+      
+      const angle = ((-longitude - 90) * Math.PI) / 180;
+      const x = chartData.centerX + Math.cos(angle) * chartData.targetPlanetRadius;
+      const y = chartData.centerY + Math.sin(angle) * chartData.targetPlanetRadius;
+      
+      const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+      
+      if (distance <= planetRadius) {
+        let normalizedLon = longitude % 360;
+        if (normalizedLon < 0) normalizedLon += 360;
+        const sign = Math.floor(normalizedLon / 30);
+        const degree = normalizedLon % 30;
+        const signName = SIGN_NAMES[sign];
+        
+        return {
+          type: 'target-planet',
+          name: name,
+          longitude: longitude,
+          position: `${degree.toFixed(2)}° ${signName}`,
+          sign: signName,
+          person: currentTarget.name
+        };
+      }
+    }
+    
+    return null;
+  }
+  
+  function checkAscendantHover(mouseX, mouseY) {
+    // Check subject ascendant line (blue)
+    const subjectAscAngle = ((-chartData.subjectAsc - 90) * Math.PI) / 180;
+    const subjectX2 = chartData.centerX + Math.cos(subjectAscAngle) * chartData.innerRadius;
+    const subjectY2 = chartData.centerY + Math.sin(subjectAscAngle) * chartData.innerRadius;
+    
+    const distanceToSubjectAsc = distanceToLineSegment(
+      mouseX, mouseY,
+      chartData.centerX, chartData.centerY,
+      subjectX2, subjectY2
+    );
+    
+    if (distanceToSubjectAsc <= 5) {
+      let normalizedLon = chartData.subjectAsc % 360;
+      if (normalizedLon < 0) normalizedLon += 360;
+      const sign = Math.floor(normalizedLon / 30);
+      const degree = normalizedLon % 30;
+      const signName = SIGN_NAMES[sign];
+      
+      return {
+        type: 'subject-ascendant',
+        person: currentSubject.name,
+        position: `${degree.toFixed(2)}° ${signName}`,
+        sign: signName
+      };
+    }
+    
+    // Check target ascendant line (purple)
+    const targetAscAngle = ((-chartData.targetAsc - 90) * Math.PI) / 180;
+    const targetX2 = chartData.centerX + Math.cos(targetAscAngle) * chartData.innerRadius;
+    const targetY2 = chartData.centerY + Math.sin(targetAscAngle) * chartData.innerRadius;
+    
+    const distanceToTargetAsc = distanceToLineSegment(
+      mouseX, mouseY,
+      chartData.centerX, chartData.centerY,
+      targetX2, targetY2
+    );
+    
+    if (distanceToTargetAsc <= 5) {
+      let normalizedLon = chartData.targetAsc % 360;
+      if (normalizedLon < 0) normalizedLon += 360;
+      const sign = Math.floor(normalizedLon / 30);
+      const degree = normalizedLon % 30;
+      const signName = SIGN_NAMES[sign];
+      
+      return {
+        type: 'target-ascendant',
+        person: currentTarget.name,
+        position: `${degree.toFixed(2)}° ${signName}`,
+        sign: signName
+      };
+    }
+    
+    return null;
+  }
+  
+  function checkSignHover(mouseX, mouseY) {
+    const ELEMENT_NAMES = ['Fire', 'Earth', 'Air', 'Water'];
+    const QUALITY_NAMES = ['Cardinal', 'Fixed', 'Mutable'];
+    
+    const dx = mouseX - chartData.centerX;
+    const dy = mouseY - chartData.centerY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // Check if in zodiac ring area
+    if (distance >= chartData.innerRadius && distance <= chartData.outerRadius) {
+      // Calculate angle from center
+      // Mirror about vertical axis by negating dx instead of the angle
+      let angle = Math.atan2(dy, -dx) * (180 / Math.PI);
+      // Convert to zodiac longitude (adjusted for ascendant and 90° offset)
+      let zodiacLon = -angle - 90 + chartData.subjectAsc;
+      while (zodiacLon < 0) zodiacLon += 360;
+      while (zodiacLon >= 360) zodiacLon -= 360;
+      
+      const signIndex = Math.floor(zodiacLon / 30);
+      const signName = SIGN_NAMES[signIndex];
+      
+      return {
+        type: 'sign',
+        name: signName,
+        index: signIndex,
+        element: ELEMENT_NAMES[signIndex % 4],
+        quality: QUALITY_NAMES[Math.floor(signIndex / 4)]
+      };
+    }
+    
+    return null;
+  }
+  
+  function updateTooltip(evt) {
+    const mousePos = getMousePos(canvas, evt);
+    const mouseX = mousePos.x;
+    const mouseY = mousePos.y;
+    
+    // Check in priority order: planets, ascendants, signs
+    let hoverInfo = checkPlanetHover(mouseX, mouseY);
+    
+    if (!hoverInfo) {
+      hoverInfo = checkAscendantHover(mouseX, mouseY);
+    }
+    
+    if (!hoverInfo) {
+      hoverInfo = checkSignHover(mouseX, mouseY);
+    }
+    
+    if (hoverInfo) {
+      let tooltipHTML = '';
+      
+      if (hoverInfo.type === 'subject-planet') {
+        tooltipHTML = `
+          <div style="font-weight: 600; color: #74c0fc; margin-bottom: 0.25rem;">${hoverInfo.name} (${hoverInfo.person})</div>
+          <div style="font-size: 0.85rem;">${hoverInfo.position}</div>
+        `;
+      } else if (hoverInfo.type === 'target-planet') {
+        tooltipHTML = `
+          <div style="font-weight: 600; color: #b85eff; margin-bottom: 0.25rem;">${hoverInfo.name} (${hoverInfo.person})</div>
+          <div style="font-size: 0.85rem;">${hoverInfo.position}</div>
+        `;
+      } else if (hoverInfo.type === 'subject-ascendant') {
+        tooltipHTML = `
+          <div style="font-weight: 600; color: #74c0fc; margin-bottom: 0.25rem;">Ascendant (${hoverInfo.person})</div>
+          <div style="font-size: 0.85rem;">${hoverInfo.position}</div>
+        `;
+      } else if (hoverInfo.type === 'target-ascendant') {
+        tooltipHTML = `
+          <div style="font-weight: 600; color: #b85eff; margin-bottom: 0.25rem;">Ascendant (${hoverInfo.person})</div>
+          <div style="font-size: 0.85rem;">${hoverInfo.position}</div>
+        `;
+      } else if (hoverInfo.type === 'sign') {
+        tooltipHTML = `
+          <div style="font-weight: 600; color: var(--accent-warm); margin-bottom: 0.25rem;">${hoverInfo.name}</div>
+          <div style="font-size: 0.85rem; color: #b8d0f0;">${hoverInfo.element} • ${hoverInfo.quality}</div>
+        `;
+      }
+      
+      tooltip.innerHTML = tooltipHTML;
+      tooltip.style.display = 'block';
+      
+      // Position tooltip near cursor (fixed positioning uses viewport coordinates)
+      tooltip.style.left = (evt.clientX + 15) + 'px';
+      tooltip.style.top = (evt.clientY + 15) + 'px';
+      
+      canvas.style.cursor = 'pointer';
+    } else {
+      tooltip.style.display = 'none';
+      canvas.style.cursor = 'default';
+    }
+  }
+  
+  // Define event listeners
+  const mouseleaveHandler = () => {
+    tooltip.style.display = 'none';
+    canvas.style.cursor = 'default';
+  };
+  
+  // Store references for cleanup
+  comparisonTooltipListeners = {
+    mousemove: updateTooltip,
+    mouseleave: mouseleaveHandler
+  };
+  
+  // Add event listeners
+  canvas.addEventListener('mousemove', updateTooltip);
+  canvas.addEventListener('mouseleave', mouseleaveHandler);
 }
 
 // Helper function to draw planets for comparison (no longer needed but keeping for compatibility)

@@ -998,6 +998,27 @@ canvas {
     grid-template-columns: 1fr;
   }
   
+  /* Fix the location lookup row to stack on mobile */
+  .input-row.with-lookup {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .location-lookup-btn {
+    width: 100%;
+    align-self: stretch;
+  }
+  
+  /* Make action buttons stack or flex properly */
+  .action-row {
+    flex-wrap: wrap;
+  }
+  
+  .primary-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  
   .positions-grid {
     grid-template-columns: 1fr;
   }

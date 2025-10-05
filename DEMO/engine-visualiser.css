@@ -15,6 +15,13 @@ body {
   color: #e2eeff;
   min-height: 100vh;
   padding: 2rem 0;
+  overflow-x: hidden;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 /* Action Row & Small Buttons */
@@ -254,6 +261,8 @@ main {
   padding: 2rem;
   border-radius: 20px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 header h1 {
@@ -612,7 +621,6 @@ h3 {
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  align-self: end;
 }
 
 .location-lookup-btn:hover {
@@ -991,11 +999,35 @@ canvas {
 
 @media (max-width: 768px) {
   main {
-    padding: 1.5rem;
+    padding: 1rem;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
   
+  /* Force all containers to respect viewport width */
+  .input-controls,
+  .control-group,
+  .input-row,
+  .input-field,
+  .action-row {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Single column layout for control groups */
+  .input-controls {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .control-group {
+    padding: 1rem;
+  }
+  
+  /* Stack all input rows vertically */
   .input-row {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
   
   /* Fix the location lookup row to stack on mobile */
@@ -1007,16 +1039,49 @@ canvas {
   .location-lookup-btn {
     width: 100%;
     align-self: stretch;
+    padding: 0.75rem;
   }
   
-  /* Make action buttons stack or flex properly */
+  /* Make all input fields scale properly */
+  .input-field {
+    min-width: 0;
+    width: 100%;
+  }
+  
+  .input-field input,
+  .setting-row select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0.65rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Make action buttons wrap and scale */
   .action-row {
     flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .mini-btn {
+    flex: 0 1 auto;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.7rem;
+    white-space: nowrap;
   }
   
   .primary-btn {
-    flex: 1 1 auto;
+    flex: 1 1 100%;
+    width: 100%;
     min-width: 0;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Ensure buttons don't overflow */
+  button {
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .positions-grid {

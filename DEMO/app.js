@@ -21,6 +21,11 @@ let playbackInterval = null;
 let playbackSpeed = 1; // days per second
 let virtualTime = 0; // Continuous time for smooth interpolation
 
+// Orbit trail history: map of body name -> array of {xAu, yAu, sampleIndex}
+let orbitTrails = {};
+const MAX_TRAIL_POINTS = 2000; // Limit trail history
+let lastRecordedIndex = -1; // Track last sample we recorded
+
 const currentScript = document.currentScript;
 const scriptBaseUrl = currentScript ? currentScript.src : window.location.href;
 const resolveRelativeUrl = (path) => new URL(path, scriptBaseUrl);
@@ -47,6 +52,13 @@ const formatDate = (jd) => {
 
 let data = window.DE200_DEMO_POSITIONS || null;
 
+// DEBUG FLAG - disable app.js diagnostics to see app-chebyshev.js logs
+const DEBUG_APP_JS = true;
+
+// Allow choosing reduced vs full via ?reduced=1 or ?reduced=0 (default reduced)
+const urlParams = new URLSearchParams(location.search);
+const useReduced = urlParams.get('reduced') !== '0'; // Use reduced by default unless explicitly disabled
+
 const DATASET_SOURCES = {
   file: [
     {
@@ -57,19 +69,10 @@ const DATASET_SOURCES = {
   http: [
     {
       type: 'ephemeris',
-      headerUrl: resolveRelativeUrl('../data/header.200'),
-      ephUrl: resolveRelativeUrl('../data/de200.eph')
+      headerUrl: resolveRelativeUrl(useReduced ? '../data/reduced_header.200' : '../data/header.200'),
+      ephUrl: resolveRelativeUrl(useReduced ? '../data/reduced_de200.eph' : '../data/de200.eph'),
+      reduced: useReduced
     }
-    // Removed JSON and script fallbacks - force ephemeris computation only
-    // {
-    //   type: 'json',
-    //   url: resolveRelativeUrl('../data/de200_demo_positions.json')
-    // },
-    // {
-    //   type: 'script',
-    //   url: resolveRelativeUrl('../data/de200_demo_positions.js'),
-    //   globals: ['de200_demo_positions', 'DE200_DEMO_POSITIONS', 'demoPositions']
-    // }
   ]
 };
 
@@ -99,7 +102,7 @@ async function computeEphemerisUsage(buffer) {
   };
 }
 
-async function loadDatasetFromEphemeris({ headerUrl, ephUrl }) {
+async function loadDatasetFromEphemeris({ headerUrl, ephUrl, reduced }) {
   const [headerResponse, ephResponse] = await Promise.all([
     fetch(headerUrl),
     fetch(ephUrl)
@@ -118,13 +121,56 @@ async function loadDatasetFromEphemeris({ headerUrl, ephUrl }) {
   ]);
 
   const { constants, startJD, endJD } = parseEphemerisHeader(headerText);
-  const dataset = integrateDemoSamples(constants, { startJD, endJD });
+  
+  // Check if heliocentric version is loaded
+  if (DEBUG_APP_JS) console.log('[app.js] app-chebyshev.js version:', window.APP_CHEBYSHEV_VERSION || 'UNKNOWN/OLD');
+  
+  // NEW: Use Chebyshev interpolation from actual ephemeris data
+  if (DEBUG_APP_JS) console.log('Loading ephemeris data for Chebyshev interpolation...');
+  const ephemerisData = await loadEphemerisData(ephUrl, { KSIZE: 1652 });
+  const dataset = generateSamplesFromEphemeris(ephemerisData, constants, { outputStride: 1 });
+  
   const usage = await computeEphemerisUsage(ephBuffer);
   dataset.metadata.ephemeris_asset = {
     header_url: headerUrl.href,
     eph_url: ephUrl.href,
-    ...usage
+    ...usage,
+    interpolation_method: 'chebyshev',
+    records_loaded: ephemerisData.records.length,
+    reduced: !!reduced
   };
+  // Simple sanity log: Earth-Moon barycenter distance from Sun at first sample
+  if (DEBUG_APP_JS) {
+  const first = dataset.samples[0];
+  if (first && first.positions_km['Sun'] && first.positions_km['Earth-Moon Barycenter']) {
+    const s = first.positions_km['Sun'];
+    const e = first.positions_km['Earth-Moon Barycenter'];
+    
+    console.log('[DIAGNOSTIC] First sample Sun position (raw):', s);
+    console.log('[DIAGNOSTIC] First sample Earth position (raw):', e);
+    
+    const dx = (e[0]-s[0]);
+    const dy = (e[1]-s[1]);
+    const dz = (e[2]-s[2]);
+    const distAu = Math.sqrt(dx*dx+dy*dy+dz*dz)/constants.AU;
+    
+    console.log(`[DIAGNOSTIC] Component differences (km): X=${dx.toFixed(0)}, Y=${dy.toFixed(0)}, Z=${dz.toFixed(0)}`);
+    console.log(`[DIAGNOSTIC] Component magnitudes (AU): X=${Math.abs(dx/constants.AU).toFixed(3)}, Y=${Math.abs(dy/constants.AU).toFixed(3)}, Z=${Math.abs(dz/constants.AU).toFixed(3)}`);
+    console.log(`[sanity] First-sample Earth/Sun distance ≈ ${distAu.toFixed(3)} AU (reduced=${!!reduced})`);
+    
+    // RAW data - no conversion
+    console.log('[DIAGNOSTIC] All bodies at first sample (RAW from ephemeris):');
+    dataset.bodies.forEach(body => {
+      if (!first.positions_km[body]) return;
+      const p = first.positions_km[body];
+      const relX = p[0] / constants.AU;
+      const relY = p[1] / constants.AU;
+      const relZ = p[2] / constants.AU;
+      const dist = Math.sqrt(relX**2 + relY**2 + relZ**2);
+      console.log(`  ${body.padEnd(25)} X=${relX.toFixed(3).padStart(8)} Y=${relY.toFixed(3).padStart(8)} Z=${relZ.toFixed(3).padStart(8)} dist=${dist.toFixed(3)}`);
+    });
+  }
+  }
   return dataset;
 }
 
@@ -550,7 +596,7 @@ async function loadData() {
   for (const source of sources) {
     try {
       data = await loadDatasetFromSource(source);
-      console.log(`✓ Loaded ${data.samples.length} samples from ${data.bodies.length} bodies (${describeSource(source)})`);
+      if (DEBUG_APP_JS) console.log(`✓ Loaded ${data.samples.length} samples from ${data.bodies.length} bodies (${describeSource(source)})`);
       slider.max = data.samples.length - 1;
       buildLegend();
       updateScene();
@@ -630,15 +676,51 @@ function drawBodies(sample, scaleAU) {
   const centerPos = sample.positions_km[centerBody];
   const centerX = centerPos ? centerPos[0] : 0;
   const centerY = centerPos ? centerPos[1] : 0;
+  const centerZ = centerPos ? centerPos[2] : 0;
+
+  // Fixed heliocentric top-down view: use X,Y after axis remap done in ephemeris generation
 
   // Clear the body positions array for hover detection
   bodyPositions = [];
 
+  // Draw orbit trails first (behind bodies) - project from world coords
   data.bodies.forEach((body, index) => {
-    const [x, y] = sample.positions_km[body];
+    if (body === 'Sun') return; // No trail for Sun
+    const trail = orbitTrails[body];
+    if (!trail || trail.length < 2) return;
+
+    const color = COLORS[index % COLORS.length];
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.4;
+    ctx.beginPath();
+    
+    // Project first point
+    const firstCx = midX + trail[0].xAu * pxPerAu;
+    const firstCy = midY - trail[0].yAu * pxPerAu;
+    ctx.moveTo(firstCx, firstCy);
+    
+    // Project remaining points
+    for (let i = 1; i < trail.length; i++) {
+      const cx = midX + trail[i].xAu * pxPerAu;
+      const cy = midY - trail[i].yAu * pxPerAu;
+      ctx.lineTo(cx, cy);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+  });
+
+  data.bodies.forEach((body, index) => {
+    const posKm = sample.positions_km[body];
+    // DE200 coordinates are [X, Y, Z] in ecliptic frame
+    // For top-down view originally assumed XY; allow plane selection if axes need swapping.
+    const x = posKm[0];
+    const y = posKm[1];
+    const z = posKm[2];
+    
     // Subtract center position to make the view relative to the center body
-    const xAu = (x - centerX) / auKm;
-    const yAu = (y - centerY) / auKm;
+  const xAu = (x - centerX) / auKm;
+  const yAu = (y - centerY) / auKm;
     const cx = midX + xAu * pxPerAu;
     const cy = midY - yAu * pxPerAu;
 
@@ -704,6 +786,28 @@ function updateScene() {
   const timeValue = playbackState !== 'stopped' ? virtualTime : Number(slider.value);
   const index = Math.round(timeValue);
   const sample = data.samples[index];
+  
+  // Record trail points (sample every 5 frames to avoid clutter)
+  if (index !== lastRecordedIndex && index % 5 === 0) {
+    const auKm = data.metadata.au_km;
+    const centerPos = sample.positions_km['Sun'];
+    const centerX = centerPos ? centerPos[0] : 0;
+    const centerY = centerPos ? centerPos[1] : 0;
+    
+    data.bodies.forEach(body => {
+      if (body === 'Sun') return;
+      const posKm = sample.positions_km[body];
+      const xAu = (posKm[0] - centerX) / auKm;
+      const yAu = (posKm[1] - centerY) / auKm;
+      
+      if (!orbitTrails[body]) orbitTrails[body] = [];
+      orbitTrails[body].push({ xAu, yAu, sampleIndex: index });
+      if (orbitTrails[body].length > MAX_TRAIL_POINTS) {
+        orbitTrails[body].shift();
+      }
+    });
+    lastRecordedIndex = index;
+  }
   
   const scaleAU = Number(scaleSlider.value);
 

@@ -503,10 +503,9 @@ function calculateChart() {
   const planetaryPositions = {};
   
   // Map ephemeris body names to our planet names
-  // Note: Using Earth-Moon Barycenter as approximation for Moon position
   const bodyMapping = {
     'Sun': 'Sun',
-    'Moon': 'Earth-Moon Barycenter',  // Barycenter is very close to Earth, good approximation
+    'Moon': 'Moon',  // DE200 has separate Moon ephemeris
     'Mercury': 'Mercury',
     'Venus': 'Venus',
     'Mars': 'Mars',
@@ -520,7 +519,23 @@ function calculateChart() {
   for (const [ourName, ephemName] of Object.entries(bodyMapping)) {
     if (positions[ephemName]) {
       const [x, y, z] = positions[ephemName];
-      const longitude = cartesianToLongitude(x, y, z);
+      let longitude;
+      
+      // Special case for Sun: In heliocentric coords, Sun is at origin (0,0,0)
+      // So Sun's apparent position from Earth is Earth's position + 180°
+      if (ourName === 'Sun') {
+        // Use Earth-Moon Barycenter as proxy for Earth's position
+        const earthPos = positions['Earth-Moon Barycenter'];
+        if (earthPos) {
+          // Sun as seen from Earth is opposite direction from Earth's heliocentric position
+          longitude = cartesianToLongitude(-earthPos[0], -earthPos[1], -earthPos[2]);
+        } else {
+          console.warn('Earth-Moon Barycenter position not found for Sun calculation');
+          continue;
+        }
+      } else {
+        longitude = cartesianToLongitude(x, y, z);
+      }
       
       // Validate the calculated longitude
       if (!isNaN(longitude) && isFinite(longitude)) {
@@ -1001,8 +1016,15 @@ async function loadDatasetFromEphemeris({ headerUrl, ephUrl }) {
     ephResponse.arrayBuffer()
   ]);
 
-  const { constants, startJD, endJD } = parseEphemerisHeader(headerText);
-  const dataset = integrateDemoSamples(constants, { startJD, endJD });
+  // Load app-chebyshev.js module functions
+  const { parseEphemerisBuffer, generateSamplesFromEphemeris } = window;
+  if (!parseEphemerisBuffer || !generateSamplesFromEphemeris) {
+    throw new Error('app-chebyshev.js not loaded');
+  }
+
+  const { constants } = parseEphemerisHeader(headerText);
+  const ephemeris = parseEphemerisBuffer(ephBuffer);
+  const dataset = generateSamplesFromEphemeris(ephemeris, constants);
   
   return dataset;
 }
@@ -1442,8 +1464,11 @@ async function loadEphemerisData() {
     // When running from http://, compute from .eph file
     try {
       console.log('Running from http:// protocol - computing ephemeris from .eph file...');
-      const headerUrl = new URL('../data/header.200', window.location.href);
-      const ephUrl = new URL('../data/de200.eph', window.location.href);
+      const urlParams = new URLSearchParams(location.search);
+      const useReduced = urlParams.get('reduced') !== '0'; // Use reduced by default
+      
+      const headerUrl = new URL(useReduced ? '../data/reduced_header.200' : '../data/header.200', window.location.href);
+      const ephUrl = new URL(useReduced ? '../data/reduced_de200.eph' : '../data/de200.eph', window.location.href);
       
       ephemerisData = await loadDatasetFromEphemeris({ headerUrl, ephUrl });
       
@@ -1460,6 +1485,41 @@ async function loadEphemerisData() {
       if (ephemerisData.samples.length > 0) {
         const firstSample = ephemerisData.samples[0];
         console.log('✓ Bodies in first sample:', Object.keys(firstSample.positions_km).join(', '));
+        
+        // Data quality check: Display positions for a few bodies
+        console.log('\n📊 DATA QUALITY CHECK - First Sample:');
+        const AU_TO_KM = 149597870.7;
+        const bodiesToCheck = ['Sun', 'Mercury', 'Venus', 'Earth-Moon Barycenter', 'Mars', 'Jupiter'];
+        bodiesToCheck.forEach(body => {
+          if (firstSample.positions_km[body]) {
+            const pos_km = firstSample.positions_km[body];
+            // Positions are arrays [x, y, z] not objects
+            const x_au = pos_km[0] / AU_TO_KM;
+            const y_au = pos_km[1] / AU_TO_KM;
+            const z_au = pos_km[2] / AU_TO_KM;
+            const dist_au = Math.sqrt(x_au*x_au + y_au*y_au + z_au*z_au);
+            console.log(`  ${body}: distance from origin = ${dist_au.toFixed(3)} AU`);
+          }
+        });
+        
+        // Check a middle sample too
+        const midIndex = Math.floor(ephemerisData.samples.length / 2);
+        const midSample = ephemerisData.samples[midIndex];
+        const midJD = midSample.julian_date;
+        const midDateObj = new Date((midJD - 2440587.5) * 86400000);
+        console.log(`\n📊 DATA QUALITY CHECK - Middle Sample (${midDateObj.toISOString().split('T')[0]}):`);
+        bodiesToCheck.forEach(body => {
+          if (midSample.positions_km[body]) {
+            const pos_km = midSample.positions_km[body];
+            // Positions are arrays [x, y, z] not objects
+            const x_au = pos_km[0] / AU_TO_KM;
+            const y_au = pos_km[1] / AU_TO_KM;
+            const z_au = pos_km[2] / AU_TO_KM;
+            const dist_au = Math.sqrt(x_au*x_au + y_au*y_au + z_au*z_au);
+            console.log(`  ${body}: distance from origin = ${dist_au.toFixed(3)} AU`);
+          }
+        });
+        console.log('\n');
       }
       
       // Set default date to middle of available range
@@ -2078,7 +2138,7 @@ function performComparison() {
 function extractPlanetaryPositions(positions) {
   const bodyMapping = {
     'Sun': 'Sun',
-    'Moon': 'Earth-Moon Barycenter',
+    'Moon': 'Moon',  // DE200 has separate Moon ephemeris
     'Mercury': 'Mercury',
     'Venus': 'Venus',
     'Mars': 'Mars',
@@ -2094,7 +2154,24 @@ function extractPlanetaryPositions(positions) {
   for (const [ourName, ephemName] of Object.entries(bodyMapping)) {
     if (positions[ephemName]) {
       const [x, y, z] = positions[ephemName];
-      const longitude = cartesianToLongitude(x, y, z);
+      let longitude;
+      
+      // Special case for Sun: In heliocentric coords, Sun is at origin (0,0,0)
+      // So Sun's apparent position from Earth is Earth's position + 180°
+      if (ourName === 'Sun') {
+        // Use Earth-Moon Barycenter as proxy for Earth's position
+        const earthPos = positions['Earth-Moon Barycenter'];
+        if (earthPos) {
+          // Sun as seen from Earth is opposite direction from Earth's heliocentric position
+          longitude = cartesianToLongitude(-earthPos[0], -earthPos[1], -earthPos[2]);
+        } else {
+          console.warn('Earth-Moon Barycenter position not found for Sun calculation');
+          longitude = 0;
+        }
+      } else {
+        longitude = cartesianToLongitude(x, y, z);
+      }
+      
       planetaryPositions[ourName] = longitude;
     } else {
       planetaryPositions[ourName] = 0;

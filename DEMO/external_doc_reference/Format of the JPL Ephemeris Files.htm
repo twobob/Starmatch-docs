@@ -1,0 +1,1681 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" href="Format%20of%20the%20JPL%20Ephemeris%20Files_files/default.css">
+<link rel="stylesheet" href="Format%20of%20the%20JPL%20Ephemeris%20Files_files/darkula.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Format of the JPL Ephemeris Files</title>
+<style>
+    .blockelement{
+        display: inline-block;
+        height:1em;
+        width:1em;
+        background-color: rgb(200,100,100);
+    }
+	.formatlevel1 {background: #000000; border-style:solid; border-width: 1px;}
+	.formatlevel2 {background: #444444; border-style:solid; border-width: 1px;}
+	.formatlevel3 {background: #808080; border-style:solid; border-width: 1px;}
+    .formatlevel4 {background: #aaaaaa; border-style:solid; border-width: 1px;}
+    
+    .baseli{
+        margin:0;
+        padding:0;
+    }
+
+</style>
+</head>
+<body class="vsc-initialized">
+<script src="Format%20of%20the%20JPL%20Ephemeris%20Files_files/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<h1>Format of the JPL Ephemeris Files</h1>
+Greg Miller (gmiller@gregmiller.net) 2019<br>
+All code in this article is public domain
+<h2>Overview</h2>
+
+<p>I have implemented an <a href="https://astrogreg.com/jpl-ephemeris-format/de405javascript.html">example</a> implementation based on the description below to show how everything fits together.  Additionally
+other example programs in other languages, and for accessing files in binary format are located in the
+<a href="https://github.com/gmiller123456/jpl-development-ephemeris">Github repository</a>.</p>
+
+<p>The JPL Development Ephemeris provide high quality, accurate data on 
+the positions of the planets, the moon, and sometimes a few other 
+variables.  Writing software to
+use the JPL files is not difficult.  Unfortunately the documentation is 
+pretty lacking, scattered, and mostly relies on reading the source code 
+of reference implementations.
+Having looked at the reference implementations, I'm pretty convinced 
+that the authors are better astronomers than they are programmers.  I'm 
+not here to judge, I'm certainly
+a much better programmer than I am an astronomer.  I'm hoping with this 
+article I can help bridge the gap, and explain how to use the JPL 
+ephemeris data in terms that are easier for programmers to follow who 
+might not be as informed on astronomy, and hopefully open up new 
+opprotunities.</p>
+
+<p>If you've looked at some of the implementations provided by NASA, or the <a href="https://www.projectpluto.com/jpl_eph.htm">Project Pluto</a>
+ implementations, it might look like
+it's an impossibly hard task to grapple.  But the reality is that these 
+are optimised implementations, designed to work with multiple ephemeris 
+versions, and are written in
+languages that lack features that make code easier to understand (though
+ they tend to run faster).  In reality, in most of these 
+implementations, only about 10-30 lines of
+code actualy deal with calculating the position (or velocity) of the 
+planets.  Most of the rest of the code is dealing with edge cases for 
+dealing with multiple versions,
+memory management, and finding the right coefficients to finally pass to
+ the computation function.</p>
+
+<p>If you're willing to forego the flexibility of being able to process 
+ephemeris files you've never seen before, then writing a program to 
+compute all of the series in a JPL
+ephemeris version can be done in about 100 lines of code in pretty much 
+any modern language.  In fact, if you were to rearrange the JPL 
+ephemeris files
+into a format which is easier to parse, you could likely get that down 
+to 10 to 20 lines of code.  The point I'm trying to make here, is that 
+it's
+the file format that is complicated, not the actual computation of 
+positions.</p>
+
+
+<h2>Why Write Your Own (Do We Really Need Another Ephemeris Generator)?</h2>
+
+<p>Probably the number one reason to write your own software, specific 
+to your needs, is that you won't be locked in to using the format JPL 
+provides the ephemeris data in.  As
+you'll see below, much of the data is independent of each other.  And, 
+if you're only interested in data on the Sun, Earth, and Moon, you can 
+extract that data into your
+own files, considerably reducing the size of the files you have to work 
+with.</p>
+
+<p>Another reason is most of the implementations recommended by the JPL 
+are written in C, which is great if speed is your only concern. But 
+modern computing environments aren't
+very friendly to the C ecosystem.  A web browser won't let you run a C 
+application at all, but is very likely the most widely used platform for
+ applications.  Platforms like
+Android will let you run C, but providing binaries for every type of 
+device is practically impossible.  Other systems, like microcontrollers,
+ have no concept of file systems.</p>
+
+<p>So, there's a lot of room to grow.  So, let's get started.</p>
+
+<h2>Header Files</h2>
+
+Have a look at the <a href="https://astrogreg.com/jpl-ephemeris-format/header.405">DE 405 header file</a>.  Most of the data you see here will not be used by us, we're primarily interested in only a few key parts
+highlighted and explained below.<br>
+
+<pre class="defaultContainer">KSIZE=  2036    NCOEFF=  <span class="highlight">1018</span>
+ 
+GROUP   1010
+ 
+JPL Planetary Ephemeris DE405/DE405
+Start Epoch: JED=  2305424.5 1599 DEC 09 00:00:00 
+Final Epoch: JED=  2525008.5 2201 FEB 20 00:00:00 
+ 
+GROUP   1030
+ 
+  <span class="highlight">2305424.50</span>  <span class="highlight">2525008.50</span>         <span class="highlight">32</span>.
+ 
+GROUP   1040
+ 
+   156
+  DENUM   LENUM   TDATEF  TDATEB  CENTER  CLIGHT  <span class="highlight">AU</span>      <span class="highlight">EMRAT</span>   GM1     GM2   
+  GMB     GM4     GM5     GM6     GM7     GM8     GM9     GMS     RAD1    RAD2  
+  RAD4    JDEPOC  X1      Y1      Z1      XD1     YD1     ZD1     X2      Y2    
+  Z2      XD2     YD2     ZD2     XB      YB      ZB      XDB     YDB     ZDB   
+  X4      Y4      Z4      XD4     YD4     ZD4     X5      Y5      Z5      XD5   
+  YD5     ZD5     X6      Y6      Z6      XD6     YD6     ZD6     X7      Y7    
+  Z7      XD7     YD7     ZD7     X8      Y8      Z8      XD8     YD8     ZD8   
+  X9      Y9      Z9      XD9     YD9     ZD9     XM      YM      ZM      XDM   
+  YDM     ZDM     XS      YS      ZS      XDS     YDS     ZDS     BETA    GAMMA 
+  J2SUN   GDOT    MA0001  MA0002  MA0004  MAD1    MAD2    MAD3    RE      ASUN  
+  PHI     THT     PSI     OMEGAX  OMEGAY  OMEGAZ  AM      J2M     J3M     J4M   
+  C22M    C31M    C32M    C33M    S31M    S32M    S33M    C41M    C42M    C43M  
+  C44M    S41M    S42M    S43M    S44M    LBET    LGAM    K2M     TAUM    AE    
+  J2E     J3E     J4E     K2E0    K2E1    K2E2    TAUE0   TAUE1   TAUE2   DROTEX
+  DROTEY  GMAST1  GMAST2  GMAST3  KVC     IFAC    PHIC    THTC    PSIC    OMGCX 
+  OMGCY   OMGCZ   PSIDOT  MGMIS   ROTEX   ROTEY                                 
+ 
+GROUP   1041
+ 
+   156
+  0.405000000000000000D+03  0.405000000000000000D+03  0.000000000000000000D+00
+  0.119970525194723000D+17  0.000000000000000000D+00  0.299792457999999984D+06
+  <span class="highlight">0.149597870691000015D+09</span>  <span class="highlight">0.813005600000000044D+02</span>  0.491254745145081187D-10
+  0.724345248616270270D-09  0.899701134671249882D-09  0.954953510577925806D-10
+  0.282534590952422643D-06  0.845971518568065874D-07  0.129202491678196939D-07
+  0.152435890078427628D-07  0.218869976542596968D-11  0.295912208285591095D-03
+  0.243976000000000022D+04  0.605230000000000018D+04  0.339751499999999987D+04
+  0.244040050000000000D+07  0.361762714603509283D+00 -0.907819677295860494D-01
+ -0.857149831817633490D-01  0.336749391398414016D-02  0.248945204676488743D-01
+
+....
+
+  0.646682543384255465D-13  0.127748118910414607D-13  0.333405877296029502D-14
+  0.000000000000000000D+00  0.299999999999999974D-03 -0.425951830000000000D-02
+  0.408844299999999994D+00 -0.171450900000000006D+01  0.000000000000000000D+00
+ -0.158167070000000005D-05  0.229888000000000009D+00  0.000000000000000000D+00
+  0.100000000000000000D+01  0.000000000000000000D+00  0.000000000000000000D+00
+ 
+GROUP   1050
+<span class="highlight">
+     3   171   231   309   342   366   387   405   423   441   753   819   899
+    14    10    13    11     8     7     6     6     6    13    11    10    10
+     4     2     2     1     1     1     1     1     1     8     2     4     4
+</span>
+GROUP   1070 
+</pre>
+
+<h3>NCOEFF</h3>
+When we look at the ASCII data files, you'll noticed that it is broken 
+up into blocks, all of which are a fixed length.  The value following 
+NCOEFF= is the count of numbers in this block.  Though, that is parly a 
+lie, as some of the ephemeris data files are padded with zeros.  For 
+example, for DE 405, each block has an extra two zeros, so the
+actual length of the block is 1020 numbers, though the last two numbers 
+will never be used.
+
+<h3>GROUP 1030</h3>
+<p>The first two numbers here are <a href="https://en.wikipedia.org/wiki/Julian_day">Julian Days</a>.
+  They are the earliest, and latest dates that the ephemeris can 
+generate
+data for.  You'll notice that GROUP 1010, just above GROUP 1030 has the 
+same data, and with their respective Gregorian Calendar dates listed 
+along side.  But if you're
+parsing the file automatically, you'll likely find GROUP 1030 easier to 
+parse.</p>
+<p>The last number, which is 32 in this case, is the total number of 
+days a given block contains data for.  As I said above, each file is 
+broken up into many blocks, and each
+block is only good for a set number of days.  You'll use this later to 
+compute an offset into the full list of data to find the right 
+coefficients.
+</p>
+
+<h3>GROUP 1040/1041</h3>
+<p>
+    These groups list the names (1040) and the values (1041) of 
+constants which were used when generating the ephemeris.  Each string in
+ group 1040
+    coorelates (in order) to a value in group 1041.  We are primarily 
+interested in the AU (number of kilometers per AU), and EMRAT
+    (the mass ratio between the Earth and Moon).
+</p>
+
+<h3>GROUP 1050</h3>
+<p>This is the most complicated part of the data, and will be explained 
+in more detail when we actually look at the data files.  But the short 
+version is that each column here
+represents a planet (or some other data element).  The order is 
+consistent across all of the ephemeris versions.  The order is:</p>
+<p>Table 1.  List of Series order in the JPL Files:</p>
+<table border="1" cellspacing="0">
+<tbody><tr><th></th><th># Properties</th><th>Units</th><th>Center</th><th>Name</th></tr>
+<tr><td>1</td><td>3</td><td>km</td><td>SSB</td><td>Mercury</td></tr>
+<tr><td>2</td><td>3</td><td>km</td><td>SSB</td><td>Venus</td></tr>
+<tr><td>3</td><td>3</td><td>km</td><td>SSB</td><td>Earth-Moon barycenter</td></tr>
+<tr><td>4</td><td>3</td><td>km</td><td>SSB</td><td>Mars </td></tr>
+<tr><td>5</td><td>3</td><td>km</td><td>SSB</td><td>Jupiter </td></tr>
+<tr><td>6</td><td>3</td><td>km</td><td>SSB</td><td>Saturn</td></tr>
+<tr><td>7</td><td>3</td><td>km</td><td>SSB</td><td>Uranus</td></tr>
+<tr><td>8</td><td>3</td><td>km</td><td>SSB</td><td>Neptune</td></tr>
+<tr><td>9</td><td>3</td><td>km</td><td>SSB</td><td>Pluto</td></tr>
+<tr><td>10</td><td>3</td><td>km</td><td>Earth</td><td>Moon (geocentric)</td></tr>
+<tr><td>11</td><td>3</td><td>km</td><td>SSB</td><td>Sun</td></tr>
+<tr><td>12</td><td>2</td><td>radians</td><td> </td><td>Earth Nutations in longitude and obliquity (IAU 1980 model)</td></tr>
+<tr><td>13</td><td>3</td><td>radians</td><td> </td><td>Lunar mantle libration</td></tr>
+<tr><td>14</td><td>3</td><td>radians/day</td><td> </td><td>Lunar mantle angular velocity</td></tr>
+<tr><td>15</td><td>1</td><td>Seconds</td><td> </td><td>TT-TDB (at geocenter)</td></tr>
+</tbody></table>
+<span class="footnote">SSB = Solar System Barycenter</span>
+
+<p></p>
+<p>You'll notice that not all ephemeris versions contain data for every 
+data element.  For example DE405 (above) does not have data for Lunar 
+Mantle Velocity, nor TT-TDB.
+and DE432 (below) does not have data for Nutations, Mantle Velocity, nor
+ TT-TDB.  Exactly how each ephemeris version expresses the fact that 
+they lack data for a
+certain element is somewhat variable.  You'll notice that DE405 just 
+lacks those columns, where DE432 has indicated 0 for the number of 
+coefficients.  Otherwise, you'll
+note that the numbers are pretty much the same between DE405 and DE432.</p>
+
+
+<b>DE 432 header</b><br>
+<pre class="defaultContainer">GROUP   1050
+ 
+     3   171   231   309   342   366   387   405   423   441   753   819   819   939   939
+    14    10    13    11     8     7     6     6     6    13    11    <span class="highlight"> 0 </span>   10    <span class="highlight"> 0 </span>    <span class="highlight"> 0 </span>
+     4     2     2     1     1     1     1     1     1     8     2    <span class="highlight"> 0 </span>    4    <span class="highlight"> 0 </span>    <span class="highlight"> 0 </span>
+
+</pre>
+
+<p>The numbers in each of these columns (from top to bottom) are:
+	</p><ul>
+		<li>The start offset of the series in a block</li>
+		<li>The number of coefficients for each property</li>
+		<li>The number of subintervals</li>
+	</ul>
+<p>Not included here, but also important is the number of properties for
+ each series.  This information you have to infer by the type of series.
+  Though you could compute
+	it by looking at where the next series starts (or for the last series, 
+the length of a block).  Each planet has three properties (X, Y, and Z).
+ Nutations have two
+	properties (dpsi, deps).  Librations have three (phi, theta, psi).  
+Mantel velocity has three (omega x, omega y, omega z).  And TT-TDB has 
+just one.  This data is
+included in Table 1 above.</p>
+
+<h3>What About the Earth?!?</h3>
+If you were paying attention, you'd have noticed that there's no data 
+for computing the position of the Earth.  Instead we get data for both 
+the Earth-Moon Barycenter, and
+a geocentric position for the Moon.  But, using those two quantities, we
+ can compute the position of the Earth:<p></p>
+
+<pre class="defaultContainer"><code class="JavaScript hljs">
+<b>Earth = EMB - Moon / ( <span class="hljs-number">1</span> + earthMoonMassRatio )</b>
+</code></pre>
+
+<p>  So, anytime you need
+tht position of the Earth, you must first compute the EMB and Moon 
+positions, then use those positions in the equation above.  The 
+earthMoonMassRatio
+value comes from the header file, and is highlighted above 
+(0.813005600000000044D+02).</p>
+
+<h2>ASCII Files</h2>
+
+<p>JPL provides ASCII versions of the ephemeris files, and binary 
+versions of some of them, some in little-endian and some in big-endian 
+format.  For
+now, I will deal only with the ASCII format, and discuss details of the 
+binary format later.  The binary format is pretty similar once you get 
+past
+the header, so knowledge of the ASCII format is a requirement for 
+understanding the binary format.</p>
+
+<script>
+    class ASCIILayoutDiagram{
+
+        init(){
+            this.canvas = document.getElementById("asciiLayoutDiagram");
+            this.w=this.canvas.width;
+            this.h=this.canvas.height;
+            this.ctx = this.canvas.getContext("2d");
+
+            this.cellSize=20;
+            this.cellPadd=8;
+            this.wrap=Math.floor(this.w/this.cellSize);
+
+            this.clearCanvas();
+
+            this.currentCell=0;
+
+            //3   171   231   309   342   366   387   405   423   441   753   819   819   939   939
+            this.cooef=[14,    10,    13,    11,     8,     7,     6,     6,     6,    13,    11,     0,    10,     0,      0];
+            this.subblocks=[ 4,     2,     2,     1,     1,     1,     1,     1,     1,     8,     2,     0,     4,     0,      0]; 
+            this.properties=[3,3,3,3,3,3,3,3,3,3,3,2,3,3,1];
+
+            this.colors=[
+                "rgba(0,255,0,1)",
+                "rgba(0,0,255,1)",
+                "rgba(255,255,0,1)",
+                "rgba(255,0,0,1)",
+                "rgba(200,100,0,1)",
+                "rgba(150,150,150,1)",
+                "rgba(200,200,200,1)",
+                "rgba(200,200,255,1)",
+                "rgba(255,255,0,1)",
+                "rgba(0,255,255,1)",
+                "rgba(255,0,255,1)",
+                "rgba(0,200,200,1)",
+                "rgba(0,0,100,1)",
+                "rgba(100,0,0,0)"
+                ];
+
+            this.drawBlockPremble();
+            for(let i=0;i<this.cooef.length;i++){
+                this.drawPlanet(i);
+            }
+            console.log(this.currentCell);
+
+        }
+
+        cellToXY(cell){
+            const x=(cell % this.wrap)*this.cellSize
+            const y=Math.floor(cell / this.wrap)*this.cellSize
+            return {x: x, y: y};
+        }
+
+        drawPlanet(planet){
+            const ctx=this.ctx;
+            const pad=this.cellPadd;
+            const pad2=pad/2;
+
+            for(let h=0;h<this.properties[planet];h++){
+                ctx.fillStyle=this.colors[planet];
+                console.log(ctx.fillStyle);
+                for(let i=0;i<this.subblocks[planet];i++){
+                    const cstart=this.currentCell;
+                    for(let j=0;j<this.cooef[planet];j++){
+                        let p=this.cellToXY(this.currentCell);
+                        this.currentCell++;
+                        ctx.fillRect(p.x+pad,p.y+pad,this.cellSize-pad,this.cellSize-pad);
+                    }
+                    const cend=this.currentCell;
+                    const pstart=this.cellToXY(cstart);
+                    const pend=this.cellToXY(cend);
+
+                    ctx.strokeStyle=this.colors[planet];
+                    ctx.beginPath();
+                    ctx.strokeRect(pstart.x+pad2,pstart.y+pad2,pend.x-pad2+this.cellSize,pend.y-pad2+this.cellSize);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        drawBlockPremble(){
+            const ctx=this.ctx;
+            const pad=this.cellPadd;
+            ctx.fillStyle="rgb(100,0,0)";
+            let p=this.cellToXY(this.currentCell);
+            this.currentCell++;
+            ctx.fillRect(p.x+pad,p.y+pad,this.cellSize-pad,this.cellSize-pad);
+
+            p=this.cellToXY(this.currentCell);
+            this.currentCell++;
+            ctx.fillRect(p.x+pad,p.y+pad,this.cellSize-pad,this.cellSize-pad);
+        }
+
+        clearCanvas(){
+            this.ctx.fillStyle="rgb(10,10,10)";
+            this.ctx.fillRect(0,0,this.w,this.h);
+        }
+
+        drawAsciiDiagram(){
+
+
+        }
+    }
+    //new ASCIILayoutDiagram().init();
+</script>
+
+<p>The general format of the ASCII files, using DE405 as an example, is as follows (each <span class="blockelement"></span>
+    represents one number in the file, ignoring whitespace):</p>
+<ul class="formatlevel1">
+	<li>Block</li>
+	<ul class="formatlevel2">
+		<li class="formatlevel3">Block Start Date - 1 Double
+        <div class="blockelementDiv">
+            <span class="blockelement"></span>
+        </div></li>
+        <li class="formatlevel3">Block End Date - 1 Double
+        <div class="blockelementDiv">
+            <span class="blockelement"></span>
+        </div></li>
+		<li>Mercury Series: Offset 3</li>
+		<ul class="formatlevel3">
+			<li>Mercury Subinterval 1</li>
+			<ul class="formatlevel4">
+                <li class="baseli">X Coefficients - 14 Doubles</li>
+                    <div class="blockelementDiv">
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                    </div>
+				<li class="baseli">Y Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+
+				<li class="baseli">Z Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+        </ul>
+			<li>Mercury Subinterval 2</li>
+			<ul class="formatlevel4">
+				<li class="baseli">X Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+            <li class="baseli">Y Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                        <span class="blockelement"></span>
+                    </div>
+            <li class="baseli">Z Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+        </ul>
+			<li>Mercury Subinterval 3</li>
+			<ul class="formatlevel4">
+				<li class="baseli">X Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Y Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Z Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+			<li>Mercury Subinterval 4</li>
+			<ul class="formatlevel4">
+				<li class="baseli">X Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Y Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Z Coefficients - 14 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+		</ul>
+		<li>Venus Series: Offset 171</li>
+		<ul class="formatlevel3">
+			<li>Venus Subinterval 1</li>
+			<ul class="formatlevel4">
+				<li class="baseli">X Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Y Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Z Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+			<li>Venus Subinterval 2</li>
+			<ul class="formatlevel4">
+				<li class="baseli">X Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Y Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Z Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+		</ul>
+		<li>Earth-Moon Barycenter Series: Offset 231</li>
+		<ul class="formatlevel3">
+			<li>EMB Subinterval 1</li>
+			<ul class="formatlevel4">
+				<li class="baseli">X Coefficients - 13 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Y Coefficients - 13 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Z Coefficients - 13 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+			<li>EMB Subinterval 2</li>
+			<ul class="formatlevel4">
+				<li class="baseli">X Coefficients - 13 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Y Coefficients - 13 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Z Coefficients - 13 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+		</ul>
+		<li> . . . . . . .</li>
+		<li> . . . . . . .</li>
+		<li>And So On</li>
+		<li> . . . . . . .</li>
+		<li> . . . . . . .</li>
+		<li>Lunar mantle libration: Offset 899</li>
+		<ul class="formatlevel3">
+			<li>Libration Subinterval 1</li>
+			<ul class="formatlevel4">
+				<li class="baseli">Phi &#934; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Theta &#952; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Psi &#968; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+			<li>Libration Subinterval 2</li>
+			<ul class="formatlevel4">
+				<li class="baseli">Phi &#934; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Theta &#952; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Psi &#968; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+			<li>Libration Subinterval 3</li>
+			<ul class="formatlevel4">
+				<li class="baseli">Phi &#934; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Theta &#952; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Psi &#968; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+			<li>Libration Subinterval 4</li>
+			<ul class="formatlevel4">
+				<li class="baseli">Phi &#934; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Theta &#952; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+				<li class="baseli">Psi &#968; Coefficients - 10 Doubles</li>
+                <div class="blockelementDiv">
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                    <span class="blockelement"></span>
+                </div>
+			</ul>
+		</ul>
+	</ul>
+</ul>
+
+<h3>Files</h3>
+<p>Each ephemeris version has files named slightly differently, mostly 
+based on how many years of data each file contains.  The basic format of
+the filename is:</p>
+<pre><code class="JavaScript hljs">
+ASC[P/M][Year].[Version]
+</code></pre>
+<p>Where [P/M] stand for "plus" or "minus".  It is "M" for negative 
+years in the Gregorian Calendar, and "P" otherwise.  [Year] is the first
+ year the
+file has data for.  And [Version] is the version of the ephemeris it was
+ generated for.  Since the 32 day blocks don't line up exactly on 
+Gergorian
+Calendar years, the start and end dates will have some overlap with 
+other files.  The first and last blocks of data for 32 days is repeated 
+in
+adjacent files.  So, once you've computed the Gregorian Year you're 
+looking for, you know which file to look in.  But you need to be careful
+ when
+joining two files, otherwise including duplicated data will likey 
+disrupt the math used to compute indexes into the data.  The year is <b>normally</b> four
+digits, but after DE430 some have 5 digits for the year.</p>
+
+<p>The numbers in the files are formatted as exponentials, with a D 
+denoting the exponent.  You will need to replace this D with an E in 
+order for it
+to parse correctly in most programming languages.</p>
+
+<h3>Blocks</h3>
+<p>If you open up the <a href="https://astrogreg.com/jpl-ephemeris-format/ascp2020.405">ascp2020.405</a>
+ file as an example.  The first thing you'll notice is that it's broken 
+up into blocks,
+with each block starting with two integers on a line, followed by a list
+ of floating point numbers.  The two integers are the block number, and
+the number of coefficients the block contains.  The number of 
+coefficients, is the same as NCOEFF from the header file.  And remember 
+that
+the number of coefficients isn't always equal to the actual count of 
+numbers.  For example the DE405 blocks are always padded with two zeros,
+ so there
+are actually 1020 numbers in each block.  Other ephemeris versions will 
+have different padding standards.
+
+</p><h3>Valid dates</h3>
+<p>The first two numbers of each block (for every ephemeris version) are
+ the Julian Days for which the block is valid.  For example, the first 
+block in the
+ascp2020.405 file is valid from 2458832.5 to 2458864.5.
+
+</p><h3>Series</h3>
+<p>The not-so obvious breakdown of the coefficients starts here.  This 
+is where you need the data from "GROUP 1050" given in the header file, 
+as well
+as the knowledge of how many components each series has (given in Table 1
+ above).  Using Mercury as an example, it has a starting offset of "3" 
+(line 1 of GROUP 1050), so
+its coefficients start with -0.468225142464447618D+08.
+
+</p><h3>Components</h3>
+<p>Line 2 of GROUP 1050 shows how many coefficients each component has, 
+for Mercury that's 14.  We know from Table 1 that Mercury has three 
+components: X, Y and Z.</p>
+
+<p>Using the first block of ascp2020.405 as an example, for the first 
+subinterval (explained in the next section) the Mercury's coefficients 
+for X, Y, and Z are:</p>
+
+<p>X:-0.468225142464447618D+08  0.855287673857185431D+07  
+0.612484375662173959D+06 -0.271197032404459242D+05  
+  0.175867546549079435D+03 -0.162623577504849326D+01 
+-0.763823621681322784D+00  0.441800821623631670D-01 
+-0.225469494234295390D-02  0.850807253766397409D-04  
+ -0.218587309569990039D-05  0.850227664778876227D-09  
+0.490853028896027249D-08 -0.398938554977480726D-09</p>
+
+<p>Y: -0.427358720430963337D+08 -0.935967597832447290D+07  
+  0.576081445763668744D+06  0.126923156433521799D+05 
+-0.614832892580008775D+03  0.253491067956385763D+02 
+-0.982133401189059008D+00  0.199660889047113960D-01  
+ -0.651480991977301560D-04 -0.458218756391133968D-04  
+0.341552453779017768D-05 -0.189986098666370616D-06  
+0.790647061064605362D-08 -0.238712559861458182D-09</p>
+
+<p>Z: -0.181325881156450957D+08 -0.588670663881796692D+07  
+0.244250146726330160D+06  0.959132849803752833D+04 
+-0.346669478216073912D+03  0.137098683499955740D+02  
+ -0.445471694283314124D+00  0.608610133598603501D-02  
+0.198916433185458984D-03 -0.332970361189953508D-04  
+0.205113183990416121D-05 -0.101577300506667819D-06  
+  0.371477546608301747D-08 -0.861673297708620472D-10</p>
+
+<h3>Subintervals</h3>
+<p>Line 3 of GROUP 1050 is the number of subintervals a series has in 
+each block.  As explained in the "Valid Dates" section, each block has 
+data for only
+a specific period of time (usually 32 days).  Some of the planets, like 
+Mercury, have to be divided into even smaller sections.  We see that 
+from line
+3, in the first colum of GROUP 1050, that Mercury is divided into 4 
+subintervals.  This means that all of the coefficients for all of the 
+components are
+included 4 times, each set valid only for 1/4th the interval in which 
+the entire block is valid for.</p>
+
+<p>Using Mercury and the first block of ascp2020.405 as an example.  It 
+has 4 subintervals, the block is valid for 32 days, so each subinterval 
+for
+Mercury is valid for 8 days.  So, 2458832.5 is the start of the first 
+subinterval, and 2458840.5 is the start of the second subinterval, and 
+so on.  So,
+if we were asked to compute the position of Mercury on JD=2458850.5, we 
+would see that date falls in the third subinterval (subinterval 2 if 
+counting the
+first as 0).  We would then compute:</p>
+
+<pre><code class="JavaScript hljs">
+lengthOfSubinterval = daysPerBlock / numberOfSubintervals
+lengthOfSubinterval = <span class="hljs-number">32</span> / <span class="hljs-number">4</span> = <span class="hljs-number">8</span>
+
+subinterval = floor( (JD-blockStartDate)/lengthOfSubinterval )
+subinterval = floor( (<span class="hljs-number">2458850.5</span> - <span class="hljs-number">2458832.5</span>)/<span class="hljs-number">8</span>)
+subinterval = floor( <span class="hljs-number">2.25</span> )
+subinterval = <span class="hljs-number">2</span>;
+
+offset=subinterval*numberOfCoefficients*numberOfProperties+seriesStartOffset;
+offset=<span class="hljs-number">2</span> * <span class="hljs-number">14</span> * <span class="hljs-number">3</span> + <span class="hljs-number">3</span> = <span class="hljs-number">87</span>
+</code></pre>
+
+<p>So we would start with the 87th number in the list of floats, and 
+take the X, Y, and Z coefficients from there.  Remember that if you're 
+using arrays,
+most languages start indexes with 0, so the 87th number is array index 
+86.</p>
+
+<p>X: 0.230446411715880504D+04  0.133726736662702635D+08 
+-0.782187090879053358D+04 -0.267678745522568279D+05  
+ -0.227070698075548364D+03 -0.142012340261296774D+02 
+-0.924872006275108544D-01  0.431659104815666252D-02  
+0.356917634561652571D-03  0.302564651657819373D-04  
+  0.980701702776103911D-06  0.505819702568259545D-07  
+0.113034198242195379D-08  0.323800745882515925D-10</p>
+
+<p>Y:  -0.593914454531169161D+08  0.138391312173493067D+07  
+  0.725419090211108793D+06  0.139471465250126903D+04 
+-0.290917422263861397D+03 -0.635064566332839320D+01 
+-0.646844700926034299D+00 -0.120797394835047579D-01  
+ -0.681164244772722110D-03 -0.783160742259704191D-05 
+-0.953933699143903451D-07  0.170514411319974421D-07  
+0.132846579503924915D-08  0.625629348278007546D-10</p>
+
+<p>Z: -0.318846685234071501D+08 -0.647159726192409638D+06  
+0.388325111500594590D+06  0.351975238047553557D+04 
+-0.131868705094903135D+03 -0.192040059987689204D+01  
+ -0.335952534459033059D+00 -0.690035617434751804D-02 
+-0.400870301836372738D-03 -0.731991272299537233D-05 
+-0.152615685994738755D-06  0.386553675297770635D-08  
+  0.592487943320094233D-09  0.300642066655273442D-10</p>
+
+<h2>Computing the Chebyshev Polynomial</h2>
+
+<p>All that work just to find a handful of numbers we want to multiply 
+against.  The good news is the JPL has already done all of the hard work
+ from
+here, there's just a couple of more steps to get the position.
+
+</p><h3>Normalize the Julian Date to the Range -1 to +1</h3>
+
+<p>The Chebyshev polynomials don't use Julian Days for computation, 
+instead they require a number from -1 to +1.  -1 would represent the 
+time of the beginning
+of a subinterval, and +1 represents the end.  So we have to scale our 
+Julian Day based on the start and end times of the subinterval.  It's 
+important to
+remember to use the times for which the <b>subinterval</b> is valid, not the entire block.  So we must first compute the valid range for the subinterval.
+Using the example of Mercury and JD=2458850.5 from above.</p>
+
+<pre><code class="JavaScript hljs">
+validStart= blockStart + subinterval * lengthOfSubinterval = <span class="hljs-number">2458848.5</span>
+validEnd= validStart + lengthOfSubinterval = <span class="hljs-number">2458856.5</span>
+</code></pre>
+<p>In order to preserve maximum accuracy of the floating point JD, it is
+ necessary to subtract off the validStart before normalization:</p>
+<pre><code class="JavaScript hljs">
+temp = JD - validStart
+temp = <span class="hljs-number">2458850.5</span> - <span class="hljs-number">2458848.5</span> = <span class="hljs-number">2.0</span>
+</code></pre>
+<p>You may have noticed that many programs use a two part JD in order to
+ increase the accuracy of the JD.  In all previous instances where we 
+used the JD,
+you can just add the two parts together without loss of accuracy.  It is
+ here at this step where it makes a difference.</p>
+<pre><code class="JavaScript hljs">
+[alternate two part JD method]
+temp = JDpart1 - validStart + JDpart2
+</code></pre>
+<p>Now compute the normalized time variable which will be used in the Chebyshev polynomial:</p>
+<pre><code class="JavaScript hljs">
+x = temp / lengthOfSubinterval * <span class="hljs-number">2.0</span> - <span class="hljs-number">1.0</span>
+x = <span class="hljs-number">2.0</span> / <span class="hljs-number">8.0</span> * <span class="hljs-number">2.0</span> - <span class="hljs-number">1.0</span>
+x = <span class="hljs-number">-0.5</span>
+</code></pre>
+<h3>Computing the Position</h3>
+
+<p>Computing the Chebyshev polynomial involves expanding the polynomial 
+using the algorithm below.  This is equation 14.20 from the Explanatory 
+Supplement to
+the Astronomical Almanac, or alternatively presented on the <a href="https://en.wikipedia.org/wiki/Chebyshev_polynomials">Wikipedia Page</a>:</p>
+
+<pre><code class="JavaScript hljs">
+T(<span class="hljs-number">0</span>) = <span class="hljs-number">1</span>
+T(<span class="hljs-number">1</span>) = x
+T(n) = <span class="hljs-number">2</span> * x * T(n<span class="hljs-number">-1</span>) - T(n<span class="hljs-number">-2</span>)
+</code></pre>
+
+<p>Where n is the number of coefficients for the property we're computing.</p>
+
+<p>Continuing our example of computing the position of Mercury for 
+JD=2458850.5.  We have x = -0.5 from above, and 14 coefficients, so n = 
+14.  Note
+we're using array indexes starting at 0, so n will actually stop at 13.</p>
+
+<pre id="expandedPolynomial" class="headertext" style="background-color: 2b2b2b;">T(0) = 1
+T(1) = -0.5
+T(2) = 2 * -0.5 * -0.5 - 1
+T(3) = 2 * -0.5 * -0.5 - -0.5
+T(4) = 2 * -0.5 * 1 - -0.5
+T(5) = 2 * -0.5 * -0.5 - 1
+T(6) = 2 * -0.5 * -0.5 - -0.5
+T(7) = 2 * -0.5 * 1 - -0.5
+T(8) = 2 * -0.5 * -0.5 - 1
+T(9) = 2 * -0.5 * -0.5 - -0.5
+T(10) = 2 * -0.5 * 1 - -0.5
+T(11) = 2 * -0.5 * -0.5 - 1
+T(12) = 2 * -0.5 * -0.5 - -0.5
+T(13) = 2 * -0.5 * 1 - -0.5
+</pre>
+<script>
+function expandPolynomial(){
+  let x=-0.5;
+  let T=new Array();
+  let temp="T(0) = 1\r\nT(1) = "+x+"\r\n";
+
+  T[0]=1;
+  T[1]=x;
+  for(let n=2;n<14;n++)  {
+    T[n]=2*x*T[n-1] - T[n-2];
+    temp+=`T(${n}) = 2 * ${x} * ${T[n-1]} - ${T[n-2]}\r\n`;
+  }
+  document.getElementById('expandedPolynomial').innerHTML=temp;
+}
+</script>
+
+<p>Now it's a simple matter of multiplying each coefficient by it's t[n]
+ counterpart and summing them together. We loop through the coefficients
+ in reverse order 
+(from smallest to largest) to avoid rounding errors.  The end routine 
+that does all of the work is simply (in JavaScript):</p>
+
+<pre><code class="JavaScript hljs">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">computePolynomial</span>(<span class="hljs-params">x,coefficients</span>)</span>{
+  <span class="hljs-keyword">let</span> T=<span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+
+  T[<span class="hljs-number">0</span>]=<span class="hljs-number">1</span>;
+  T[<span class="hljs-number">1</span>]=x;
+  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> n=<span class="hljs-number">2</span>;n&lt;<span class="hljs-number">14</span>;n++)  {
+    T[n]=<span class="hljs-number">2</span>*x*T[n<span class="hljs-number">-1</span>] - T[n<span class="hljs-number">-2</span>];
+  }
+
+  <span class="hljs-keyword">let</span> v=<span class="hljs-number">0</span>;
+  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=coefficients.length<span class="hljs-number">-1</span>;i&gt;=<span class="hljs-number">0</span>;i--){
+  	v+=T[i]*coefficients[i];
+  }
+  <span class="hljs-keyword">return</span> v;
+}	
+</code></pre>
+
+<p>A function which calls that routine with our example data is:</p>
+
+<pre><code class="JavaScript hljs">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">computeExamplePolynomials</span>(<span class="hljs-params"></span>)</span>{	
+    <span class="hljs-keyword">let</span> X=[<span class="hljs-number">0.230446411715880504E+04</span>,  <span class="hljs-number">0.133726736662702635E+08</span>, <span class="hljs-number">-0.782187090879053358E+04</span>, <span class="hljs-number">-0.267678745522568279E+05</span>,  
+           <span class="hljs-number">-0.227070698075548364E+03</span>, <span class="hljs-number">-0.142012340261296774E+02</span>, <span class="hljs-number">-0.924872006275108544E-01</span>,  <span class="hljs-number">0.431659104815666252E-02</span>,
+            <span class="hljs-number">0.356917634561652571E-03</span>,  <span class="hljs-number">0.302564651657819373E-04</span>, <span class="hljs-number">0.980701702776103911E-06</span>,  <span class="hljs-number">0.505819702568259545E-07</span>,
+            <span class="hljs-number">0.113034198242195379E-08</span>,  <span class="hljs-number">0.323800745882515925E-10</span>];
+
+    <span class="hljs-keyword">let</span> Y=[<span class="hljs-number">-0.593914454531169161E+08</span>,  <span class="hljs-number">0.138391312173493067E+07</span>, <span class="hljs-number">0.725419090211108793E+06</span>,  <span class="hljs-number">0.139471465250126903E+04</span>,
+           <span class="hljs-number">-0.290917422263861397E+03</span>, <span class="hljs-number">-0.635064566332839320E+01</span>, <span class="hljs-number">-0.646844700926034299E+00</span>, <span class="hljs-number">-0.120797394835047579E-01</span>, 
+           <span class="hljs-number">-0.681164244772722110E-03</span>, <span class="hljs-number">-0.783160742259704191E-05</span>, <span class="hljs-number">-0.953933699143903451E-07</span>,  <span class="hljs-number">0.170514411319974421E-07</span>,
+            <span class="hljs-number">0.132846579503924915E-08</span>,  <span class="hljs-number">0.625629348278007546E-10</span>];
+
+    <span class="hljs-keyword">let</span> Z=[<span class="hljs-number">-0.318846685234071501E+08</span>, <span class="hljs-number">-0.647159726192409638E+06</span>,  <span class="hljs-number">0.388325111500594590E+06</span>,  <span class="hljs-number">0.351975238047553557E+04</span>,
+           <span class="hljs-number">-0.131868705094903135E+03</span>, <span class="hljs-number">-0.192040059987689204E+01</span>, <span class="hljs-number">-0.335952534459033059E+00</span>, <span class="hljs-number">-0.690035617434751804E-02</span>,
+           <span class="hljs-number">-0.400870301836372738E-03</span>, <span class="hljs-number">-0.731991272299537233E-05</span>, <span class="hljs-number">-0.152615685994738755E-06</span>,  <span class="hljs-number">0.386553675297770635E-08</span>,  
+            <span class="hljs-number">0.592487943320094233E-09</span>,  <span class="hljs-number">0.300642066655273442E-10</span>];
+
+	<span class="hljs-keyword">let</span> x=<span class="hljs-number">-0.5</span>;
+	<span class="hljs-built_in">console</span>.log(computePolynomial(x,X));
+	<span class="hljs-built_in">console</span>.log(computePolynomial(x,Y));
+	<span class="hljs-built_in">console</span>.log(computePolynomial(x,Z));
+}
+</code></pre>
+
+<script>
+computeExamplePolynomials();
+
+function computeExamplePolynomials(){	
+    let X=[0.230446411715880504E+04,  0.133726736662702635E+08, -0.782187090879053358E+04, -0.267678745522568279E+05,  
+           -0.227070698075548364E+03, -0.142012340261296774E+02, -0.924872006275108544E-01,  0.431659104815666252E-02,
+            0.356917634561652571E-03,  0.302564651657819373E-04, 0.980701702776103911E-06,  0.505819702568259545E-07,
+            0.113034198242195379E-08,  0.323800745882515925E-10];
+
+    let Y=[-0.593914454531169161E+08,  0.138391312173493067E+07, 0.725419090211108793E+06,  0.139471465250126903E+04,
+           -0.290917422263861397E+03, -0.635064566332839320E+01, -0.646844700926034299E+00, -0.120797394835047579E-01, 
+           -0.681164244772722110E-03, -0.783160742259704191E-05, -0.953933699143903451E-07,  0.170514411319974421E-07,
+            0.132846579503924915E-08,  0.625629348278007546E-10];
+
+    let Z=[-0.318846685234071501E+08, -0.647159726192409638E+06,  0.388325111500594590E+06,  0.351975238047553557E+04,
+           -0.131868705094903135E+03, -0.192040059987689204E+01, -0.335952534459033059E+00, -0.690035617434751804E-02,
+           -0.400870301836372738E-03, -0.731991272299537233E-05, -0.152615685994738755E-06,  0.386553675297770635E-08,  
+            0.592487943320094233E-09,  0.300642066655273442E-10];
+
+	let x=-0.5;
+	console.log(computePolynomial(x,X));
+	console.log(computePolynomial(x,Y));
+	console.log(computePolynomial(x,Z));
+}
+
+function computePolynomial(x,coefficients){
+  let T=new Array();
+
+  T[0]=1;
+  T[1]=x;
+  for(let n=2;n<14;n++)  {
+    T[n]=2*x*T[n-1] - T[n-2];
+  }
+
+  let v=0;
+  for(let i=coefficients.length-1;i>=0;i--){
+  	v+=T[i]*coefficients[i];
+  }
+  return v;
+}	
+</script>
+
+<p>And the final output for our example:</p>
+<pre><code class="JavaScript hljs">
+X = <span class="hljs-number">-6706768.766943997</span> km
+Y = <span class="hljs-number">-60444568.85087551</span> km
+Z = <span class="hljs-number">-31751664.901437085</span>	km
+</code></pre>
+
+<h3>Computing Velocities</h3>
+<p>You thought we were done?  In many cases it's required to also 
+compute the velocity, so that relativistic effects on the observer's
+	time can be accounted for.  The ephemeris data doesn't contain any data
+ for velocity, but, fortunately velocity is just the first derivitive
+	of position.  So all we need to do is compute the derivitive.  I won't 
+list out all of the polynomials again, but the final function
+which computes both position and velocity, as well as a slightly 
+modified calling function to finish the derivitive out:</p>
+<pre><code class="JavaScript hljs">
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">computePolynomial</span>(<span class="hljs-params">x,coefficients</span>)</span>{
+   <span class="hljs-comment">//Equation 14.20 from Explanetory Supplement 3rd ed.</span>
+   <span class="hljs-keyword">const</span> t=<span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+   t[<span class="hljs-number">0</span>]=<span class="hljs-number">1</span>;
+   t[<span class="hljs-number">1</span>]=x;
+   
+   <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> n=<span class="hljs-number">2</span>;n&lt;coefficients.length; n++){
+	   <span class="hljs-keyword">let</span> tn=<span class="hljs-number">2</span>*x*t[n<span class="hljs-number">-1</span>]-t[n<span class="hljs-number">-2</span>];
+	   t[n]=tn;
+   }
+   
+   <span class="hljs-comment">//Multiply the polynomial by the coefficients.</span>
+   <span class="hljs-comment">//Loop through coefficients backwards (from smallest to largest) to avoid floating point rounding errors</span>
+   <span class="hljs-keyword">let</span> position=<span class="hljs-number">0</span>;
+   <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=coefficients.length<span class="hljs-number">-1</span>;i&gt;=<span class="hljs-number">0</span>;i--){
+      position+=coefficients[i]*t[i];
+   }
+   
+   <span class="hljs-comment">//Compute velocity (just the derivitave of the above)</span>
+   <span class="hljs-keyword">const</span> v=<span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+   v[<span class="hljs-number">0</span>]=<span class="hljs-number">0</span>;
+   v[<span class="hljs-number">1</span>]=<span class="hljs-number">1</span>;
+   v[<span class="hljs-number">2</span>]=<span class="hljs-number">4</span>*x;
+   <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> n=<span class="hljs-number">3</span>;n&lt;coefficients.length;n++){
+      v[n]=<span class="hljs-number">2</span>*x*v[n<span class="hljs-number">-1</span>]+<span class="hljs-number">2</span>*t[n<span class="hljs-number">-1</span>]-v[n<span class="hljs-number">-2</span>];
+   }
+   
+   <span class="hljs-keyword">let</span> velocity=<span class="hljs-number">0</span>;
+   <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=coefficients.length<span class="hljs-number">-1</span>;i&gt;=<span class="hljs-number">0</span>;i--){
+      velocity+=v[i]*coefficients[i];
+   }
+   
+   <span class="hljs-keyword">let</span> retval=<span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+   retval[<span class="hljs-number">0</span>]=position;
+   retval[<span class="hljs-number">1</span>]=velocity;
+   <span class="hljs-keyword">return</span> retval;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">computeExamplePolynomials2</span>(<span class="hljs-params"></span>)</span>{	
+    <span class="hljs-keyword">let</span> X=[<span class="hljs-number">0.230446411715880504E+04</span>,  <span class="hljs-number">0.133726736662702635E+08</span>, <span class="hljs-number">-0.782187090879053358E+04</span>, <span class="hljs-number">-0.267678745522568279E+05</span>,  
+           <span class="hljs-number">-0.227070698075548364E+03</span>, <span class="hljs-number">-0.142012340261296774E+02</span>, <span class="hljs-number">-0.924872006275108544E-01</span>,  <span class="hljs-number">0.431659104815666252E-02</span>,
+            <span class="hljs-number">0.356917634561652571E-03</span>,  <span class="hljs-number">0.302564651657819373E-04</span>, <span class="hljs-number">0.980701702776103911E-06</span>,  <span class="hljs-number">0.505819702568259545E-07</span>,
+            <span class="hljs-number">0.113034198242195379E-08</span>,  <span class="hljs-number">0.323800745882515925E-10</span>];
+
+    <span class="hljs-keyword">let</span> Y=[<span class="hljs-number">-0.593914454531169161E+08</span>,  <span class="hljs-number">0.138391312173493067E+07</span>, <span class="hljs-number">0.725419090211108793E+06</span>,  <span class="hljs-number">0.139471465250126903E+04</span>,
+           <span class="hljs-number">-0.290917422263861397E+03</span>, <span class="hljs-number">-0.635064566332839320E+01</span>, <span class="hljs-number">-0.646844700926034299E+00</span>, <span class="hljs-number">-0.120797394835047579E-01</span>, 
+           <span class="hljs-number">-0.681164244772722110E-03</span>, <span class="hljs-number">-0.783160742259704191E-05</span>, <span class="hljs-number">-0.953933699143903451E-07</span>,  <span class="hljs-number">0.170514411319974421E-07</span>,
+            <span class="hljs-number">0.132846579503924915E-08</span>,  <span class="hljs-number">0.625629348278007546E-10</span>];
+
+    <span class="hljs-keyword">let</span> Z=[<span class="hljs-number">-0.318846685234071501E+08</span>, <span class="hljs-number">-0.647159726192409638E+06</span>,  <span class="hljs-number">0.388325111500594590E+06</span>,  <span class="hljs-number">0.351975238047553557E+04</span>,
+           <span class="hljs-number">-0.131868705094903135E+03</span>, <span class="hljs-number">-0.192040059987689204E+01</span>, <span class="hljs-number">-0.335952534459033059E+00</span>, <span class="hljs-number">-0.690035617434751804E-02</span>,
+           <span class="hljs-number">-0.400870301836372738E-03</span>, <span class="hljs-number">-0.731991272299537233E-05</span>, <span class="hljs-number">-0.152615685994738755E-06</span>,  <span class="hljs-number">0.386553675297770635E-08</span>,  
+            <span class="hljs-number">0.592487943320094233E-09</span>,  <span class="hljs-number">0.300642066655273442E-10</span>];
+
+    <span class="hljs-keyword">let</span> x=<span class="hljs-number">-0.5</span>;
+    <span class="hljs-keyword">let</span> temp;
+    temp=computePolynomial2(x,X);
+    temp[<span class="hljs-number">1</span>]=temp[<span class="hljs-number">1</span>]*(<span class="hljs-number">2.0</span>*<span class="hljs-number">4.0</span>/<span class="hljs-number">32.0</span>);
+    <span class="hljs-built_in">console</span>.log(temp);
+
+    temp=computePolynomial2(x,Y);
+    temp[<span class="hljs-number">1</span>]=temp[<span class="hljs-number">1</span>]*(<span class="hljs-number">2.0</span>*<span class="hljs-number">4.0</span>/<span class="hljs-number">32.0</span>);
+    <span class="hljs-built_in">console</span>.log(temp);
+
+    temp=computePolynomial2(x,Z);
+    temp[<span class="hljs-number">1</span>]=temp[<span class="hljs-number">1</span>]*(<span class="hljs-number">2.0</span>*<span class="hljs-number">4.0</span>/<span class="hljs-number">32.0</span>);
+    <span class="hljs-built_in">console</span>.log(temp);
+}
+</code></pre>
+<p>And the final output with velocities is:
+
+<script>
+computeExamplePolynomials2();
+
+function computeExamplePolynomials2(){	
+    let X=[0.230446411715880504E+04,  0.133726736662702635E+08, -0.782187090879053358E+04, -0.267678745522568279E+05,  
+           -0.227070698075548364E+03, -0.142012340261296774E+02, -0.924872006275108544E-01,  0.431659104815666252E-02,
+            0.356917634561652571E-03,  0.302564651657819373E-04, 0.980701702776103911E-06,  0.505819702568259545E-07,
+            0.113034198242195379E-08,  0.323800745882515925E-10];
+
+    let Y=[-0.593914454531169161E+08,  0.138391312173493067E+07, 0.725419090211108793E+06,  0.139471465250126903E+04,
+           -0.290917422263861397E+03, -0.635064566332839320E+01, -0.646844700926034299E+00, -0.120797394835047579E-01, 
+           -0.681164244772722110E-03, -0.783160742259704191E-05, -0.953933699143903451E-07,  0.170514411319974421E-07,
+            0.132846579503924915E-08,  0.625629348278007546E-10];
+
+    let Z=[-0.318846685234071501E+08, -0.647159726192409638E+06,  0.388325111500594590E+06,  0.351975238047553557E+04,
+           -0.131868705094903135E+03, -0.192040059987689204E+01, -0.335952534459033059E+00, -0.690035617434751804E-02,
+           -0.400870301836372738E-03, -0.731991272299537233E-05, -0.152615685994738755E-06,  0.386553675297770635E-08,  
+            0.592487943320094233E-09,  0.300642066655273442E-10];
+
+    const au= 149597870.691;
+	let x=-0.5;
+	let temp;
+	temp=computePolynomial2(x,X);
+	temp[1]=temp[1]*(2.0*4.0/32.0);
+	console.log(temp[0]);
+	console.log(temp[1]);
+
+	temp=computePolynomial2(x,Y);
+	temp[1]=temp[1]*(2.0*4.0/32.0);
+	console.log(temp[0]);
+	console.log(temp[1]);
+
+	temp=computePolynomial2(x,Z);
+	temp[1]=temp[1]*(2.0*4.0/32.0);
+	console.log(temp[0]);
+	console.log(temp[1]);
+}
+
+function computePolynomial2(x,coefficients){
+   //Equation 14.20 from Explanetory Supplement 3rd ed.
+   const t=new Array();
+   t[0]=1;
+   t[1]=x;
+   
+   for(let n=2;n<coefficients.length; n++){
+	   let tn=2*x*t[n-1]-t[n-2];
+	   t[n]=tn;
+   }
+   
+   //Multiply the polynomial by the coefficients.
+   //Loop through coefficients backwards (from smallest to largest) to avoid floating point rounding errors
+   let position=0;
+   for(let i=coefficients.length-1;i>=0;i--){
+      position+=coefficients[i]*t[i];
+   }
+   
+   //Compute velocity (just the derivitave of the above)
+   const v=new Array();
+   v[0]=0;
+   v[1]=1;
+   v[2]=4*x;
+   for(let n=3;n<coefficients.length;n++){
+      v[n]=2*x*v[n-1]+2*t[n-1]-v[n-2];
+   }
+   
+   let velocity=0;
+   for(let i=coefficients.length-1;i>=0;i--){
+      velocity+=v[i]*coefficients[i];
+   }
+   
+   let retval=new Array();
+   retval[0]=position;
+   retval[1]=velocity;
+   return retval;
+}
+</script>
+
+</p><pre> X = -6706768.766943997 km
+dX =  3346870.03970893 km/day
+ Y = -60444568.85087551 km
+dY = -17014.263564507186 km/day
+ Z = -31751664.901437085 km
+dZ = -356081.96677701955 km/day
+</pre>
+
+<p>And these match to within 1km of the values from <a href="https://ssd.jpl.nasa.gov/horizons_batch.cgi?batch=1&amp;command=199&amp;TABLE_TYPE=%27VECTORS%27&amp;REF_PLANE=%27FRAME%27&amp;START_TIME=%272020-Jan-02%2000:00:00.0000%27&amp;STOP_TIME=%272020-Jan-02%2000:01:00.0000%27&amp;STEP_SIZE=%271%20hours%27&amp;OUT_UNITS=%27KM-D%27&amp;CENTER=500@0">JPL Horizons</a>.</p>
+
+<h3>Binary File Format</h3>
+<p>As mentioned previously, the binary file format is quite similar to 
+the ASCII file format.  The only real difference is the inclusion of a 
+binary header
+at the beginning of the file.</p>
+
+<p>The header contains some unknown/inferred values which means existing programs likely will
+not be able to read new files which add new planets/series.</p>
+
+<p>The referces to things like "Group 1010" are references to portions of the ASCII header and
+    generally contain the same or similar data as their ASCII counterparts.
+</p>
+
+<p>The overall format of the header is 2 times the blocksize.  The blocksize isn't in the header
+and must be computed after reading the first half of the header using the inferred property
+numbers in Table 2, or looked up from Table 3 using the DE version.  But, for the versions
+ending in "t", the "t" does not appear in the header, so you will need a different method of
+identifying those versions' block sizes.  Computing the block size always works for all
+existing versions.  Refer to the source code findRecLength() function for the exact details.</p>
+
+<p>The first half of the header is from 0 - blocksize.  It contains all but the last two fields
+listed in Table 1.  The second half of the header goes from blocksize - 2*blocksize, and
+contains all of the constants from group 1041.</p>
+
+<p>The "undefined" portions of the file should be set to null, but some asc2eph programs do not
+clear the memory of these portions, and some binary files floating around do have leaked
+personal information in these areas.  So you cannot count on these to be null, though many
+programs do properly set them to null.  If they were set to null, it'd be possible to infer
+the blocksize for compatibility with newer DE versions, but even the files distributed by
+NASA have extranious information in these areas.</p>
+
+<pre>s - string
+l - 32 bit integer (long)
+d - 64 bit floating point (double)
+</pre>
+<p>
+Table 1 - Field offsets
+<table border="1" cellspacing="0">
+<tbody><tr><th>Offset     </th><th> Type           </th><th>Description</th></tr>
+<tr><td>0-83       </td><td> s              </td><td>First text line from Group 1010 (name)</td></tr>
+<tr><td>84-167     </td><td> s              </td><td>Second text line from Group 1010 (Start date)</td></tr>
+<tr><td>168-251    </td><td> s              </td><td>Third text line from Group 1010 (End date)</td></tr>
+<tr><td>252-2645   </td><td> array of s     </td><td>Names of constants (Group 1040), each 6 characters.  Undefined after last constant</td></tr>
+<tr><td>2652-2659  </td><td> d              </td><td>Start JD</td></tr>
+<tr><td>2660-2667  </td><td> d              </td><td>End JD</td></tr>
+<tr><td>2668-2675  </td><td> l              </td><td>Days per block</td></tr>
+<tr><td>2676-2679  </td><td> l              </td><td>Number of constants (constantCount)</td></tr>
+<tr><td>2680-2687  </td><td> d              </td><td>AU per km</td></tr>
+<tr><td>2688-2695  </td><td> d              </td><td>Ratio between Earth/Moon (for computing Earth position from barycenter)</td></tr>
+<tr><td>2696-2839  </td><td> array of array </td><td>*12 arrays of 3 32 bit ints each (36 ints total).  Represents columns 1-12 of Group 1050</td></tr>
+<tr><td>2840-2843  </td><td> l              </td><td>DE Version (e.g. 200, 405, etc).</td></tr>
+<tr><td>2844-2855  </td><td> array of l     </td><td>1 array of 3 Ints.  Represents column 13 of Group 1050</td></tr>
+<tr><td>2856-var   </td><td> array of s     </td><td>If more than 400 constants, 400-constantCount constant names.</td></tr>
+<tr><td>var-var    </td><td> array of l     </td><td>After (400-constantCount)*6, 2 arrays of 3 ints.  Represents cols 14,15 of Group 1050</td></tr>
+<tr><td>var-block  </td><td> undefined      </td><td>Undefined until end of block size</td></tr>
+<tr><td>block+1-var</td><td> d              </td><td>All values for constants</td></tr>
+<tr><td>var-2*block</td><td> d              </td><td>Undefined to end of block size</td></tr>
+</tbody></table>
+*Each of the three entries in the array represent rows 1-3 of group 1050<br>
+
+"block" is the computed block size using the inferred number of properties for each variable
+in Table 2.<br>
+</p>
+<p>
+Table 2 - Properties per variable
+<table border="1" cellspacing="0">
+<tbody><tr><th>Index</th><th>  Properties   </th><th>    Units       </th><th>   Center </th><th>Description</th></tr>
+<tr><td>0    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Mercury</td></tr>
+<tr><td>1    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Venus</td></tr>
+<tr><td>2    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Earth-Moon barycenter</td></tr>
+<tr><td>3    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Mars</td></tr>
+<tr><td>4    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Jupiter</td></tr>
+<tr><td>5    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Saturn</td></tr>
+<tr><td>6    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Uranus</td></tr>
+<tr><td>7    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Neptune</td></tr>
+<tr><td>8    </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Pluto</td></tr>
+<tr><td>9    </td><td>  x,y,z        </td><td>    km          </td><td>   Earth  </td><td>Moon (geocentric)</td></tr>
+<tr><td>10   </td><td>  x,y,z        </td><td>    km          </td><td>   SSB    </td><td>Sun</td></tr>
+<tr><td>11   </td><td>  dPsi,dEps    </td><td>    radians     </td><td>          </td><td>Earth Nutations in longitude and obliquity</td></tr>
+<tr><td>12   </td><td>  phi,theta,psi</td><td>    radians     </td><td>          </td><td>Lunar mantle libration</td></tr>
+<tr><td>13   </td><td>  Ox,Oy,Oz     </td><td>    radians/day </td><td>          </td><td>Lunar mantle angular velocity</td></tr>
+<tr><td>14   </td><td>  t            </td><td>    seconds     </td><td>          </td><td>TT-TDB (at geocenter)</td></tr>
+</tbody></table>
+</p>
+<p>
+Table 3 - Block sizes by version
+<table border="1" cellspacing="0">
+<tbody><tr><th>Version </th><th>     Block Size</th></tr>
+<tr><td>102     </td><td>     6184</td></tr>
+<tr><td>200     </td><td>     6608</td></tr>
+<tr><td>202     </td><td>     6608</td></tr>
+<tr><td>403     </td><td>     8144</td></tr>
+<tr><td>405     </td><td>     8144</td></tr>
+<tr><td>406     </td><td>     5824</td></tr>
+<tr><td>410     </td><td>     8144</td></tr>
+<tr><td>413     </td><td>     8144</td></tr>
+<tr><td>414     </td><td>     8144</td></tr>
+<tr><td>418     </td><td>     8144</td></tr>
+<tr><td>421     </td><td>     8144</td></tr>
+<tr><td>422     </td><td>     8144</td></tr>
+<tr><td>423     </td><td>     8144</td></tr>
+<tr><td>424     </td><td>     8144</td></tr>
+<tr><td>430     </td><td>     8144</td></tr>
+<tr><td>430t    </td><td>     7856</td></tr>
+<tr><td>431     </td><td>     8144</td></tr>
+<tr><td>432     </td><td>     7504</td></tr>
+<tr><td>432t    </td><td>     7856</td></tr>
+<tr><td>433     </td><td>     8144</td></tr>
+<tr><td>434     </td><td>     8144</td></tr>
+<tr><td>435     </td><td>     8144</td></tr>
+<tr><td>436     </td><td>     8144</td></tr>
+<tr><td>436t    </td><td>     8976</td></tr>
+<tr><td>438     </td><td>     8144</td></tr>
+<tr><td>438t    </td><td>     8336</td></tr>
+<tr><td>440     </td><td>     8144</td></tr>
+<tr><td>440t    </td><td>     8976</td></tr>
+<tr><td>441     </td><td>     8144</td></tr>
+</tbody></table>
+</p>
+<h2>Final Notes</h2>
+<p>Most ephemeris implementations output data in AU and AU/Day, while 
+the above works in kilometers and km/day which is what the JPL Ephemeris
+ uses
+internally.  If you want to match the output of other programs, you will
+ need to covert.</p>
+<p>The code produced here was written primarily for clarity.  There are 
+many optimizations that can be done to make it faster, though you may 
+find that
+	it works well enough as is.  If you're looking for places for 
+optimization, the first place to look is the generation of the arrays in
+ "computePolynomial".
+	The arrays are regenerated for every call, but it is highly likely that
+ you'll make multiple calls to this function with the same value of "x",
+ so it would
+	help quite a bit to cache the array and check to see if it needs to be 
+recomputed or not.  And, if you always generate the maxiumim entries 
+required by
+any series, you can reuse the array for every planet/series.</p>
+<p>Another good place to look for optimization is "computePolynomial" 
+accepts an array of polynomials.  Which requires copying of data from 
+the main data array
+into a temporary array.  It would be much faster to just pass an index 
+into the main data array.</p>
+<p>The JPL ASCII data files are available on the <a href="ftp://ssd.jpl.nasa.gov/pub/eph/planets/ascii/">JPL FTP Site</a></p>
+<p>Not all data is available for every DE version.  Some versions 
+specify a larger interval than there are files on the JPL FTP site.  But
+ there are test
+	cases for these unavailable data ranges in the testpo.xxx files.  So 
+you will encounter errors if you blindly run all tests.
+
+</p></body></html>
